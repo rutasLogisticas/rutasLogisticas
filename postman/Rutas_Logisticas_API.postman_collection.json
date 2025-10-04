@@ -1,0 +1,841 @@
+{
+	"info": {
+		"_postman_id": "rutas-logisticas-api",
+		"name": "Rutas Logísticas API",
+		"description": "Colección completa para probar la API del sistema de gestión logística",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "noauth"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Variables globales",
+					"pm.globals.set('baseUrl', 'http://localhost:8000');",
+					"pm.globals.set('apiVersion', 'v1');"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "vehicleId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "driverId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "clientId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "addressId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Health & Info",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "API Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/info",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "info"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Root Endpoint",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": ["{{baseUrl}}"],
+							"path": [""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vehículos",
+			"item": [
+				{
+					"name": "Crear Vehículo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('vehicleId', response.id);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"license_plate\": \"ABC-1234\",\n  \"brand\": \"Toyota\",\n  \"model\": \"Hilux\",\n  \"year\": 2022,\n  \"color\": \"Blanco\",\n  \"vehicle_type\": \"camioneta\",\n  \"capacity_weight\": 1000.0,\n  \"capacity_volume\": 2.5,\n  \"fuel_type\": \"Diesel\",\n  \"fuel_consumption\": 8.5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/vehicles",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "vehicles"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Vehículos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/vehicles?page=1&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "vehicles"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Vehículo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/vehicles/{{vehicleId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "vehicles", "{{vehicleId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Vehículo",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"color\": \"Azul\",\n  \"fuel_consumption\": 7.8\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/vehicles/{{vehicleId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "vehicles", "{{vehicleId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Estado Vehículo",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"en_ruta\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/vehicles/{{vehicleId}}/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "vehicles", "{{vehicleId}}", "status"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Vehículos",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/vehicles/search?query=Toyota&page=1&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "vehicles", "search"],
+							"query": [
+								{
+									"key": "query",
+									"value": "Toyota"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Estadísticas Vehículos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/vehicles/statistics/overview",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "vehicles", "statistics", "overview"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Conductores",
+			"item": [
+				{
+					"name": "Crear Conductor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('driverId', response.id);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"Juan\",\n  \"last_name\": \"Pérez\",\n  \"email\": \"juan.perez@empresa.com\",\n  \"phone\": \"+593991234567\",\n  \"document_type\": \"DNI\",\n  \"document_number\": \"1234567890\",\n  \"license_type\": \"C\",\n  \"license_number\": \"LIC123456\",\n  \"license_expiry\": \"2025-12-31\",\n  \"emergency_contact_name\": \"María Pérez\",\n  \"emergency_contact_phone\": \"+593991234568\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/drivers",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "drivers"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Conductores",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/drivers?page=1&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "drivers"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Conductor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/drivers/{{driverId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "drivers", "{{driverId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Conductor",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"+593991234569\",\n  \"emergency_contact_phone\": \"+593991234570\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/drivers/{{driverId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "drivers", "{{driverId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Alertas Licencias",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/drivers/alerts/license-expiry?days_ahead=30",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "drivers", "alerts", "license-expiry"],
+							"query": [
+								{
+									"key": "days_ahead",
+									"value": "30"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Estadísticas Conductores",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/drivers/statistics/overview",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "drivers", "statistics", "overview"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Clientes",
+			"item": [
+				{
+					"name": "Crear Cliente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('clientId', response.id);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Empresa ABC S.A.\",\n  \"client_type\": \"empresa\",\n  \"email\": \"contacto@empresaabc.com\",\n  \"phone\": \"+593221234567\",\n  \"city\": \"Quito\",\n  \"state\": \"Pichincha\",\n  \"contact_person\": \"Ana López\",\n  \"contact_email\": \"ana.lopez@empresaabc.com\",\n  \"credit_limit\": 10000.0,\n  \"payment_terms\": 30,\n  \"discount_percentage\": 5.0,\n  \"is_priority\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/clients",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "clients"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Clientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/clients?page=1&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "clients"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Cliente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/clients/{{clientId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "clients", "{{clientId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Cliente",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"credit_limit\": 15000.0,\n  \"discount_percentage\": 7.5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/clients/{{clientId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "clients", "{{clientId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Prioridad",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"is_priority\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/clients/{{clientId}}/priority",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "clients", "{{clientId}}", "priority"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Estadísticas Clientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/clients/statistics/overview",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "clients", "statistics", "overview"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Direcciones",
+			"item": [
+				{
+					"name": "Crear Dirección",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('addressId', response.id);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"client_id\": {{clientId}},\n  \"address_type\": \"oficina\",\n  \"address_line1\": \"Av. Amazonas N12-34\",\n  \"city\": \"Quito\",\n  \"state\": \"Pichincha\",\n  \"country\": \"Ecuador\",\n  \"latitude\": -0.2298500,\n  \"longitude\": -78.5249500,\n  \"contact_name\": \"Ana López\",\n  \"contact_phone\": \"+593991234567\",\n  \"is_primary\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/addresses",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "addresses"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Direcciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/addresses?page=1&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "addresses"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Dirección",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/addresses/{{addressId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "addresses", "{{addressId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Dirección Principal del Cliente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/addresses/client/{{clientId}}/primary",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "addresses", "client", "{{clientId}}", "primary"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Direcciones de Entrega",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/addresses/client/{{clientId}}/delivery?page=1&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "addresses", "client", "{{clientId}}", "delivery"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Coordenadas",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"latitude\": -0.2298500,\n  \"longitude\": -78.5249500\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/addresses/{{addressId}}/coordinates",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "addresses", "{{addressId}}", "coordinates"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Estadísticas Direcciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/addresses/statistics/overview",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "addresses", "statistics", "overview"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tests de Flujo Completo",
+			"item": [
+				{
+					"name": "Flujo Completo - Crear Todo",
+					"item": [
+						{
+							"name": "1. Crear Cliente",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"if (pm.response.code === 201) {",
+											"    const response = pm.response.json();",
+											"    pm.collectionVariables.set('clientId', response.id);",
+											"    console.log('Cliente creado con ID:', response.id);",
+											"}"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Empresa Test S.A.\",\n  \"client_type\": \"empresa\",\n  \"email\": \"test@empresa.com\",\n  \"phone\": \"+593221234567\",\n  \"city\": \"Quito\",\n  \"state\": \"Pichincha\",\n  \"is_priority\": true\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/clients",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "clients"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2. Crear Dirección",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"client_id\": {{clientId}},\n  \"address_type\": \"oficina\",\n  \"address_line1\": \"Av. Test 123\",\n  \"city\": \"Quito\",\n  \"state\": \"Pichincha\",\n  \"latitude\": -0.2298500,\n  \"longitude\": -78.5249500,\n  \"is_primary\": true\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/addresses",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "addresses"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "3. Crear Vehículo",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"license_plate\": \"TEST-001\",\n  \"brand\": \"Toyota\",\n  \"model\": \"Hilux\",\n  \"year\": 2023,\n  \"vehicle_type\": \"camioneta\",\n  \"capacity_weight\": 1000.0,\n  \"capacity_volume\": 2.5\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/vehicles",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "vehicles"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4. Crear Conductor",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"first_name\": \"Carlos\",\n  \"last_name\": \"Test\",\n  \"email\": \"carlos.test@empresa.com\",\n  \"phone\": \"+593991234567\",\n  \"document_number\": \"TEST123456\",\n  \"license_type\": \"B\",\n  \"license_number\": \"LIC123456\",\n  \"license_expiry\": \"2025-12-31\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/drivers",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "drivers"]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Flujo Completo - Consultar Todo",
+					"item": [
+						{
+							"name": "1. Listar Clientes",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/clients?priority_only=true",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "clients"],
+									"query": [
+										{
+											"key": "priority_only",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2. Listar Vehículos Disponibles",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/vehicles?available_only=true",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "vehicles"],
+									"query": [
+										{
+											"key": "available_only",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "3. Listar Conductores Disponibles",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/drivers?available_only=true",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "drivers"],
+									"query": [
+										{
+											"key": "available_only",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

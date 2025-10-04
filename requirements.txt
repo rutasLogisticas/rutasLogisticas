@@ -1,0 +1,44 @@
+# Rutas Logísticas - Dependencias del proyecto
+# Sistema de gestión logística con FastAPI y MySQL
+
+# Framework web
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# Base de datos
+sqlalchemy==2.0.23
+pymysql==1.1.0
+cryptography>=42.0.0
+alembic==1.12.1
+
+# Validación de datos
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# Utilidades
+python-multipart==0.0.6
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-dotenv==1.0.0
+
+# Desarrollo y testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+httpx==0.25.2
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.1
+
+# Logging y monitoreo
+structlog==23.2.0
+
+# CORS y middleware
+starlette==0.27.0
+
+# Documentación
+sphinx==7.2.6
+sphinx-rtd-theme==1.3.0
+
+# Herramientas de desarrollo
+pre-commit==3.6.0
+isort==5.12.0
