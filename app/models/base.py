@@ -5,7 +5,7 @@ Implementa principio DRY (Don't Repeat Yourself) y SRP
 from datetime import datetime
 from sqlalchemy import Column, Integer, DateTime, Boolean
 from sqlalchemy.ext.declarative import declared_attr
-from app.core.database import Base
+from app.core.base import Base
 
 
 class BaseModel(Base):

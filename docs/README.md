@@ -1,406 +1,410 @@
-# Rutas Logísticas - Documentación Técnica
+# 📚 Documentación Técnica - Sistema de Rutas Logísticas
 
-## Tabla de Contenidos
+Documentación técnica completa del sistema de gestión logística simplificado.
+
+## 📋 Tabla de Contenidos
 
 1. [Introducción](#introducción)
 2. [Arquitectura del Sistema](#arquitectura-del-sistema)
-3. [Principios de Diseño](#principios-de-diseño)
-4. [Instalación y Configuración](#instalación-y-configuración)
-5. [Estructura del Proyecto](#estructura-del-proyecto)
-6. [API Documentation](#api-documentation)
-7. [Base de Datos](#base-de-datos)
-8. [Patrones de Diseño Implementados](#patrones-de-diseño-implementados)
-9. [Guía de Desarrollo](#guía-de-desarrollo)
-10. [Testing](#testing)
-11. [Despliegue](#despliegue)
+3. [Instalación y Configuración](#instalación-y-configuración)
+4. [Estructura del Proyecto](#estructura-del-proyecto)
+5. [API Documentation](#api-documentation)
+6. [Base de Datos](#base-de-datos)
+7. [Despliegue](#despliegue)
+8. [Guía de Desarrollo](#guía-de-desarrollo)
 
-## Introducción
+## 🎯 Introducción
 
-**Rutas Logísticas** es un sistema completo de gestión logística que permite la administración de vehículos, conductores, clientes y direcciones. El sistema está diseñado siguiendo los principios SOLID, SMART y patrones de diseño como Singleton y Repository.
+**Sistema de Rutas Logísticas** es una aplicación REST simple y eficiente para la gestión de flotas vehiculares, conductores, clientes y direcciones. Diseñada con principios de código limpio y arquitectura simple.
 
 ### Características Principales
 
-- **CRUD completo** para vehículos, conductores, clientes y direcciones
-- **API REST** con FastAPI y documentación automática
-- **Base de datos MySQL** con migraciones
-- **Arquitectura limpia** siguiendo principios SOLID
-- **Validaciones de negocio** robustas
-- **Búsqueda y filtrado** avanzado
-- **Estadísticas y reportes**
-- **Docker support** para desarrollo y producción
+- ✅ **API REST completa** con FastAPI
+- ✅ **Base de datos MySQL** con SQLAlchemy ORM
+- ✅ **Arquitectura limpia** con separación de responsabilidades
+- ✅ **Dockerizado** para fácil despliegue
+- ✅ **Documentación automática** con Swagger/OpenAPI
+- ✅ **Código simplificado** y fácil de mantener
 
-## Arquitectura del Sistema
+## 🏗️ Arquitectura del Sistema
 
-### Diagrama de Arquitectura
+### Patrón de Arquitectura
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   API Gateway   │    │   Microservices │
-│   (React/Vue)   │◄──►│   (FastAPI)     │◄──►│   (Modules)     │
+│   API Routes    │────│   Services      │────│  Repositories   │
+│   (FastAPI)     │    │   (Business)    │    │   (Data Access) │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
-                                │
-                                ▼
-                       ┌─────────────────┐
-                       │   Database      │
-                       │     (MySQL)     │
-                       └─────────────────┘
+         │                       │                       │
+         │                       │                       │
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Schemas       │    │   Models        │    │   Database      │
+│   (Validation)  │    │   (SQLAlchemy)  │    │   (MySQL)       │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-### Capas de la Aplicación
+### Capas del Sistema
 
-1. **Capa de Presentación (API)**: Endpoints REST con FastAPI
-2. **Capa de Servicios**: Lógica de negocio
-3. **Capa de Repositorio**: Acceso a datos
-4. **Capa de Modelos**: Entidades de dominio
-5. **Capa de Base de Datos**: Persistencia con MySQL
+1. **Capa de API** (`app/api/routes/`)
+   - Endpoints REST
+   - Validación de entrada
+   - Manejo de errores
 
-## Principios de Diseño
+2. **Capa de Servicios** (`app/services/`)
+   - Lógica de negocio
+   - Validaciones de reglas
+   - Orquestación de operaciones
 
-### Principios SOLID
+3. **Capa de Repositorios** (`app/repositories/`)
+   - Acceso a datos
+   - Consultas de base de datos
+   - Operaciones CRUD
 
-- **S** - **Single Responsibility Principle (SRP)**: Cada clase tiene una sola responsabilidad
-- **O** - **Open/Closed Principle (OCP)**: Abierto para extensión, cerrado para modificación
-- **L** - **Liskov Substitution Principle (LSP)**: Los objetos derivados deben ser sustituibles por sus objetos base
-- **I** - **Interface Segregation Principle (ISP)**: Muchas interfaces específicas son mejores que una general
-- **D** - **Dependency Inversion Principle (DIP)**: Depender de abstracciones, no de concreciones
+4. **Capa de Modelos** (`app/models/`)
+   - Entidades de dominio
+   - Mapeo ORM
+   - Relaciones entre entidades
 
-### Principios SMART
+5. **Capa de Esquemas** (`app/schemas/`)
+   - Validación de datos
+   - Serialización
+   - Documentación automática
 
-- **S** - **Specific**: Específico y claro
-- **M** - **Measurable**: Medible y cuantificable
-- **A** - **Achievable**: Alcanzable y realista
-- **R** - **Relevant**: Relevante para el negocio
-- **T** - **Time-bound**: Con límite de tiempo
+## 🚀 Instalación y Configuración
 
-### Patrones de Diseño
-
-1. **Singleton**: Para configuración y gestión de base de datos
-2. **Repository**: Para acceso a datos
-3. **Service Layer**: Para lógica de negocio
-4. **Factory**: Para creación de objetos
-5. **Observer**: Para eventos del sistema
-
-## Instalación y Configuración
-
-### Requisitos Previos
-
-- Python 3.11+
-- MySQL 8.0+
-- Docker (opcional)
-- Git
-
-### Instalación Rápida
+### Método Rápido (Docker)
 
 ```bash
-# Clonar el repositorio
-git clone <repository-url>
-cd rutas-logisticas
+# 1. Clonar repositorio
+git clone <url-del-repositorio>
+cd rutasLogisticas
 
-# Configurar entorno
-python scripts/setup.py
-
-# Iniciar con Docker
+# 2. Ejecutar con Docker
 docker-compose up -d
+
+# 3. Verificar funcionamiento
+curl http://localhost:8000/health
 ```
 
-### Instalación Manual
+### Método Local
 
 ```bash
-# 1. Crear entorno virtual
-python -m venv venv
-source venv/bin/activate  # En Windows: venv\Scripts\activate
-
-# 2. Instalar dependencias
+# 1. Instalar dependencias
 pip install -r requirements.txt
+
+# 2. Configurar base de datos
+mysql -u root -p < database/init_mysql.sql
 
 # 3. Configurar variables de entorno
 cp env.example .env
-# Editar .env con tus configuraciones
 
-# 4. Configurar base de datos
-createdb rutas_logisticas
-psql -d rutas_logisticas -f database/init.sql
-
-# 5. Ejecutar migraciones
-alembic upgrade head
-
-# 6. Iniciar servidor
+# 4. Ejecutar aplicación
 uvicorn app.main:app --reload
 ```
 
-## Estructura del Proyecto
+## 📁 Estructura del Proyecto
 
 ```
-rutas-logisticas/
-├── app/                          # Aplicación principal
-│   ├── __init__.py
-│   ├── main.py                   # Punto de entrada de FastAPI
-│   ├── api/                      # Capa de API REST
-│   │   ├── __init__.py
-│   │   ├── dependencies.py       # Dependencias de la API
-│   │   └── routes/               # Endpoints
-│   │       ├── vehicles.py
-│   │       ├── drivers.py
-│   │       ├── clients.py
-│   │       └── addresses.py
-│   ├── core/                     # Configuración central
-│   │   ├── __init__.py
-│   │   ├── config.py            # Configuración con Singleton
-│   │   └── database.py          # Gestión de BD con Singleton
-│   ├── models/                   # Modelos de datos
-│   │   ├── __init__.py
-│   │   ├── base.py              # Modelo base
-│   │   ├── vehicle.py
-│   │   ├── driver.py
-│   │   ├── client.py
-│   │   └── address.py
-│   ├── repositories/             # Capa de repositorio
-│   │   ├── __init__.py
-│   │   ├── base.py              # Repositorio base
-│   │   ├── vehicle_repository.py
-│   │   ├── driver_repository.py
-│   │   ├── client_repository.py
-│   │   └── address_repository.py
-│   ├── services/                 # Capa de servicios
-│   │   ├── __init__.py
-│   │   ├── base.py              # Servicio base
-│   │   ├── vehicle_service.py
-│   │   ├── driver_service.py
-│   │   ├── client_service.py
-│   │   └── address_service.py
-│   └── schemas/                  # Esquemas Pydantic
-│       ├── __init__.py
-│       ├── base_schemas.py
-│       ├── vehicle_schemas.py
-│       ├── driver_schemas.py
-│       ├── client_schemas.py
-│       └── address_schemas.py
-├── database/                     # Scripts de base de datos
-│   └── init.sql                 # Script de inicialización
-├── docs/                        # Documentación
-│   ├── README.md
-│   ├── api.md
-│   └── deployment.md
-├── migrations/                  # Migraciones de Alembic
-│   ├── env.py
-│   └── script.py.mako
-├── scripts/                     # Scripts de utilidad
-│   └── setup.py
-├── tests/                       # Tests
-├── requirements.txt             # Dependencias
-├── pyproject.toml              # Configuración del proyecto
-├── alembic.ini                 # Configuración de Alembic
-├── docker-compose.yml          # Docker Compose
-├── Dockerfile                  # Imagen Docker
-└── README.md                   # Documentación principal
+rutasLogisticas/
+├── app/                    # Código fuente de la aplicación
+│   ├── api/               # Capa de API REST
+│   │   ├── routes/        # Endpoints de la API
+│   │   └── dependencies.py # Dependencias de FastAPI
+│   ├── core/              # Configuración central
+│   │   ├── base.py        # Base de SQLAlchemy
+│   │   ├── config.py      # Configuración de la app
+│   │   └── database.py    # Gestión de base de datos
+│   ├── models/            # Modelos de datos (SQLAlchemy)
+│   ├── repositories/      # Capa de acceso a datos
+│   ├── schemas/           # Esquemas de validación (Pydantic)
+│   ├── services/          # Lógica de negocio
+│   └── main.py           # Punto de entrada de la aplicación
+├── database/              # Scripts de base de datos
+│   └── init_mysql.sql    # Inicialización de MySQL
+├── docs/                 # Documentación
+│   ├── API.md           # Documentación de la API
+│   ├── DEPLOYMENT.md    # Guía de despliegue
+│   └── README.md        # Este archivo
+├── postman/             # Colección de Postman
+│   └── Rutas_Logisticas_API.postman_collection.json
+├── docker-compose.yml   # Configuración de Docker
+├── Dockerfile          # Imagen de la aplicación
+├── requirements.txt    # Dependencias de Python
+├── README.md          # Documentación principal
+└── DOCKER.md         # Guía de Docker
 ```
 
-## API Documentation
+## 📖 API Documentation
 
 ### Endpoints Principales
+
+#### Health Check
+- `GET /health` - Estado de la aplicación
+- `GET /` - Información básica de la API
 
 #### Vehículos
 - `GET /api/v1/vehicles` - Listar vehículos
 - `POST /api/v1/vehicles` - Crear vehículo
 - `GET /api/v1/vehicles/{id}` - Obtener vehículo
-- `PUT /api/v1/vehicles/{id}` - Actualizar vehículo
-- `DELETE /api/v1/vehicles/{id}` - Eliminar vehículo
 
 #### Conductores
 - `GET /api/v1/drivers` - Listar conductores
 - `POST /api/v1/drivers` - Crear conductor
 - `GET /api/v1/drivers/{id}` - Obtener conductor
-- `PUT /api/v1/drivers/{id}` - Actualizar conductor
-- `DELETE /api/v1/drivers/{id}` - Eliminar conductor
+- `GET /api/v1/drivers/available/` - Conductores disponibles
 
 #### Clientes
 - `GET /api/v1/clients` - Listar clientes
 - `POST /api/v1/clients` - Crear cliente
 - `GET /api/v1/clients/{id}` - Obtener cliente
-- `PUT /api/v1/clients/{id}` - Actualizar cliente
-- `DELETE /api/v1/clients/{id}` - Eliminar cliente
+- `GET /api/v1/clients/company/{company}` - Clientes por empresa
 
 #### Direcciones
 - `GET /api/v1/addresses` - Listar direcciones
 - `POST /api/v1/addresses` - Crear dirección
 - `GET /api/v1/addresses/{id}` - Obtener dirección
-- `PUT /api/v1/addresses/{id}` - Actualizar dirección
-- `DELETE /api/v1/addresses/{id}` - Eliminar dirección
+- `GET /api/v1/addresses/client/{client_id}` - Direcciones por cliente
+- `GET /api/v1/addresses/city/{city}` - Direcciones por ciudad
 
 ### Documentación Interactiva
 
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
 
-## Base de Datos
+Para más detalles, consulta [API.md](API.md).
 
-### Esquema de Base de Datos
+## 🗄️ Base de Datos
 
+### Estructura de Datos
+
+El sistema utiliza MySQL 8.0+ con las siguientes tablas:
+
+#### vehicles
 ```sql
--- Tabla de vehículos
-vehicles (id, license_plate, brand, model, year, vehicle_type, status, ...)
+CREATE TABLE vehicles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    license_plate VARCHAR(20) UNIQUE NOT NULL,
+    brand VARCHAR(100) NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    year INT NOT NULL,
+    vehicle_type VARCHAR(20) NOT NULL,
+    status VARCHAR(20) DEFAULT 'disponible',
+    is_available BOOLEAN DEFAULT TRUE,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+```
 
--- Tabla de conductores
-drivers (id, first_name, last_name, email, license_type, license_number, ...)
+#### drivers
+```sql
+CREATE TABLE drivers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    document_number VARCHAR(20) UNIQUE NOT NULL,
+    license_type VARCHAR(10) NOT NULL,
+    status VARCHAR(20) DEFAULT 'disponible',
+    is_available BOOLEAN DEFAULT TRUE,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+```
 
--- Tabla de clientes
-clients (id, name, client_type, status, email, phone, ...)
+#### clients
+```sql
+CREATE TABLE clients (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    company VARCHAR(200),
+    client_type VARCHAR(20) DEFAULT 'individual',
+    status VARCHAR(20) DEFAULT 'activo',
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+```
 
--- Tabla de direcciones
-addresses (id, client_id, address_type, address_line1, city, state, ...)
+#### addresses
+```sql
+CREATE TABLE addresses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    client_id INT NOT NULL,
+    street VARCHAR(200) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(100) NOT NULL,
+    postal_code VARCHAR(20) NOT NULL,
+    country VARCHAR(100) DEFAULT 'Colombia',
+    address_type VARCHAR(20) DEFAULT 'principal',
+    is_primary BOOLEAN DEFAULT FALSE,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES clients(id)
+);
 ```
 
 ### Relaciones
 
-- Un cliente puede tener múltiples direcciones (1:N)
-- Un vehículo puede estar en múltiples rutas (1:N)
-- Un conductor puede manejar múltiples vehículos (N:M)
+- **Clientes ↔ Direcciones**: Una dirección pertenece a un cliente
+- **Integridad Referencial**: Claves foráneas con restricciones
+- **Índices**: Optimizados para consultas frecuentes
 
-### Migraciones
+### Datos de Ejemplo
 
-```bash
-# Crear nueva migración
-alembic revision --autogenerate -m "Descripción del cambio"
+El sistema incluye datos de prueba:
+- 3 vehículos (Toyota Hilux, Ford Transit, Honda CB250)
+- 3 conductores (Juan Pérez, María García, Carlos López)
+- 3 clientes (Empresa ABC, Ana Martínez, Distribuidora XYZ)
+- 3 direcciones (Bogotá, Medellín, Cali)
 
-# Aplicar migraciones
-alembic upgrade head
+## 🚀 Despliegue
 
-# Revertir migración
-alembic downgrade -1
-```
-
-## Patrones de Diseño Implementados
-
-### 1. Singleton
-
-```python
-class ConfigManager:
-    _instance = None
-    
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(ConfigManager, cls).__new__(cls)
-        return cls._instance
-```
-
-### 2. Repository Pattern
-
-```python
-class BaseRepository(Generic[ModelType]):
-    def create(self, db: Session, **kwargs) -> ModelType:
-        # Implementación genérica
-    
-    def get_by_id(self, db: Session, id: int) -> Optional[ModelType]:
-        # Implementación genérica
-```
-
-### 3. Service Layer
-
-```python
-class VehicleService(BaseService[Vehicle, VehicleRepository]):
-    def create_vehicle(self, db: Session, **kwargs) -> Vehicle:
-        self._validate_create(kwargs)
-        return self.repository.create(db, **kwargs)
-```
-
-## Guía de Desarrollo
-
-### Agregar Nueva Entidad
-
-1. **Crear modelo** en `app/models/`
-2. **Crear repositorio** en `app/repositories/`
-3. **Crear servicio** en `app/services/`
-4. **Crear esquemas** en `app/schemas/`
-5. **Crear endpoints** en `app/api/routes/`
-6. **Crear migración** con Alembic
-
-### Convenciones de Código
-
-- **Nombres de archivos**: snake_case
-- **Nombres de clases**: PascalCase
-- **Nombres de funciones**: snake_case
-- **Constantes**: UPPER_CASE
-- **Tipos de datos**: Usar type hints
-
-### Estructura de Commits
-
-```
-feat: agregar nueva funcionalidad
-fix: corregir bug
-docs: actualizar documentación
-style: cambios de formato
-refactor: refactorizar código
-test: agregar o modificar tests
-```
-
-## Testing
-
-### Ejecutar Tests
+### Docker (Recomendado)
 
 ```bash
-# Todos los tests
-pytest
-
-# Tests específicos
-pytest tests/test_vehicles.py
-
-# Con cobertura
-pytest --cov=app tests/
-```
-
-### Tipos de Tests
-
-1. **Unit Tests**: Testear funciones individuales
-2. **Integration Tests**: Testear integración entre componentes
-3. **API Tests**: Testear endpoints de la API
-4. **Database Tests**: Testear operaciones de base de datos
-
-## Despliegue
-
-### Desarrollo
-
-```bash
-# Con Docker
+# Desarrollo
 docker-compose up -d
 
-# Manual
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+# Producción
+docker-compose -f docker-compose.yml up -d
 ```
 
-### Producción
+### Local
 
 ```bash
-# Con Docker
-docker-compose -f docker-compose.prod.yml up -d
+# Instalar dependencias
+pip install -r requirements.txt
 
-# Manual
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+# Configurar base de datos
+mysql -u root -p < database/init_mysql.sql
+
+# Ejecutar aplicación
+uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-### Variables de Entorno de Producción
+Para más detalles, consulta [DEPLOYMENT.md](DEPLOYMENT.md).
 
-```env
-DEBUG=False
-SECRET_KEY=your-production-secret-key
-DB_HOST=your-db-host
-DB_PASSWORD=your-secure-password
+## 🛠️ Guía de Desarrollo
+
+### Principios Aplicados
+
+- **SRP**: Single Responsibility Principle
+- **DRY**: Don't Repeat Yourself
+- **Separación de capas**: API, Servicios, Repositorios, Modelos
+- **Código limpio**: Simple y mantenible
+
+### Estructura de Archivos
+
+#### Modelos
+```python
+# app/models/vehicle.py
+class Vehicle(BaseModel):
+    """Modelo de Vehículo"""
+    __tablename__ = "vehicles"
+    
+    license_plate = Column(String(20), unique=True, nullable=False)
+    brand = Column(String(100), nullable=False)
+    # ... más campos
 ```
 
-## Contribución
+#### Servicios
+```python
+# app/services/vehicle_service.py
+class VehicleService(BaseService):
+    """Servicio para vehículos"""
+    
+    def get_available_vehicles(self, db: Session) -> List[Vehicle]:
+        return self.repository.get_available_vehicles(db)
+```
+
+#### Repositorios
+```python
+# app/repositories/vehicle_repository.py
+class VehicleRepository(BaseRepository[Vehicle]):
+    """Repositorio para vehículos"""
+    
+    def get_by_license_plate(self, db: Session, plate: str) -> Optional[Vehicle]:
+        return db.query(Vehicle).filter(Vehicle.license_plate == plate).first()
+```
+
+#### Rutas
+```python
+# app/api/routes/vehicles.py
+@router.get("/", response_model=List[VehicleSummary])
+async def get_vehicles(
+    db: Session = Depends(get_db),
+    vehicle_service: VehicleService = Depends(get_vehicle_service)
+):
+    return vehicle_service.get_all(db)
+```
+
+### Agregar Nuevos Endpoints
+
+1. **Crear modelo** en `app/models/`
+2. **Crear schema** en `app/schemas/`
+3. **Crear repositorio** en `app/repositories/`
+4. **Crear servicio** en `app/services/`
+5. **Crear rutas** en `app/api/routes/`
+6. **Registrar rutas** en `app/main.py`
+
+### Testing
+
+```bash
+# Con Postman
+# Importar colección desde postman/Rutas_Logisticas_API.postman_collection.json
+
+# Con cURL
+curl http://localhost:8000/api/v1/vehicles
+
+# Con Python
+import requests
+response = requests.get("http://localhost:8000/api/v1/vehicles")
+```
+
+## 📊 Monitoreo
+
+### Logs
+
+```bash
+# Docker
+docker-compose logs -f app
+
+# Local
+tail -f logs/app.log
+```
+
+### Health Checks
+
+```bash
+# Aplicación
+curl http://localhost:8000/health
+
+# Base de datos
+docker-compose exec mysql mysqladmin ping -h localhost -u root -p1234
+```
+
+## 🤝 Contribución
 
 1. Fork el proyecto
-2. Crear rama para feature (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit cambios (`git commit -m 'feat: agregar nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Crear Pull Request
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
 
-## Licencia
+## 📞 Soporte
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+Para soporte técnico o preguntas sobre el proyecto:
 
-## Soporte
+1. Consulta la documentación
+2. Revisa los logs de la aplicación
+3. Contacta al equipo de desarrollo
 
-Para soporte técnico o preguntas:
-- 📧 Email: dev@empresa.com
-- 🐛 Issues: [GitHub Issues](https://github.com/empresa/rutas-logisticas/issues)
-- 📖 Documentación: [Wiki del Proyecto](https://github.com/empresa/rutas-logisticas/wiki)
+---
+
+**¡Sistema listo para desarrollo y producción! 🚀**

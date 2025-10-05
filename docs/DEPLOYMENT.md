@@ -1,687 +1,424 @@
-# Guía de Despliegue - Rutas Logísticas
+# 🚀 Guía de Despliegue - Sistema de Rutas Logísticas
 
-## Tabla de Contenidos
+Guía completa para desplegar el sistema de gestión logística en diferentes entornos.
+
+## 📋 Tabla de Contenidos
 
 1. [Introducción](#introducción)
 2. [Requisitos del Sistema](#requisitos-del-sistema)
-3. [Configuración de Entorno](#configuración-de-entorno)
-4. [Despliegue en Desarrollo](#despliegue-en-desarrollo)
+3. [Despliegue con Docker (Recomendado)](#despliegue-con-docker-recomendado)
+4. [Despliegue Local sin Docker](#despliegue-local-sin-docker)
 5. [Despliegue en Producción](#despliegue-en-producción)
 6. [Configuración de Base de Datos](#configuración-de-base-de-datos)
-7. [Configuración de Servidor Web](#configuración-de-servidor-web)
-8. [Monitoreo y Logs](#monitoreo-y-logs)
-9. [Backup y Recuperación](#backup-y-recuperación)
-10. [Seguridad](#seguridad)
-11. [Troubleshooting](#troubleshooting)
+7. [Monitoreo y Logs](#monitoreo-y-logs)
+8. [Backup y Recuperación](#backup-y-recuperación)
+9. [Troubleshooting](#troubleshooting)
 
-## Introducción
+## 🎯 Introducción
 
-Esta guía proporciona instrucciones detalladas para desplegar el sistema Rutas Logísticas en diferentes entornos, desde desarrollo local hasta producción.
+El sistema de rutas logísticas está diseñado para ser simple de desplegar y mantener. Esta guía cubre todos los métodos de despliegue disponibles.
 
-## Requisitos del Sistema
+## 💻 Requisitos del Sistema
 
 ### Mínimos
 - **CPU**: 2 cores
 - **RAM**: 4 GB
-- **Disco**: 20 GB
-- **OS**: Ubuntu 20.04+, CentOS 8+, o Windows Server 2019+
+- **Disco**: 10 GB
+- **OS**: Windows 10+, Ubuntu 18.04+, macOS 10.14+
 
 ### Recomendados
 - **CPU**: 4+ cores
 - **RAM**: 8+ GB
-- **Disco**: 50+ GB SSD
+- **Disco**: 20+ GB SSD
 - **OS**: Ubuntu 22.04 LTS
 
 ### Software Requerido
-- Python 3.11+
-- MySQL 8.0+
-- Nginx (para producción)
-- Docker (opcional)
+- **Docker** y **Docker Compose** (recomendado)
+- **Python 3.11+** (solo para despliegue local)
+- **MySQL 8.0+** (solo para despliegue local)
 
-## Configuración de Entorno
+## 🐳 Despliegue con Docker (Recomendado)
 
-### Variables de Entorno
+### Instalación Rápida
 
-Crear archivo `.env` basado en `env.example`:
+1. **Clonar el repositorio**
+   ```bash
+   git clone <url-del-repositorio>
+   cd rutasLogisticas
+   ```
 
-```bash
-# Configuración de la aplicación
-DEBUG=False
-SECRET_KEY=your-production-secret-key-here
-API_HOST=0.0.0.0
-API_PORT=8000
+2. **Ejecutar la aplicación**
+   ```bash
+   docker-compose up -d
+   ```
 
-# Configuración de CORS
-CORS_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
+3. **Verificar funcionamiento**
+   ```bash
+   curl http://localhost:8000/health
+   ```
 
-# Configuración de base de datos
-DB_HOST=localhost
-DB_PORT=5432
+### Configuración Avanzada
+
+#### Variables de Entorno
+
+Crea un archivo `.env` personalizado:
+
+```env
+# Base de datos
+DB_HOST=mysql
+DB_PORT=3306
 DB_NAME=rutas_logisticas
-DB_USER=rutas_app
-DB_PASSWORD=your-secure-db-password
-DB_POOL_SIZE=20
-DB_MAX_OVERFLOW=30
+DB_USER=root
+DB_PASSWORD=tu_password_seguro
 
-# Configuración de logging
+# Aplicación
+DEBUG=False
 LOG_LEVEL=INFO
-
-# Configuración de seguridad
-ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
-SSL_REDIRECT=True
 ```
 
-### Configuración de Base de Datos
+#### Personalizar Puertos
 
-```bash
-# Crear usuario de base de datos MySQL
-sudo mysql -u root -p
-CREATE USER 'rutas_app'@'localhost' IDENTIFIED BY 'your-secure-db-password';
-CREATE DATABASE rutas_logisticas CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-GRANT ALL PRIVILEGES ON rutas_logisticas.* TO 'rutas_app'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
+Modifica `docker-compose.yml`:
 
-# Configurar MySQL para conexiones
-sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
-# Cambiar: bind-address = 127.0.0.1
-# Cambiar: port = 3306
-
-sudo systemctl restart mysql
+```yaml
+services:
+  app:
+    ports:
+      - "8001:8000"  # Cambiar puerto externo
+  
+  mysql:
+    ports:
+      - "3308:3306"  # Cambiar puerto MySQL
 ```
 
-## Despliegue en Desarrollo
-
-### Opción 1: Docker Compose (Recomendado)
+### Comandos Útiles
 
 ```bash
-# Clonar repositorio
-git clone <repository-url>
-cd rutas-logisticas
-
-# Configurar entorno
-cp env.example .env
-# Editar .env con configuraciones de desarrollo
-
 # Iniciar servicios
 docker-compose up -d
 
-# Verificar estado
-docker-compose ps
-docker-compose logs app
+# Ver logs
+docker-compose logs -f
+
+# Reiniciar aplicación
+docker-compose restart app
+
+# Detener servicios
+docker-compose down
+
+# Limpiar todo (¡CUIDADO! Borra datos)
+docker-compose down -v
 ```
 
-### Opción 2: Instalación Manual
+## 🖥️ Despliegue Local sin Docker
 
-```bash
-# Crear entorno virtual
-python3 -m venv venv
-source venv/bin/activate
+### Instalación de Dependencias
 
-# Instalar dependencias
-pip install -r requirements.txt
+1. **Instalar Python 3.11+**
+   ```bash
+   # Ubuntu/Debian
+   sudo apt update
+   sudo apt install python3.11 python3.11-venv python3.11-pip
 
-# Configurar base de datos
-createdb rutas_logisticas
-psql -d rutas_logisticas -f database/init.sql
+   # Windows
+   # Descargar desde python.org
+   ```
 
-# Ejecutar migraciones
-alembic upgrade head
+2. **Crear entorno virtual**
+   ```bash
+   python3.11 -m venv venv
+   source venv/bin/activate  # Linux/Mac
+   # venv\Scripts\activate  # Windows
+   ```
 
-# Iniciar servidor
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
+3. **Instalar dependencias**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Verificar Instalación
+### Configuración de MySQL
 
-```bash
-# Verificar API
-curl http://localhost:8000/health
+1. **Instalar MySQL**
+   ```bash
+   # Ubuntu/Debian
+   sudo apt install mysql-server
 
-# Verificar documentación
-# Abrir http://localhost:8000/docs en el navegador
-```
+   # Windows
+   # Descargar MySQL Installer
+   ```
 
-## Despliegue en Producción
+2. **Crear base de datos**
+   ```bash
+   mysql -u root -p
+   CREATE DATABASE rutas_logisticas CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
 
-### Opción 1: Docker Compose
+3. **Importar datos iniciales**
+   ```bash
+   mysql -u root -p rutas_logisticas < database/init_mysql.sql
+   ```
 
-```bash
-# Crear archivo de producción
-cp docker-compose.yml docker-compose.prod.yml
+### Configuración de la Aplicación
 
-# Editar docker-compose.prod.yml
-version: '3.8'
-services:
-  app:
-    build: .
-    environment:
-      - DEBUG=False
-      - DB_HOST=mysql
-      - DB_PASSWORD=${DB_PASSWORD}
-    restart: unless-stopped
-    deploy:
-      replicas: 2
-      resources:
-        limits:
-          memory: 1G
-          cpus: '0.5'
+1. **Crear archivo `.env`**
+   ```env
+   DB_HOST=localhost
+   DB_PORT=3306
+   DB_NAME=rutas_logisticas
+   DB_USER=root
+   DB_PASSWORD=tu_password
+   DEBUG=True
+   ```
 
-# Iniciar en producción
-docker-compose -f docker-compose.prod.yml up -d
-```
+2. **Ejecutar la aplicación**
+   ```bash
+   uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+   ```
 
-### Opción 2: Instalación en Servidor
+## 🌐 Despliegue en Producción
 
-#### 1. Preparar Servidor
+### Preparación del Servidor
 
-```bash
-# Actualizar sistema
-sudo apt update && sudo apt upgrade -y
+1. **Actualizar sistema**
+   ```bash
+   sudo apt update && sudo apt upgrade -y
+   ```
 
-# Instalar dependencias
-sudo apt install -y python3.11 python3.11-venv python3-pip mysql-server nginx
+2. **Instalar Docker**
+   ```bash
+   curl -fsSL https://get.docker.com -o get-docker.sh
+   sh get-docker.sh
+   sudo usermod -aG docker $USER
+   ```
 
-# Crear usuario de aplicación
-sudo useradd -m -s /bin/bash rutas
-sudo usermod -aG sudo rutas
-```
+3. **Instalar Docker Compose**
+   ```bash
+   sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+   sudo chmod +x /usr/local/bin/docker-compose
+   ```
 
-#### 2. Configurar Aplicación
+### Configuración de Producción
 
-```bash
-# Cambiar a usuario de aplicación
-sudo su - rutas
+1. **Clonar repositorio**
+   ```bash
+   git clone <url-del-repositorio>
+   cd rutasLogisticas
+   ```
 
-# Clonar código
-git clone <repository-url> /home/rutas/rutas-logisticas
-cd /home/rutas/rutas-logisticas
+2. **Configurar variables de entorno**
+   ```bash
+   cp env.example .env
+   nano .env  # Editar con valores de producción
+   ```
 
-# Crear entorno virtual
-python3.11 -m venv venv
-source venv/bin/activate
+3. **Configurar firewall**
+   ```bash
+   sudo ufw allow 22    # SSH
+   sudo ufw allow 80    # HTTP
+   sudo ufw allow 443   # HTTPS
+   sudo ufw enable
+   ```
 
-# Instalar dependencias
-pip install -r requirements.txt
-```
+4. **Ejecutar en producción**
+   ```bash
+   docker-compose -f docker-compose.yml up -d
+   ```
 
-#### 3. Configurar Base de Datos
-
-```bash
-# Como root user de MySQL
-sudo mysql -u root -p
-
-# Crear base de datos y usuario
-CREATE DATABASE rutas_logisticas CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'rutas_app'@'localhost' IDENTIFIED BY 'secure_password';
-GRANT ALL PRIVILEGES ON rutas_logisticas.* TO 'rutas_app'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
-
-# Ejecutar script de inicialización
-mysql -u rutas_app -p rutas_logisticas < database/init_mysql.sql
-
-# Ejecutar migraciones
-alembic upgrade head
-```
-
-#### 4. Configurar Systemd Service
-
-```bash
-sudo nano /etc/systemd/system/rutas-logisticas.service
-```
-
-```ini
-[Unit]
-Description=Rutas Logísticas API
-After=network.target mysql.service
-
-[Service]
-Type=exec
-User=rutas
-Group=rutas
-WorkingDirectory=/home/rutas/rutas-logisticas
-Environment=PATH=/home/rutas/rutas-logisticas/venv/bin
-ExecStart=/home/rutas/rutas-logisticas/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
-Restart=always
-RestartSec=3
-
-[Install]
-WantedBy=multi-user.target
-```
-
-```bash
-# Habilitar y iniciar servicio
-sudo systemctl daemon-reload
-sudo systemctl enable rutas-logisticas
-sudo systemctl start rutas-logisticas
-sudo systemctl status rutas-logisticas
-```
-
-#### 5. Configurar Nginx
-
-```bash
-sudo nano /etc/nginx/sites-available/rutas-logisticas
-```
+### Configuración de Nginx (Opcional)
 
 ```nginx
 server {
     listen 80;
-    server_name yourdomain.com www.yourdomain.com;
+    server_name tu-dominio.com;
 
-    # Redirección HTTPS
-    return 301 https://$server_name$request_uri;
-}
-
-server {
-    listen 443 ssl http2;
-    server_name yourdomain.com www.yourdomain.com;
-
-    # Certificados SSL
-    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
-
-    # Configuración SSL
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
-    ssl_prefer_server_ciphers off;
-    ssl_session_cache shared:SSL:10m;
-
-    # Headers de seguridad
-    add_header X-Frame-Options DENY;
-    add_header X-Content-Type-Options nosniff;
-    add_header X-XSS-Protection "1; mode=block";
-
-    # Proxy a la aplicación
     location / {
-        proxy_pass http://127.0.0.1:8000;
+        proxy_pass http://localhost:8000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        
-        # Timeouts
-        proxy_connect_timeout 30s;
-        proxy_send_timeout 30s;
-        proxy_read_timeout 30s;
-    }
-
-    # Archivos estáticos
-    location /static/ {
-        alias /home/rutas/rutas-logisticas/static/;
-        expires 1y;
-        add_header Cache-Control "public, immutable";
     }
 }
 ```
 
-```bash
-# Habilitar sitio
-sudo ln -s /etc/nginx/sites-available/rutas-logisticas /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl reload nginx
-```
+## 🗄️ Configuración de Base de Datos
 
-#### 6. Configurar SSL con Let's Encrypt
+### Estructura de Datos
 
-```bash
-# Instalar Certbot
-sudo apt install -y certbot python3-certbot-nginx
+El sistema incluye 4 tablas principales:
 
-# Obtener certificado
-sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+- **vehicles**: Información de vehículos
+- **drivers**: Información de conductores
+- **clients**: Información de clientes
+- **addresses**: Direcciones de clientes
 
-# Configurar renovación automática
-sudo crontab -e
-# Agregar: 0 12 * * * /usr/bin/certbot renew --quiet
-```
+### Datos de Ejemplo
 
-## Configuración de Base de Datos
+El sistema incluye datos de prueba:
+- 3 vehículos (Toyota, Ford, Honda)
+- 3 conductores (Juan, María, Carlos)
+- 3 clientes (Empresa ABC, Ana, Distribuidora XYZ)
+- 3 direcciones (Bogotá, Medellín, Cali)
 
-### Optimización de MySQL
+### Backup de Base de Datos
 
 ```bash
-sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
+# Con Docker
+docker-compose exec mysql mysqldump -u root -p1234 rutas_logisticas > backup.sql
+
+# Restaurar backup
+docker-compose exec -T mysql mysql -u root -p1234 rutas_logisticas < backup.sql
+
+# Local
+mysqldump -u root -p rutas_logisticas > backup.sql
+mysql -u root -p rutas_logisticas < backup.sql
 ```
 
-```conf
-# Configuraciones de memoria
-innodb_buffer_pool_size = 256M
-query_cache_size = 64M
-query_cache_limit = 2M
+## 📊 Monitoreo y Logs
 
-# Configuraciones de conexión
-max_connections = 100
-bind-address = 0.0.0.0
+### Ver Logs de la Aplicación
 
-# Configuraciones de logging
-general_log = 1
-general_log_file = /var/log/mysql/general.log
-slow_query_log = 1
-slow_query_log_file = /var/log/mysql/slow.log
-long_query_time = 1
+```bash
+# Docker
+docker-compose logs -f app
 
-# Configuraciones de InnoDB
-innodb_log_file_size = 64M
-innodb_log_buffer_size = 16M
-innodb_flush_log_at_trx_commit = 1
+# Local
+tail -f logs/app.log
 ```
+
+### Verificar Estado de Servicios
+
+```bash
+# Docker
+docker-compose ps
+
+# Local
+systemctl status mysql
+ps aux | grep uvicorn
+```
+
+### Health Checks
+
+```bash
+# Verificar aplicación
+curl http://localhost:8000/health
+
+# Verificar base de datos
+docker-compose exec mysql mysqladmin ping -h localhost -u root -p1234
+```
+
+## 💾 Backup y Recuperación
 
 ### Backup Automático
 
-```bash
-# Script de backup
-sudo nano /usr/local/bin/backup_rutas_db.sh
-```
+Crear script de backup:
 
 ```bash
 #!/bin/bash
-BACKUP_DIR="/var/backups/rutas_logisticas"
+# backup.sh
 DATE=$(date +%Y%m%d_%H%M%S)
-DB_NAME="rutas_logisticas"
-DB_USER="rutas_app"
-
-mkdir -p $BACKUP_DIR
-
-# Backup completo
-pg_dump -h localhost -U $DB_USER $DB_NAME | gzip > $BACKUP_DIR/rutas_${DATE}.sql.gz
-
-# Limpiar backups antiguos (mantener últimos 7 días)
-find $BACKUP_DIR -name "rutas_*.sql.gz" -mtime +7 -delete
-
-echo "Backup completado: rutas_${DATE}.sql.gz"
-```
-
-```bash
-# Hacer ejecutable
-sudo chmod +x /usr/local/bin/backup_rutas_db.sh
-
-# Programar backup diario
-sudo crontab -e
-# Agregar: 0 2 * * * /usr/local/bin/backup_rutas_db.sh
-```
-
-## Configuración de Servidor Web
-
-### Nginx - Configuraciones Avanzadas
-
-```nginx
-# Configuración de rate limiting
-http {
-    limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
-    
-    server {
-        location /api/ {
-            limit_req zone=api burst=20 nodelay;
-            proxy_pass http://127.0.0.1:8000;
-        }
-    }
-}
-
-# Configuración de compresión
-gzip on;
-gzip_vary on;
-gzip_min_length 1024;
-gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
-
-# Configuración de cache
-location ~* \.(jpg|jpeg|png|gif|ico|css|js)$ {
-    expires 1y;
-    add_header Cache-Control "public, immutable";
-}
-```
-
-## Monitoreo y Logs
-
-### Configuración de Logs
-
-```python
-# En app/core/config.py
-LOGGING_CONFIG = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'standard': {
-            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
-        },
-        'detailed': {
-            'format': '%(asctime)s [%(levelname)s] %(name)s:%(lineno)d: %(message)s'
-        }
-    },
-    'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/rutas-logisticas/app.log',
-            'maxBytes': 10485760,  # 10MB
-            'backupCount': 5,
-            'formatter': 'detailed'
-        },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'standard'
-        }
-    },
-    'loggers': {
-        '': {
-            'handlers': ['file', 'console'],
-            'level': 'INFO',
-            'propagate': False
-        }
-    }
-}
-```
-
-### Monitoreo con Prometheus
-
-```yaml
-# docker-compose.monitoring.yml
-version: '3.8'
-services:
-  prometheus:
-    image: prom/prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
-
-  grafana:
-    image: grafana/grafana
-    ports:
-      - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-```
-
-## Backup y Recuperación
-
-### Backup Completo del Sistema
-
-```bash
-#!/bin/bash
-# Script de backup completo
-BACKUP_DIR="/var/backups/rutas_logisticas/$(date +%Y%m%d)"
+BACKUP_DIR="/backups"
 mkdir -p $BACKUP_DIR
 
 # Backup de base de datos
-pg_dump -h localhost -U rutas_app rutas_logisticas | gzip > $BACKUP_DIR/database.sql.gz
+docker-compose exec mysql mysqldump -u root -p1234 rutas_logisticas > $BACKUP_DIR/backup_$DATE.sql
 
-# Backup de código
-tar -czf $BACKUP_DIR/code.tar.gz /home/rutas/rutas-logisticas
+# Backup de archivos de configuración
+cp docker-compose.yml $BACKUP_DIR/
+cp .env $BACKUP_DIR/
 
-# Backup de configuración
-tar -czf $BACKUP_DIR/config.tar.gz /etc/nginx/sites-available/rutas-logisticas /etc/systemd/system/rutas-logisticas.service
-
-echo "Backup completo guardado en: $BACKUP_DIR"
+# Mantener solo últimos 7 backups
+find $BACKUP_DIR -name "backup_*.sql" -mtime +7 -delete
 ```
 
-### Procedimiento de Recuperación
+### Recuperación
 
 ```bash
-# 1. Restaurar base de datos
-gunzip -c /var/backups/rutas_logisticas/20240101/database.sql.gz | psql -h localhost -U rutas_app rutas_logisticas
+# Restaurar desde backup
+docker-compose exec -T mysql mysql -u root -p1234 rutas_logisticas < backup_20231201_120000.sql
 
-# 2. Restaurar código
-tar -xzf /var/backups/rutas_logisticas/20240101/code.tar.gz -C /
-
-# 3. Restaurar configuración
-tar -xzf /var/backups/rutas_logisticas/20240101/config.tar.gz -C /
-
-# 4. Reiniciar servicios
-sudo systemctl restart rutas-logisticas
-sudo systemctl restart nginx
+# Recrear contenedores
+docker-compose down
+docker-compose up -d
 ```
 
-## Seguridad
-
-### Configuraciones de Seguridad
-
-#### 1. Firewall
-
-```bash
-# Configurar UFW
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
-sudo ufw allow ssh
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw enable
-```
-
-#### 2. Fail2Ban
-
-```bash
-# Instalar Fail2Ban
-sudo apt install -y fail2ban
-
-# Configurar para Nginx
-sudo nano /etc/fail2ban/jail.local
-```
-
-```ini
-[nginx-http-auth]
-enabled = true
-port = http,https
-logpath = /var/log/nginx/error.log
-
-[nginx-limit-req]
-enabled = true
-port = http,https
-logpath = /var/log/nginx/error.log
-maxretry = 10
-```
-
-#### 3. Actualizaciones Automáticas
-
-```bash
-# Configurar actualizaciones automáticas
-sudo apt install -y unattended-upgrades
-sudo dpkg-reconfigure -plow unattended-upgrades
-```
-
-### Configuraciones de Aplicación
-
-```python
-# En app/core/config.py
-SECURITY_CONFIG = {
-    'CORS_ORIGINS': ['https://yourdomain.com'],
-    'ALLOWED_HOSTS': ['yourdomain.com', 'www.yourdomain.com'],
-    'SECURE_SSL_REDIRECT': True,
-    'SECURE_HSTS_SECONDS': 31536000,
-    'SECURE_HSTS_INCLUDE_SUBDOMAINS': True,
-    'SECURE_HSTS_PRELOAD': True,
-    'SECURE_CONTENT_TYPE_NOSNIFF': True,
-    'SECURE_BROWSER_XSS_FILTER': True,
-    'X_FRAME_OPTIONS': 'DENY'
-}
-```
-
-## Troubleshooting
+## 🔧 Troubleshooting
 
 ### Problemas Comunes
 
-#### 1. Error de Conexión a Base de Datos
+#### 1. Puerto 3306 en Uso
+```bash
+# Error: Puerto 3306 ya está en uso
+# Solución: Usar puerto 3307 en docker-compose.yml
+mysql -h localhost -P 3307 -u root -p1234
+```
 
+#### 2. Aplicación No Inicia
+```bash
+# Verificar logs
+docker-compose logs app
+
+# Verificar que MySQL esté listo
+docker-compose logs mysql
+
+# Reiniciar aplicación
+docker-compose restart app
+```
+
+#### 3. Base de Datos No Conecta
 ```bash
 # Verificar estado de MySQL
-sudo systemctl status mysql
+docker-compose ps mysql
 
-# Verificar conexión
-mysql -h localhost -u rutas_app -p rutas_logisticas
-
-# Verificar logs
-sudo tail -f /var/log/mysql/error.log
+# Probar conexión
+docker-compose exec app python -c "from app.core.database import db_manager; print('DB OK')"
 ```
 
-#### 2. Error de Permisos
-
+#### 4. Permisos de Docker
 ```bash
-# Verificar permisos de archivos
-ls -la /home/rutas/rutas-logisticas/
-
-# Corregir permisos
-sudo chown -R rutas:rutas /home/rutas/rutas-logisticas/
-sudo chmod -R 755 /home/rutas/rutas-logisticas/
-```
-
-#### 3. Error de Puerto en Uso
-
-```bash
-# Verificar puertos en uso
-sudo netstat -tulpn | grep :8000
-
-# Matar proceso si es necesario
-sudo kill -9 <PID>
-```
-
-#### 4. Error de SSL
-
-```bash
-# Verificar certificados
-sudo certbot certificates
-
-# Renovar certificados
-sudo certbot renew --dry-run
-```
-
-### Logs de Diagnóstico
-
-```bash
-# Logs de aplicación
-sudo journalctl -u rutas-logisticas -f
-
-# Logs de Nginx
-sudo tail -f /var/log/nginx/access.log
-sudo tail -f /var/log/nginx/error.log
-
-# Logs de MySQL
-sudo tail -f /var/log/mysql/error.log
+# Agregar usuario al grupo docker
+sudo usermod -aG docker $USER
+# Reiniciar sesión
 ```
 
 ### Comandos de Diagnóstico
 
 ```bash
-# Verificar estado de servicios
-sudo systemctl status rutas-logisticas nginx mysql
+# Ver uso de recursos
+docker stats
 
-# Verificar conectividad
-curl -I http://localhost:8000/health
-curl -I https://yourdomain.com/health
-
-# Verificar base de datos
-mysql -u root -p -e "SELECT VERSION();"
-mysql -u rutas_app -p rutas_logisticas -e "SELECT COUNT(*) FROM vehicles;"
-
-# Verificar recursos del sistema
-htop
+# Ver espacio en disco
 df -h
+
+# Ver memoria disponible
 free -h
+
+# Ver procesos de Docker
+docker ps -a
 ```
 
-### Contacto de Soporte
+### Logs Importantes
+
+```bash
+# Logs de aplicación
+docker-compose logs app
+
+# Logs de MySQL
+docker-compose logs mysql
+
+# Logs del sistema
+journalctl -u docker
+```
+
+## 📞 Soporte
 
 Para soporte técnico:
-- 📧 Email: devops@empresa.com
-- 🐛 Issues: [GitHub Issues](https://github.com/empresa/rutas-logisticas/issues)
-- 📖 Wiki: [Documentación del Proyecto](https://github.com/empresa/rutas-logisticas/wiki)
+
+1. Verificar logs de la aplicación
+2. Revisar esta guía de troubleshooting
+3. Consultar la documentación de la API
+4. Contactar al equipo de desarrollo
+
+---
+
+**¡Sistema listo para producción! 🚀**
