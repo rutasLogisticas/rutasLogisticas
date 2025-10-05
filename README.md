@@ -1,8 +1,8 @@
-# 🚚 Sistema de Rutas Logísticas
+# Sistema de Rutas Logísticas
 
 Un sistema de gestión logística simple y eficiente desarrollado con FastAPI, diseñado para la administración de vehículos, conductores, clientes y direcciones.
 
-## 🎯 Características
+## Características
 
 - **API REST completa** con FastAPI
 - **Base de datos MySQL** con SQLAlchemy ORM
@@ -12,33 +12,33 @@ Un sistema de gestión logística simple y eficiente desarrollado con FastAPI, d
 - **Validación de datos** con Pydantic
 - **Código simplificado** y fácil de mantener
 
-## 📋 Módulos del Sistema
+## Módulos del Sistema
 
-### 🚛 Vehículos
+### Vehículos
 - Gestión de flota vehicular
 - Tipos: camioneta, furgón, motocicleta, etc.
 - Estados: disponible, en ruta, mantenimiento
 - Información básica: placa, marca, modelo, año
 
-### 👨‍💼 Conductores
+### Conductores
 - Gestión de personal conductor
 - Información personal y profesional
 - Tipos de licencia (A, B, C)
 - Estados de disponibilidad
 
-### 🏢 Clientes
+### Clientes
 - Gestión de clientes individuales y empresas
 - Información de contacto
 - Clasificación por tipo
 - Estados de actividad
 
-### 📍 Direcciones
+### Direcciones
 - Gestión de direcciones de clientes
 - Relación con clientes
 - Tipos: principal, entrega, oficina
 - Información geográfica completa
 
-## 🚀 Instalación y Uso
+## Instalación y Uso
 
 ### Requisitos Previos
 - Docker y Docker Compose
@@ -68,7 +68,7 @@ Un sistema de gestión logística simple y eficiente desarrollado con FastAPI, d
 - **Documentación**: http://localhost:8000/docs
 - **Base de datos**: localhost:3307 (usuario: root, contraseña: 1234)
 
-## 📚 API Endpoints
+## API Endpoints
 
 ### Health Check
 - `GET /health` - Estado de la aplicación
@@ -98,7 +98,7 @@ Un sistema de gestión logística simple y eficiente desarrollado con FastAPI, d
 - `GET /api/v1/addresses/client/{client_id}` - Direcciones por cliente
 - `GET /api/v1/addresses/city/{city}` - Direcciones por ciudad
 
-## 🧪 Testing con Postman
+## Testing con Postman
 
 El proyecto incluye una colección de Postman completa en la carpeta `postman/`:
 
@@ -106,7 +106,7 @@ El proyecto incluye una colección de Postman completa en la carpeta `postman/`:
 2. Importar `Rutas_Logisticas_Environment.postman_environment.json`
 3. Ejecutar los tests de flujo completo
 
-## 🏗️ Arquitectura
+## Arquitectura
 
 ```
 app/
@@ -124,7 +124,7 @@ app/
 └── main.py            # Punto de entrada de la aplicación
 ```
 
-## 🔧 Configuración
+## Configuración
 
 ### Variables de Entorno
 
@@ -150,7 +150,7 @@ El archivo `docker-compose.yml` incluye:
 - **mysql**: Base de datos MySQL
 - **redis**: Cache (opcional)
 
-## 📊 Datos de Ejemplo
+## Datos de Ejemplo
 
 El sistema incluye datos de ejemplo:
 - 3 vehículos (Toyota Hilux, Ford Transit, Honda CB250)
@@ -158,7 +158,7 @@ El sistema incluye datos de ejemplo:
 - 3 clientes (Empresa ABC, Ana Martínez, Distribuidora XYZ)
 - 3 direcciones (Bogotá, Medellín, Cali)
 
-## 🛠️ Desarrollo
+## Desarrollo
 
 ### Estructura del Proyecto
 
@@ -175,11 +175,11 @@ El sistema incluye datos de ejemplo:
 - **Separación de capas**: API, Servicios, Repositorios, Modelos
 - **Código limpio**: Simple y mantenible
 
-## 📝 Licencia
+## Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
 
-## 🤝 Contribución
+## Contribución
 
 1. Fork el proyecto
 2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
@@ -187,10 +187,10 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abre un Pull Request
 
-## 📞 Soporte
+## Soporte
 
 Para soporte técnico o preguntas sobre el proyecto, contacta al equipo de desarrollo.
 
 ---
 
-**Desarrollado con ❤️ para la gestión logística eficiente**
+**Desarrollado para la gestión logística eficiente**
