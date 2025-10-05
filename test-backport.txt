@@ -1,0 +1,8 @@
+Este archivo es para probar el workflow de backport automático.
+
+Cuando este PR se mergee a master, el workflow debería:
+1. Detectar el push a master
+2. Hacer cherry-pick a develop
+3. Sincronizar ambas ramas automáticamente
+
+Fecha de creación: $(date)
