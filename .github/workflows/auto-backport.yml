@@ -1,0 +1,93 @@
+name: Auto Backport Master to Develop
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  backport:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Configure Git
+      run: |
+        git config --global user.name "Auto Backport Bot"
+        git config --global user.email "bot@rutaslogisticas.com"
+    
+    - name: Auto Backport to Develop
+      run: |
+        echo "🔄 Iniciando backport automático de master a develop..."
+        
+        # Obtener información del commit
+        COMMIT_SHA=$(git rev-parse HEAD)
+        COMMIT_TITLE=$(git log -1 --pretty=format:"%s")
+        COMMIT_AUTHOR=$(git log -1 --pretty=format:"%an")
+        
+        echo "📝 Commit: $COMMIT_TITLE"
+        echo "👤 Autor: $COMMIT_AUTHOR"
+        echo "🔗 SHA: $COMMIT_SHA"
+        
+        # Cambiar a develop y actualizar
+        echo "📂 Cambiando a rama develop..."
+        git checkout develop
+        git pull origin develop
+        
+        # Hacer cherry-pick del último commit de master
+        echo "🍒 Aplicando cherry-pick..."
+        if git cherry-pick $COMMIT_SHA; then
+          # Push del backport
+          echo "✅ Cherry-pick exitoso, haciendo push a develop..."
+          git push origin develop
+          
+          echo "🎉 Backport completado exitosamente!"
+          echo "✅ master y develop están sincronizados"
+        else
+          # Si hay conflictos, crear PR para resolver manualmente
+          echo "⚠️ Conflicto detectado, creando PR para resolución manual..."
+          
+          # Crear PR usando GitHub CLI
+          gh pr create \
+            --title "⚠️ Backport automático - Resolución de conflictos requerida" \
+            --body "## 🔄 Backport Automático - Conflicto Detectado
+
+**Commit original:** \`$COMMIT_SHA\`
+**Título:** $COMMIT_TITLE  
+**Autor:** $COMMIT_AUTHOR
+
+### ⚠️ Acción Requerida
+Este backport automático encontró conflictos que requieren resolución manual.
+
+### 📋 Pasos para resolver:
+1. Revisar los conflictos en este PR
+2. Resolver los conflictos manualmente
+3. Aprobar y hacer merge del PR
+4. Verificar que master y develop estén sincronizados
+
+### 🔍 Archivos con conflictos:
+\`\`\`bash
+git status --porcelain
+\`\`\`
+
+---
+*Este PR fue creado automáticamente por el sistema de backport*" \
+            --base develop \
+            --head develop \
+            --label "backport,conflict,needs-review"
+            
+          echo "📋 PR creado para resolución manual de conflictos"
+        fi
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Notification
+      if: always()
+      run: |
+        echo "🏁 Proceso de backport completado"
+        echo "📊 Estado: ${{ job.status }}"
