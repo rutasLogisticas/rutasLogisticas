@@ -23,63 +23,44 @@ jobs:
     
     - name: Auto Backport to Develop
       run: |
-        echo "🔄 Iniciando backport automático de master a develop..."
+        echo "Iniciando backport automatico de master a develop..."
         
-        # Obtener información del commit
+        # Obtener informacion del commit
         COMMIT_SHA=$(git rev-parse HEAD)
         COMMIT_TITLE=$(git log -1 --pretty=format:"%s")
         COMMIT_AUTHOR=$(git log -1 --pretty=format:"%an")
         
-        echo "📝 Commit: $COMMIT_TITLE"
-        echo "👤 Autor: $COMMIT_AUTHOR"
-        echo "🔗 SHA: $COMMIT_SHA"
+        echo "Commit: $COMMIT_TITLE"
+        echo "Autor: $COMMIT_AUTHOR"
+        echo "SHA: $COMMIT_SHA"
         
         # Cambiar a develop y actualizar
-        echo "📂 Cambiando a rama develop..."
+        echo "Cambiando a rama develop..."
         git checkout develop
         git pull origin develop
         
-        # Hacer cherry-pick del último commit de master
-        echo "🍒 Aplicando cherry-pick..."
+        # Hacer cherry-pick del ultimo commit de master
+        echo "Aplicando cherry-pick..."
         if git cherry-pick $COMMIT_SHA; then
           # Push del backport
-          echo "✅ Cherry-pick exitoso, haciendo push a develop..."
+          echo "Cherry-pick exitoso, haciendo push a develop..."
           git push origin develop
           
-          echo "🎉 Backport completado exitosamente!"
-          echo "✅ master y develop están sincronizados"
+          echo "Backport completado exitosamente!"
+          echo "master y develop estan sincronizados"
         else
           # Si hay conflictos, crear PR para resolver manualmente
-          echo "⚠️ Conflicto detectado, creando PR para resolución manual..."
+          echo "Conflicto detectado, creando PR para resolucion manual..."
           
           # Crear PR usando GitHub CLI
           gh pr create \
             --title "Backport automatico - Resolucion de conflictos requerida" \
-            --body "## Backport Automatico - Conflicto Detectado
-
-**Commit original:** $COMMIT_SHA
-**Titulo:** $COMMIT_TITLE  
-**Autor:** $COMMIT_AUTHOR
-
-### Accion Requerida
-Este backport automatico encontro conflictos que requieren resolucion manual.
-
-### Pasos para resolver:
-1. Revisar los conflictos en este PR
-2. Resolver los conflictos manualmente
-3. Aprobar y hacer merge del PR
-4. Verificar que master y develop esten sincronizados
-
-### Archivos con conflictos:
-Ver git status para detalles
-
----
-*Este PR fue creado automaticamente por el sistema de backport*" \
+            --body "Backport automatico encontro conflictos. Commit: $COMMIT_SHA. Resolver conflictos y hacer merge." \
             --base develop \
             --head develop \
             --label "backport,conflict,needs-review"
             
-          echo "📋 PR creado para resolución manual de conflictos"
+          echo "PR creado para resolucion manual de conflictos"
         fi
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -87,5 +68,5 @@ Ver git status para detalles
     - name: Notification
       if: always()
       run: |
-        echo "🏁 Proceso de backport completado"
-        echo "📊 Estado: ${{ job.status }}"
+        echo "Proceso de backport completado"
+        echo "Estado: ${{ job.status }}"
