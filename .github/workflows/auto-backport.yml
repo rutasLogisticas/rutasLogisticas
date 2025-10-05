@@ -4,6 +4,10 @@ on:
   push:
     branches: [ master ]
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   backport:
     runs-on: ubuntu-latest
@@ -14,12 +18,13 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
     
-    - name: Configure Git
+    - name: Setup Git for push
       run: |
         git config --global user.name "Auto Backport Bot"
         git config --global user.email "bot@rutaslogisticas.com"
+        git remote set-url origin https://x-access-token:${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
     
     - name: Auto Backport to Develop
       run: |
@@ -41,7 +46,7 @@ jobs:
         
         # Hacer cherry-pick del ultimo commit de master
         echo "Aplicando cherry-pick..."
-        if git cherry-pick $COMMIT_SHA; then
+        if git cherry-pick -m 1 $COMMIT_SHA; then
           # Push del backport
           echo "Cherry-pick exitoso, haciendo push a develop..."
           git push origin develop
@@ -57,8 +62,7 @@ jobs:
             --title "Backport automatico - Resolucion de conflictos requerida" \
             --body "Backport automatico encontro conflictos. Commit: $COMMIT_SHA. Resolver conflictos y hacer merge." \
             --base develop \
-            --head develop \
-            --label "backport,conflict,needs-review"
+            --head develop
             
           echo "PR creado para resolucion manual de conflictos"
         fi
