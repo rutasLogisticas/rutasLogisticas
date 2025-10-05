@@ -41,8 +41,7 @@ jobs:
         
         # Hacer cherry-pick del ultimo commit de master
         echo "Aplicando cherry-pick..."
-        if git cherry-pick $COMMIT_SHA; then
-          # Push del backport
+        if git cherry-pick -m 1 $COMMIT_SHA; then          # Push del backport
           echo "Cherry-pick exitoso, haciendo push a develop..."
           git push origin develop
           
