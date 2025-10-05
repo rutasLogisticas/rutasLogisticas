@@ -54,29 +54,27 @@ jobs:
           
           # Crear PR usando GitHub CLI
           gh pr create \
-            --title "⚠️ Backport automático - Resolución de conflictos requerida" \
-            --body "## 🔄 Backport Automático - Conflicto Detectado
+            --title "Backport automatico - Resolucion de conflictos requerida" \
+            --body "## Backport Automatico - Conflicto Detectado
 
-**Commit original:** \`$COMMIT_SHA\`
-**Título:** $COMMIT_TITLE  
+**Commit original:** $COMMIT_SHA
+**Titulo:** $COMMIT_TITLE  
 **Autor:** $COMMIT_AUTHOR
 
-### ⚠️ Acción Requerida
-Este backport automático encontró conflictos que requieren resolución manual.
+### Accion Requerida
+Este backport automatico encontro conflictos que requieren resolucion manual.
 
-### 📋 Pasos para resolver:
+### Pasos para resolver:
 1. Revisar los conflictos en este PR
 2. Resolver los conflictos manualmente
 3. Aprobar y hacer merge del PR
-4. Verificar que master y develop estén sincronizados
+4. Verificar que master y develop esten sincronizados
 
-### 🔍 Archivos con conflictos:
-\`\`\`bash
-git status --porcelain
-\`\`\`
+### Archivos con conflictos:
+Ver git status para detalles
 
 ---
-*Este PR fue creado automáticamente por el sistema de backport*" \
+*Este PR fue creado automaticamente por el sistema de backport*" \
             --base develop \
             --head develop \
             --label "backport,conflict,needs-review"
