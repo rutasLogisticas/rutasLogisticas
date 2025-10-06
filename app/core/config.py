@@ -12,7 +12,7 @@ class Config:
     DB_PORT = int(os.getenv('DB_PORT', 3306))
     DB_NAME = os.getenv('DB_NAME', 'rutas_logisticas')
     DB_USER = os.getenv('DB_USER', 'root')
-    DB_PASSWORD = os.getenv('DB_PASSWORD', 'Oscar16102')
+    DB_PASSWORD = os.getenv('DB_PASSWORD', '1234')
     
     # Aplicación
     DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
