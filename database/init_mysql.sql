@@ -67,6 +67,18 @@ CREATE TABLE IF NOT EXISTS addresses (
     FOREIGN KEY (client_id) REFERENCES clients(id)
 ) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- Tabla para usuarios
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) DEFAULT 'user',
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+
 -- Datos de ejemplo
 INSERT INTO vehicles (license_plate, brand, model, year, vehicle_type, status) VALUES
 ('ABC-123', 'Toyota', 'Hilux', 2020, 'camioneta', 'disponible'),

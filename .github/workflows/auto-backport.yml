@@ -44,28 +44,16 @@ jobs:
         git checkout develop
         git pull origin develop
         
-        # Hacer cherry-pick del ultimo commit de master
-        echo "Aplicando cherry-pick..."
-        if git cherry-pick -m 1 $COMMIT_SHA; then
-          # Push del backport
-          echo "Cherry-pick exitoso, haciendo push a develop..."
-          git push origin develop
-          
-          echo "Backport completado exitosamente!"
-          echo "master y develop estan sincronizados"
-        else
-          # Si hay conflictos, crear PR para resolver manualmente
-          echo "Conflicto detectado, creando PR para resolucion manual..."
-          
-          # Crear PR usando GitHub CLI
-          gh pr create \
-            --title "Backport automatico - Resolucion de conflictos requerida" \
-            --body "Backport automatico encontro conflictos. Commit: $COMMIT_SHA. Resolver conflictos y hacer merge." \
-            --base develop \
-            --head develop
-            
-          echo "PR creado para resolucion manual de conflictos"
-        fi
+        # Resetear develop para que sea exactamente igual a master
+        echo "Sincronizando develop con master..."
+        git reset --hard master
+        
+        # Push del backport
+        echo "Sincronizacion exitosa, haciendo push a develop..."
+        git push --force-with-lease origin develop
+        
+        echo "Backport completado exitosamente!"
+        echo "master y develop estan perfectamente sincronizados"
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
