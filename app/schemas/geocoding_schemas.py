@@ -1,26 +1,25 @@
 """
-Schemas para geocodificación
+Esquemas para el servicio de geocodificación
 """
 from pydantic import BaseModel, Field
+from typing import Optional
 
 
 class GeocodingRequest(BaseModel):
-    """Schema para solicitud de geocodificación"""
-    address: str = Field(..., min_length=1, description="Dirección a geocodificar")
+    """Esquema para solicitud de geocodificación"""
+    address: str = Field(..., description="Dirección a geocodificar", min_length=1)
 
 
 class GeocodingResponse(BaseModel):
-    """Schema para respuesta de geocodificación"""
-    address: str = Field(..., description="Dirección formateada")
+    """Esquema para respuesta de geocodificación"""
+    address: str = Field(..., description="Dirección original")
     latitude: float = Field(..., description="Latitud")
     longitude: float = Field(..., description="Longitud")
-    
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "address": "Calle 100 #15-20, Bogotá, Colombia",
-                "latitude": 4.6825,
-                "longitude": -74.0481
-            }
-        }
+    formatted_address: Optional[str] = Field(None, description="Dirección formateada por Google")
+    status: str = Field(..., description="Estado de la respuesta")
 
+
+class GeocodingErrorResponse(BaseModel):
+    """Esquema para errores de geocodificación"""
+    error: str = Field(..., description="Mensaje de error")
+    address: str = Field(..., description="Dirección que causó el error")
