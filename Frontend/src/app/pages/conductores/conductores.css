@@ -1,0 +1,187 @@
+/* === CONTENEDOR PRINCIPAL === */
+.page-content {
+  padding: 24px;
+  background: #f5f6fa;
+  min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* === GRID PRINCIPAL === */
+.conductores-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* === FORMULARIO === */
+.conductores-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(6px);
+}
+
+.conductores-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.conductores-form input,
+.conductores-form select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.conductores-form input:focus,
+.conductores-form select:focus {
+  border-color: #0078d7;
+  outline: none;
+  box-shadow: 0 0 4px rgba(0, 120, 215, 0.3);
+}
+
+/* === BOTONES === */
+button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  background-color: #ff7a00;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 0.9rem;
+}
+
+button:hover {
+  background-color:#6c757d;
+}
+
+button[type="button"] {
+  background-color: #6c757d;
+}
+
+button[type="button"]:hover {
+  background-color: #ff7a00;
+}
+
+/* === ACCIONES === */
+.conductores-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* === TABLA === */
+.table-wrapper {
+  overflow-x: auto;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(6px);
+  padding: 10px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.9rem;
+}
+
+.data-table th,
+.data-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  word-break: break-word;
+}
+
+.data-table th {
+  background: #f0f2f5;
+  font-weight: 600;
+  color: #ff7a00;
+}
+
+.data-table tr:hover {
+  background: #f9fafb;
+  cursor: pointer;
+}
+
+/* === PANEL DETALLE === */
+.panel {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(6px);
+}
+
+.panel h3 {
+  margin-top: 0;
+}
+
+/* === FILTROS === */
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.filter-bar input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+}
+
+.filter-bar button {
+  background-color: #ff7a00;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+}
+
+.filter-bar button:hover {
+  background-color: #ff7a00;
+}
+
+/* === MENSAJE DE ERROR === */
+.error-text {
+  color: #b00020;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .conductores-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .conductores-form {
+    grid-template-columns: 1fr;
+  }
+
+  .data-table {
+    font-size: 0.85rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 6px 8px;
+  }
+}

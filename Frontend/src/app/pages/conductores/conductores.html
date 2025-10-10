@@ -1,0 +1,100 @@
+<div class="page-content">
+  <h2>Conductores</h2>
+
+  <div *ngIf="error" class="error-text">{{ error }}</div>
+
+  <div class="panel conductores-grid">
+    <div>
+      <h3 style="margin-top:0">Crear conductor</h3>
+      <form (ngSubmit)="submit()" #driverForm="ngForm" class="conductores-form">
+        <label>Nombre
+          <input name="first_name" [(ngModel)]="form.first_name" required />
+        </label>
+        <label>Apellido
+          <input name="last_name" [(ngModel)]="form.last_name" required />
+        </label>
+        <label>Email
+          <input name="email" type="email" [(ngModel)]="form.email" required />
+        </label>
+        <label>Teléfono
+          <input name="phone" [(ngModel)]="form.phone" />
+        </label>
+        <label>Documento
+          <input name="document_number" [(ngModel)]="form.document_number" required />
+        </label>
+        <label>Licencia
+          <select name="license_type" [(ngModel)]="form.license_type">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+          </select>
+        </label>
+        <label>Estado
+          <select name="status" [(ngModel)]="form.status">
+            <option value="disponible">Disponible</option>
+            <option value="en_ruta">En ruta</option>
+          </select>
+        </label>
+        <label style="display:flex; align-items:center; gap:8px">
+          <input type="checkbox" name="is_available" [(ngModel)]="form.is_available" /> Disponible
+        </label>
+
+        <div class="conductores-actions">
+          <button type="submit">Crear</button>
+          <button type="button" (click)="resetForm()">Limpiar</button>
+        </div>
+      </form>
+    </div>
+
+    <div>
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px">
+        <h3 style="margin-top:0">Listado</h3>
+        <div style="display:flex; gap:8px; align-items:center">
+          <label style="display:flex; gap:6px; align-items:center">
+            <input type="checkbox" [checked]="onlyAvailable" (change)="toggleAvailable()" /> Solo disponibles
+          </label>
+        </div>
+        <span *ngIf="loading">Cargando…</span>
+      </div>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Documento</th>
+              <th>Licencia</th>
+              <th>Estado</th>
+              <th>Disponible</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let d of drivers" (click)="select(d)" style="cursor:pointer">
+              <td>{{ d.first_name }}</td>
+              <td>{{ d.last_name }}</td>
+              <td>{{ d.email }}</td>
+              <td>{{ d.phone }}</td>
+              <td>{{ d.document_number }}</td>
+              <td>{{ d.license_type }}</td>
+              <td>{{ d.status }}</td>
+              <td>{{ d.is_available ? 'Sí' : 'No' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="selected" class="panel" style="margin-top:12px">
+        <h3 style="margin-top:0">Detalle</h3>
+        <div><strong>Nombre:</strong> {{ selected.first_name }} {{ selected.last_name }}</div>
+        <div><strong>Email:</strong> {{ selected.email }}</div>
+        <div><strong>Teléfono:</strong> {{ selected.phone }}</div>
+        <div><strong>Documento:</strong> {{ selected.document_number }}</div>
+        <div><strong>Licencia:</strong> {{ selected.license_type }}</div>
+        <div><strong>Estado:</strong> {{ selected.status }}</div>
+        <div><strong>Disponible:</strong> {{ selected.is_available ? 'Sí' : 'No' }}</div>
+      </div>
+    </div>
+  </div>
+</div>

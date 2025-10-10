@@ -1,0 +1,100 @@
+<div class="page-content">
+  <h2>Direcciones</h2>
+
+  <div *ngIf="error" class="error-text">{{ error }}</div>
+
+  <div class="panel direcciones-grid">
+    <div>
+      <h3 style="margin-top:0">Crear dirección</h3>
+      <form (ngSubmit)="submit()" #addrForm="ngForm" class="direcciones-form">
+        <label>ID Cliente
+          <input name="client_id" type="number" [(ngModel)]="form.client_id" required />
+        </label>
+        <label>Calle
+          <input name="street" [(ngModel)]="form.street" required />
+        </label>
+        <label>Ciudad
+          <input name="city" [(ngModel)]="form.city" required />
+        </label>
+        <label>Estado/Depto
+          <input name="state" [(ngModel)]="form.state" required />
+        </label>
+        <label>Código postal
+          <input name="postal_code" [(ngModel)]="form.postal_code" required />
+        </label>
+        <label>País
+          <input name="country" [(ngModel)]="form.country" />
+        </label>
+        <label>Tipo
+          <select name="address_type" [(ngModel)]="form.address_type">
+            <option value="principal">Principal</option>
+            <option value="entrega">Entrega</option>
+            <option value="oficina">Oficina</option>
+          </select>
+        </label>
+        <label style="display:flex; align-items:center; gap:8px">
+          <input type="checkbox" name="is_primary" [(ngModel)]="form.is_primary" /> Es principal
+        </label>
+
+        <div class="direcciones-actions">
+          <button type="submit">Crear</button>
+          <button type="button" (click)="resetForm()">Limpiar</button>
+        </div>
+      </form>
+    </div>
+
+    <div>
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px">
+        <h3 style="margin-top:0">Listado</h3>
+        <div style="display:flex; gap:8px; align-items:center">
+          <input placeholder="Filtrar por ID cliente" type="number" [(ngModel)]="clientIdFilter" />
+          <input placeholder="Filtrar por ciudad" [(ngModel)]="cityFilter" />
+          <button type="button" (click)="filter()">Filtrar</button>
+        </div>
+        <span *ngIf="loading">Cargando…</span>
+      </div>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Calle</th>
+              <th>Ciudad</th>
+              <th>Estado</th>
+              <th>Postal</th>
+              <th>País</th>
+              <th>Tipo</th>
+              <th>Principal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let a of addresses" (click)="select(a)" style="cursor:pointer">
+              <td>{{ a.client_id }}</td>
+              <td>{{ a.street }}</td>
+              <td>{{ a.city }}</td>
+              <td>{{ a.state }}</td>
+              <td>{{ a.postal_code }}</td>
+              <td>{{ a.country }}</td>
+              <td>{{ a.address_type }}</td>
+              <td>{{ a.is_primary ? 'Sí' : 'No' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="selected" class="panel" style="margin-top:12px">
+        <h3 style="margin-top:0">Detalle</h3>
+        <div><strong>Cliente:</strong> {{ selected.client_id }}</div>
+        <div><strong>Calle:</strong> {{ selected.street }}</div>
+        <div><strong>Ciudad:</strong> {{ selected.city }}</div>
+        <div><strong>Estado:</strong> {{ selected.state }}</div>
+        <div><strong>Postal:</strong> {{ selected.postal_code }}</div>
+        <div><strong>País:</strong> {{ selected.country }}</div>
+        <div><strong>Tipo:</strong> {{ selected.address_type }}</div>
+        <div><strong>Principal:</strong> {{ selected.is_primary ? 'Sí' : 'No' }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

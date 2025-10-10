@@ -1,0 +1,50 @@
+<div class="page-full">
+  <!-- PANEL IZQUIERDO: FORMULARIO FLOTANTE -->
+  <div class="search-panel">
+    <h3>Buscar ubicación</h3>
+    <form (ngSubmit)="geocode()" class="search-form">
+      <label>
+        Dirección
+        <input 
+          name="address" 
+          [(ngModel)]="address" 
+          placeholder="Ej: Calle 72 #10-51, Bogotá, Colombia"
+          required 
+        />
+      </label>
+      <div class="form-actions">
+        <button type="submit" [disabled]="loading">
+          {{ loading ? 'Buscando...' : 'Geocodificar' }}
+        </button>
+        <button type="button" (click)="clear()">Limpiar</button>
+      </div>
+    </form>
+
+    <div *ngIf="result" class="result-panel">
+      <h4>Resultado</h4>
+      <div class="result-item"><strong>Dirección:</strong> {{ result.address }}</div>
+      <div class="result-item"><strong>Latitud:</strong> {{ result.latitude }}</div>
+      <div class="result-item"><strong>Longitud:</strong> {{ result.longitude }}</div>
+    </div>
+
+    <div *ngIf="error" class="error-text">{{ error }}</div>
+  </div>
+
+  <!-- PANEL DERECHO: MAPA DE FONDO COMPLETO -->
+  <div class="map-container">
+    <iframe
+      [src]="mapUrl | sanitizeUrl"
+      frameborder="0"
+      scrolling="no"
+      class="map-frame"
+    ></iframe>
+    <p class="map-note">
+      <small>
+        {{ result 
+          ? 'Ubicación encontrada' 
+          : 'Vista predeterminada: Bogotá, Colombia' 
+        }}
+      </small>
+    </p>
+  </div>
+</div>
