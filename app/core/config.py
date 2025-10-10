@@ -19,6 +19,9 @@ class Config:
     API_HOST = os.getenv('API_HOST', '127.0.0.1')
     API_PORT = int(os.getenv('API_PORT', 8000))
     
+    # Google Maps API
+    google_maps_api_key = os.getenv('GOOGLE_MAPS_API_KEY', 'AIzaSyDfIIPbFtxFmsLEeoe-msMMReXOCPVPBKU')
+    
     @classmethod
     def get_database_url(cls) -> str:
         """URL de conexión a la base de datos"""
