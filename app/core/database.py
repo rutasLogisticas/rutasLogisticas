@@ -66,3 +66,13 @@ class DatabaseManager:
 
 # Instancia global
 db_manager = DatabaseManager()
+
+def get_db() -> Generator[Session, None, None]:
+    """
+    Dependencia para obtener una sesión de base de datos en los endpoints de FastAPI
+    """
+    with db_manager.get_session() as db:
+        yield db
+# Compatibilidad para código antiguo
+SessionLocal = db_manager.SessionLocal
+

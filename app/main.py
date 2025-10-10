@@ -10,7 +10,7 @@ import asyncio
 
 from app.core.config import config
 from app.core.database import db_manager
-from app.api.routes import vehicles, drivers, clients, addresses
+from app.api.routes import userses, vehicles, drivers, clients, addresses, geocoding
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
@@ -66,6 +66,9 @@ app.include_router(vehicles.router, prefix="/api/v1")
 app.include_router(drivers.router, prefix="/api/v1")
 app.include_router(clients.router, prefix="/api/v1")
 app.include_router(addresses.router, prefix="/api/v1")
+app.include_router(userses.router, prefix="/api/v1")
+app.include_router(geocoding.router, prefix="/api/v1")
+
 
 
 # Rutas básicas
