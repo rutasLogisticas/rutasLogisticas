@@ -1,0 +1,35 @@
+<div class="login-container">
+  <div class="login-card">
+    <!-- Sección izquierda (imagen) -->
+    <div class="login-image">
+      <img src="/img/login-photo.jpg" alt="Login Image">
+    </div>
+
+    <!-- Sección derecha (formulario) -->
+    <div class="login-form">
+      <h2 class="logo">🔶 Logo</h2>
+      <h3>Sign into your account</h3>
+
+      <form (ngSubmit)="onSubmit()" #formRef="ngForm">
+        <div class="form-group">
+          <input name="username" [(ngModel)]="username" placeholder="Usuario" required />
+        </div>
+        <div class="form-group">
+          <input name="password" [(ngModel)]="password" type="password" placeholder="Contraseña" required />
+        </div>
+
+        <button type="submit" class="btn-login" [disabled]="loading">{{ loading ? 'Ingresando…' : 'LOGIN' }}</button>
+      </form>
+
+      <div class="options">
+        <a routerLink="/register">Forgot password?</a>
+        <p>Don't have an account? <a routerLink="/register">Register here</a></p>
+      </div>
+
+      <div class="terms">
+        <a href="#">Terms of use.</a> <a href="#">Privacy policy</a>
+      </div>
+      
+         </div>
+      </div>
+    </div>
