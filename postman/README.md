@@ -38,14 +38,18 @@ Esta colección de Postman contiene todos los endpoints necesarios para probar l
 - **Crear Dirección**: Crear una nueva dirección
 - **Listar Direcciones**: Obtener lista paginada de direcciones
 - **Obtener Dirección**: Obtener dirección por ID
-- **Dirección Principal**: Obtener dirección principal del cliente
-- **Direcciones de Entrega**: Obtener direcciones disponibles para entrega
-- **Actualizar Coordenadas**: Actualizar coordenadas geográficas
-- **Estadísticas**: Estadísticas de direcciones
+- **Direcciones por Cliente**: Obtener direcciones de un cliente específico
+- **Direcciones por Ciudad**: Obtener direcciones de una ciudad
+
+### Geocodificación 🆕
+- **Geocodificar Dirección**: Convertir una dirección en coordenadas GPS (latitud y longitud)
+- **Geocodificar - Medellín**: Ejemplo preconfigurado para Medellín
+- **Geocodificar - Cali**: Ejemplo preconfigurado para Cali
+- **Health Check Geocoding**: Verificar estado del servicio de geocodificación
 
 ### Tests de Flujo Completo
 - **Flujo Completo - Crear Todo**: Crear cliente, dirección, vehículo y conductor
-- **Flujo Completo - Consultar Todo**: Consultar todos los recursos creados
+- **Flujo Completo - Consultar Todo**: Consultar todos los recursos y geocodificar una dirección
 
 ## Cómo Usar la Colección
 
@@ -163,24 +167,35 @@ Si en el futuro se implementa autenticación:
 }
 ```
 
-### Crear una Dirección con Coordenadas
+### Crear una Dirección
 
 ```json
 {
   "client_id": 1,
-  "address_type": "oficina",
-  "address_line1": "Av. Amazonas N12-34",
-  "address_line2": "Edificio Plaza Central",
-  "neighborhood": "Centro",
-  "city": "Quito",
-  "state": "Pichincha",
-  "country": "Ecuador",
-  "postal_code": "170150",
-  "latitude": -0.2298500,
-  "longitude": -78.5249500,
-  "contact_name": "Ana López",
-  "contact_phone": "+593991234567",
+  "street": "Calle 100 #15-20",
+  "city": "Bogotá",
+  "state": "Cundinamarca",
+  "postal_code": "110111",
+  "country": "Colombia",
+  "address_type": "principal",
   "is_primary": true
+}
+```
+
+### Geocodificar una Dirección 🆕
+
+```json
+{
+  "address": "Calle 100 #15-20, Bogotá, Colombia"
+}
+```
+
+**Respuesta esperada:**
+```json
+{
+  "address": "Cl. 100 #15-20, Bogotá, Colombia",
+  "latitude": 4.6867831,
+  "longitude": -74.0538037
 }
 ```
 
