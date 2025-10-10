@@ -38,6 +38,12 @@ Un sistema de gestión logística simple y eficiente desarrollado con FastAPI, d
 - Tipos: principal, entrega, oficina
 - Información geográfica completa
 
+### Geocodificación 🆕
+- Conversión de direcciones a coordenadas GPS
+- Integración con Google Maps API
+- Latitud y longitud precisas
+- Soporte para direcciones en Colombia
+
 ## Instalación y Uso
 
 ### Requisitos Previos
@@ -98,6 +104,10 @@ Un sistema de gestión logística simple y eficiente desarrollado con FastAPI, d
 - `GET /api/v1/addresses/client/{client_id}` - Direcciones por cliente
 - `GET /api/v1/addresses/city/{city}` - Direcciones por ciudad
 
+### Geocodificación 🆕
+- `POST /api/v1/geocoding/` - Geocodificar dirección
+- `GET /api/v1/geocoding/health` - Estado del servicio
+
 ## Testing con Postman
 
 El proyecto incluye una colección de Postman completa en la carpeta `postman/`:
@@ -157,6 +167,34 @@ El sistema incluye datos de ejemplo:
 - 3 conductores (Juan Pérez, María García, Carlos López)
 - 3 clientes (Empresa ABC, Ana Martínez, Distribuidora XYZ)
 - 3 direcciones (Bogotá, Medellín, Cali)
+
+## Nuevas Funcionalidades
+
+### Geocodificación de Direcciones
+
+La API ahora incluye un servicio de geocodificación que convierte direcciones de texto en coordenadas geográficas (latitud y longitud) utilizando Google Maps API.
+
+**Ejemplo de uso:**
+```bash
+curl -X POST http://localhost:8000/api/v1/geocoding/ \
+  -H "Content-Type: application/json" \
+  -d '{"address": "Calle 100 #15-20, Bogotá, Colombia"}'
+```
+
+**Respuesta:**
+```json
+{
+  "address": "Ac 100 #15-20, Bogotá, Colombia",
+  "latitude": 4.685111,
+  "longitude": -74.049071
+}
+```
+
+**Casos de uso:**
+- Validar direcciones de clientes
+- Calcular rutas de entrega
+- Optimizar recorridos de vehículos
+- Visualizar ubicaciones en mapas
 
 ## Desarrollo
 
