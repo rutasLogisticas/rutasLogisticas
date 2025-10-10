@@ -5,29 +5,44 @@
     </div>
 
     <div class="login-form">
-      <h2 class="logo">🔶 Register</h2>
-      <h3>Create your account</h3>
+      <h2 class="logo">🔶 Registro</h2>
+      <h3>Crea tu cuenta</h3>
 
-      <form>
+      <form (ngSubmit)="onSubmit()">
         <div class="form-group">
-          <input type="text" placeholder="Full name" />
+          <input 
+            type="text" 
+            [(ngModel)]="username" 
+            name="username"
+            placeholder="Nombre de usuario" 
+            required 
+          />
         </div>
         <div class="form-group">
-          <input type="email" placeholder="Email address" />
+          <input 
+            type="password" 
+            [(ngModel)]="password" 
+            name="password"
+            placeholder="Contraseña" 
+            required 
+          />
         </div>
         <div class="form-group">
-          <input type="password" placeholder="Password" />
+          <input 
+            type="password" 
+            [(ngModel)]="confirmPassword" 
+            name="confirmPassword"
+            placeholder="Confirmar contraseña" 
+          />
         </div>
 
-        <button type="submit" class="btn-login">Create account</button>
+        <button type="submit" class="btn-login" [disabled]="loading">
+          {{ loading ? 'Creando cuenta...' : 'Crear cuenta' }}
+        </button>
       </form>
 
       <div class="options">
-        <p>Already have an account? <a routerLink="/login">Sign in</a></p>
-      </div>
-
-      <div class="terms">
-        <a routerLink="/terms">Terms of use.</a> <a routerLink="/privacy">Privacy policy</a>
+        <p>¿Ya tienes cuenta? <a routerLink="/login">Iniciar sesión</a></p>
       </div>
     </div>
   </div>

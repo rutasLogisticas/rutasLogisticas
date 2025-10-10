@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
+import { isPlatformBrowser } from '@angular/common';
 
 export interface GeocodeResult {
   address: string;
@@ -17,8 +18,7 @@ export interface GeocodeRequest {
   providedIn: 'root'
 })
 export class GeocodingService {
-  // Ajusta esta URL según tu configuración del backend
-  private apiUrl = 'http://localhost:5000';
+  private apiUrl: string;
   
   private httpOptions = {
     headers: new HttpHeaders({
@@ -26,13 +26,20 @@ export class GeocodingService {
     })
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.apiUrl = isPlatformBrowser(this.platformId) 
+      ? 'http://localhost:8000/api/v1'
+      : 'http://app:8000/api/v1';
+  }
 
   geocodeAddress(address: string): Observable<GeocodeResult> {
     const body: GeocodeRequest = { address };
     
     return this.http.post<GeocodeResult>(
-      `${this.apiUrl}/geocode`, 
+      `${this.apiUrl}/geocoding/`, 
       body,
       this.httpOptions
     ).pipe(

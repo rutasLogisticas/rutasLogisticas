@@ -63,6 +63,23 @@ services:
       - rutas_network
     restart: unless-stopped
 
+  # Frontend Angular
+  frontend:
+    build: ./Frontend
+    container_name: rutas_logisticas_frontend
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./Frontend:/app
+      - /app/node_modules
+    networks:
+      - rutas_network
+    restart: unless-stopped
+    depends_on:
+      - app
+    environment:
+      - NODE_ENV=development
+
 volumes:
   mysql_data:
 

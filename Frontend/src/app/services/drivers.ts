@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
 
 export interface DriverSummary {
   id: number;
@@ -27,9 +28,16 @@ export interface DriverCreate {
 
 @Injectable({ providedIn: 'root' })
 export class DriversService {
-  private apiUrl = 'http://localhost:8000/api/v1';
+  private apiUrl: string;
   
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.apiUrl = isPlatformBrowser(this.platformId) 
+      ? 'http://localhost:8000/api/v1'
+      : 'http://app:8000/api/v1';
+  }
 
   getDrivers(): Observable<DriverSummary[]> {
     return this.http.get<DriverSummary[]>(`${this.apiUrl}/drivers/`);
