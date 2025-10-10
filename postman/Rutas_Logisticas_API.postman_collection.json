@@ -397,6 +397,90 @@
 			]
 		},
 		{
+			"name": "Geocodificación",
+			"item": [
+				{
+					"name": "Geocodificar Dirección",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"Calle 100 #15-20, Bogotá, Colombia\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/geocoding/",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "geocoding", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Geocodificar - Medellín",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"Carrera 43A #1-50, Medellín, Colombia\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/geocoding/",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "geocoding", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Geocodificar - Cali",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"address\": \"Avenida 6N #15-25, Cali, Colombia\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/geocoding/",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "geocoding", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Health Check Geocoding",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/geocoding/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "geocoding", "health"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Tests de Flujo Completo",
 			"item": [
 				{
@@ -557,6 +641,28 @@
 									"raw": "{{baseUrl}}/api/v1/addresses",
 									"host": ["{{baseUrl}}"],
 									"path": ["api", "v1", "addresses"]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5. Geocodificar Dirección",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"address\": \"Calle 100 #15-20, Bogotá, Colombia\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/geocoding/",
+									"host": ["{{baseUrl}}"],
+									"path": ["api", "v1", "geocoding", ""]
 								}
 							},
 							"response": []
