@@ -5,8 +5,8 @@
 
   <div class="panel clientes-grid">
     <div>
-      <h3 style="margin-top:0">Crear cliente</h3>
-      <form (ngSubmit)="submit()" #clientForm="ngForm" class="clientes-form">
+      <h3 style="margin-top:0">{{ isEditing ? 'Editar cliente' : 'Crear cliente' }}</h3>
+      <form (ngSubmit)="isEditing ? updateClient() : submit()" #clientForm="ngForm" class="clientes-form">
         <label>Nombre
           <input name="name" [(ngModel)]="form.name" required />
         </label>
@@ -37,8 +37,8 @@
         </label>
 
         <div class="clientes-actions">
-          <button type="submit">Crear</button>
-          <button type="button" (click)="resetForm()">Limpiar</button>
+          <button type="submit">{{ isEditing ? 'Actualizar' : 'Crear' }}</button>
+          <button type="button" (click)="resetForm()">{{ isEditing ? 'Cancelar' : 'Limpiar' }}</button>
         </div>
       </form>
     </div>
@@ -63,6 +63,7 @@
               <th>Tipo</th>
               <th>Estado</th>
               <th>Activo</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -74,6 +75,10 @@
               <td>{{ c.client_type }}</td>
               <td>{{ c.status }}</td>
               <td>{{ c.is_active ? 'Sí' : 'No' }}</td>
+              <td>
+                <button type="button" (click)="editClient(c); $event.stopPropagation()" class="btn-edit">Editar</button>
+                <button type="button" (click)="deleteClient(c); $event.stopPropagation()" class="btn-delete">Eliminar</button>
+              </td>
             </tr>
           </tbody>
         </table>

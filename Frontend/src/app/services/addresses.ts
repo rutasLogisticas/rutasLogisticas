@@ -26,6 +26,16 @@ export interface AddressCreate {
   is_primary?: boolean;
 }
 
+export interface AddressUpdate {
+  street?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+  country?: string;
+  address_type?: string;
+  is_primary?: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AddressesService {
   private apiUrl: string;
@@ -57,6 +67,14 @@ export class AddressesService {
 
   createAddress(data: AddressCreate): Observable<AddressSummary> {
     return this.http.post<AddressSummary>(`${this.apiUrl}/addresses/`, data);
+  }
+
+  updateAddress(id: number, data: AddressUpdate): Observable<AddressSummary> {
+    return this.http.put<AddressSummary>(`${this.apiUrl}/addresses/${id}`, data);
+  }
+
+  deleteAddress(id: number): Observable<{message: string}> {
+    return this.http.delete<{message: string}>(`${this.apiUrl}/addresses/${id}`);
   }
 }
 

@@ -5,8 +5,8 @@
 
   <div class="panel vehiculos-grid">
     <div>
-      <h3 style="margin-top:0">Crear vehículo</h3>
-      <form (ngSubmit)="submit()" #vehForm="ngForm" class="vehiculos-form">
+      <h3 style="margin-top:0">{{ isEditing ? 'Editar vehículo' : 'Crear vehículo' }}</h3>
+      <form (ngSubmit)="isEditing ? updateVehicle() : submit()" #vehForm="ngForm" class="vehiculos-form">
         <label>Placa
           <input name="license_plate" [(ngModel)]="form.license_plate" required />
         </label>
@@ -39,8 +39,8 @@
         </label>
 
         <div class="vehiculos-actions">
-          <button type="submit">Crear</button>
-          <button type="button" (click)="resetForm()">Limpiar</button>
+          <button type="submit">{{ isEditing ? 'Actualizar' : 'Crear' }}</button>
+          <button type="button" (click)="resetForm()">{{ isEditing ? 'Cancelar' : 'Limpiar' }}</button>
         </div>
       </form>
     </div>
@@ -61,6 +61,7 @@
               <th>Tipo</th>
               <th>Estado</th>
               <th>Disponible</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -72,6 +73,10 @@
               <td>{{ v.vehicle_type }}</td>
               <td>{{ v.status }}</td>
               <td>{{ v.is_available ? 'Sí' : 'No' }}</td>
+              <td>
+                <button type="button" (click)="editVehicle(v); $event.stopPropagation()" class="btn-edit">Editar</button>
+                <button type="button" (click)="deleteVehicle(v); $event.stopPropagation()" class="btn-delete">Eliminar</button>
+              </td>
             </tr>
           </tbody>
         </table>

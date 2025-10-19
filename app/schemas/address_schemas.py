@@ -17,6 +17,17 @@ class AddressCreate(BaseModel):
     is_primary: bool = False
 
 
+class AddressUpdate(BaseModel):
+    """Schema para actualizar direcciones"""
+    street: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    postal_code: Optional[str] = None
+    country: Optional[str] = None
+    address_type: Optional[str] = None
+    is_primary: Optional[bool] = None
+
+
 class AddressResponse(BaseModel):
     """Schema para respuesta de direcciones"""
     id: int

@@ -15,6 +15,15 @@ class VehicleCreate(BaseModel):
     status: str = "disponible"
 
 
+class VehicleUpdate(BaseModel):
+    """Schema para actualizar vehículos"""
+    brand: Optional[str] = None
+    model: Optional[str] = None
+    year: Optional[int] = None
+    vehicle_type: Optional[str] = None
+    status: Optional[str] = None
+
+
 class VehicleResponse(BaseModel):
     """Schema para respuesta de vehículos"""
     id: int

@@ -26,6 +26,15 @@ export interface DriverCreate {
   is_available?: boolean;
 }
 
+export interface DriverUpdate {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  phone?: string;
+  license_type?: string;
+  status?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class DriversService {
   private apiUrl: string;
@@ -53,6 +62,14 @@ export class DriversService {
 
   createDriver(data: DriverCreate): Observable<DriverSummary> {
     return this.http.post<DriverSummary>(`${this.apiUrl}/drivers/`, data);
+  }
+
+  updateDriver(id: number, data: DriverUpdate): Observable<DriverSummary> {
+    return this.http.put<DriverSummary>(`${this.apiUrl}/drivers/${id}`, data);
+  }
+
+  deleteDriver(id: number): Observable<{message: string}> {
+    return this.http.delete<{message: string}>(`${this.apiUrl}/drivers/${id}`);
   }
 }
 

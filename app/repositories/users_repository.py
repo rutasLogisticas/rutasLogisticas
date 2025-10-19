@@ -36,3 +36,4 @@ def get_user_by_username(db: Session, username: str):
 
 def get_users(db: Session):
     return db.query(User).all()
+

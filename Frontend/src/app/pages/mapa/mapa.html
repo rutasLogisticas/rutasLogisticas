@@ -1,0 +1,142 @@
+<div class="page-content">
+  <h2>Mapas y Geolocalización</h2>
+
+  <div *ngIf="error" class="error-text">{{ error }}</div>
+
+  <div class="panel mapa-grid">
+    <!-- PANEL DE BÚSQUEDA Y CONTROLES -->
+    <div class="search-section">
+      <h3>Búsqueda de Ubicaciones</h3>
+      
+      <!-- Formulario de búsqueda -->
+      <form (ngSubmit)="geocode()" class="search-form">
+        <label>
+          Dirección
+          <input 
+            name="address" 
+            [(ngModel)]="address" 
+            placeholder="Ej: Calle 72 #10-51, Bogotá, Colombia"
+            required 
+          />
+        </label>
+        <div class="form-actions">
+          <button type="submit" [disabled]="loading" class="btn-primary">
+            {{ loading ? 'Buscando...' : 'Buscar' }}
+          </button>
+          <button type="button" (click)="getCurrentLocation()" class="btn-secondary" [disabled]="locationLoading">
+            {{ locationLoading ? 'Obteniendo...' : 'Mi ubicación' }}
+          </button>
+          <button type="button" (click)="clear()" class="btn-clear">Limpiar</button>
+        </div>
+      </form>
+
+      <!-- Controles del mapa -->
+      <div class="map-controls">
+        <h4>Controles del Mapa</h4>
+        <div class="control-buttons">
+          <button (click)="zoomIn()" class="control-btn" [disabled]="currentZoom >= maxZoom">
+            <span class="control-icon">+</span>
+            <span class="control-label">Acercar</span>
+          </button>
+          <button (click)="zoomOut()" class="control-btn" [disabled]="currentZoom <= minZoom">
+            <span class="control-icon">-</span>
+            <span class="control-label">Alejar</span>
+          </button>
+          <button (click)="centerMap()" class="control-btn">
+            <span class="control-icon">⌂</span>
+            <span class="control-label">Centrar</span>
+          </button>
+          <button (click)="toggleFullscreen()" class="control-btn">
+            <span class="control-icon">⛶</span>
+            <span class="control-label">Pantalla completa</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Información de la ubicación actual -->
+      <div *ngIf="result" class="location-info">
+        <h4>Ubicación Encontrada</h4>
+        <div class="info-item">
+          <strong>Dirección:</strong> 
+          <span class="address-text">{{ result.address }}</span>
+        </div>
+        <div class="info-item">
+          <strong>Coordenadas:</strong>
+          <span class="coordinates">{{ result.latitude.toFixed(6) }}, {{ result.longitude.toFixed(6) }}</span>
+        </div>
+        <div class="info-item">
+          <strong>Zoom actual:</strong>
+          <span class="zoom-level">{{ currentZoom }}</span>
+        </div>
+      </div>
+
+      <!-- Historial de búsquedas -->
+      <div *ngIf="searchHistory.length > 0" class="search-history">
+        <h4>Búsquedas Recientes</h4>
+        <div class="history-list">
+          <div 
+            *ngFor="let item of searchHistory; trackBy: trackByHistory" 
+            class="history-item"
+            (click)="selectFromHistory(item)"
+          >
+            <span class="history-address">{{ item.address }}</span>
+            <span class="history-coords">{{ item.latitude.toFixed(4) }}, {{ item.longitude.toFixed(4) }}</span>
+          </div>
+        </div>
+        <button (click)="clearHistory()" class="btn-clear btn-small">Limpiar historial</button>
+      </div>
+    </div>
+
+    <!-- CONTENEDOR DEL MAPA -->
+    <div class="map-section">
+      <div class="map-container" [class.fullscreen]="isFullscreen">
+        <div class="map-wrapper">
+          <iframe
+            [src]="mapUrl | sanitizeUrl"
+            frameborder="0"
+            scrolling="no"
+            class="map-frame"
+          ></iframe>
+          <div class="map-overlay" *ngIf="!result">
+            <div class="overlay-content">
+              <div class="overlay-icon">🗺️</div>
+              <p>Ingresa una dirección para ver la ubicación en el mapa</p>
+              <p class="overlay-subtitle">O usa el botón "Mi ubicación" para encontrar tu posición actual</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Información del mapa -->
+        <div class="map-info" *ngIf="result">
+          <div class="map-stats">
+            <span class="stat-item">
+              <strong>Latitud:</strong> {{ result.latitude.toFixed(6) }}
+            </span>
+            <span class="stat-item">
+              <strong>Longitud:</strong> {{ result.longitude.toFixed(6) }}
+            </span>
+            <span class="stat-item">
+              <strong>Zoom:</strong> {{ currentZoom }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Funciones adicionales -->
+      <div class="additional-features">
+        <h4>Funciones Adicionales</h4>
+        <div class="feature-buttons">
+          <button (click)="exportLocation()" class="feature-btn" [disabled]="!result">
+            📋 Copiar coordenadas
+          </button>
+          <button (click)="shareLocation()" class="feature-btn" [disabled]="!result">
+            🔗 Compartir ubicación
+          </button>
+          <button (click)="calculateDistance()" class="feature-btn" [disabled]="!result">
+            📏 Calcular distancia
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

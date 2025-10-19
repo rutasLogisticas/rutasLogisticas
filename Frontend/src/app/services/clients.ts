@@ -24,6 +24,15 @@ export interface ClientCreate {
   is_active?: boolean;
 }
 
+export interface ClientUpdate {
+  name?: string;
+  email?: string;
+  phone?: string;
+  company?: string | null;
+  client_type?: string;
+  status?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ClientsService {
   private apiUrl: string;
@@ -51,6 +60,14 @@ export class ClientsService {
 
   createClient(data: ClientCreate): Observable<ClientSummary> {
     return this.http.post<ClientSummary>(`${this.apiUrl}/clients/`, data);
+  }
+
+  updateClient(id: number, data: ClientUpdate): Observable<ClientSummary> {
+    return this.http.put<ClientSummary>(`${this.apiUrl}/clients/${id}`, data);
+  }
+
+  deleteClient(id: number): Observable<{message: string}> {
+    return this.http.delete<{message: string}>(`${this.apiUrl}/clients/${id}`);
   }
 }
 

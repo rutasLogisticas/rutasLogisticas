@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_db, get_vehicle_service
 from app.services.vehicle_service import VehicleService
-from app.schemas.vehicle_schemas import VehicleCreate, VehicleResponse, VehicleSummary
+from app.schemas.vehicle_schemas import VehicleCreate, VehicleUpdate, VehicleResponse, VehicleSummary
 
 router = APIRouter(prefix="/vehicles", tags=["vehicles"])
 
@@ -58,6 +58,55 @@ async def get_vehicle(
         if not vehicle:
             raise HTTPException(status_code=404, detail="Vehículo no encontrado")
         return vehicle
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
+
+
+@router.put("/{vehicle_id}", response_model=VehicleResponse)
+async def update_vehicle(
+    vehicle_id: int,
+    vehicle_data: VehicleUpdate,
+    db: Session = Depends(get_db),
+    vehicle_service: VehicleService = Depends(get_vehicle_service)
+):
+    """Actualiza un vehículo"""
+    try:
+        # Verificar que el vehículo existe
+        existing_vehicle = vehicle_service.get_by_id(db, vehicle_id)
+        if not existing_vehicle:
+            raise HTTPException(status_code=404, detail="Vehículo no encontrado")
+        
+        # Actualizar solo los campos proporcionados
+        update_data = vehicle_data.model_dump(exclude_unset=True)
+        updated_vehicle = vehicle_service.update(db, vehicle_id, **update_data)
+        return updated_vehicle
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
+
+
+@router.delete("/{vehicle_id}")
+async def delete_vehicle(
+    vehicle_id: int,
+    db: Session = Depends(get_db),
+    vehicle_service: VehicleService = Depends(get_vehicle_service)
+):
+    """Elimina un vehículo (soft delete)"""
+    try:
+        # Verificar que el vehículo existe
+        existing_vehicle = vehicle_service.get_by_id(db, vehicle_id)
+        if not existing_vehicle:
+            raise HTTPException(status_code=404, detail="Vehículo no encontrado")
+        
+        # Realizar eliminación lógica
+        success = vehicle_service.delete(db, vehicle_id)
+        if success:
+            return {"message": "Vehículo eliminado exitosamente"}
+        else:
+            raise HTTPException(status_code=500, detail="Error al eliminar el vehículo")
     except HTTPException:
         raise
     except Exception as e:

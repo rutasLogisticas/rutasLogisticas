@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ClientsService, ClientSummary, ClientCreate } from '../../services/clients';
+import { ClientsService, ClientSummary, ClientCreate, ClientUpdate } from '../../services/clients';
 
 @Component({
   selector: 'app-clientes',
@@ -16,6 +16,8 @@ export class ClientesComponent {
   loading = false;
   error: string | null = null;
   companyFilter = '';
+  editingClient: ClientSummary | null = null;
+  isEditing = false;
 
   form: ClientCreate = {
     name: '',
@@ -98,6 +100,68 @@ export class ClientesComponent {
       status: 'activo',
       is_active: true
     };
+    this.isEditing = false;
+    this.editingClient = null;
+  }
+
+  editClient(client: ClientSummary) {
+    this.editingClient = client;
+    this.isEditing = true;
+    this.form = {
+      name: client.name,
+      email: client.email,
+      phone: client.phone,
+      company: client.company || '',
+      client_type: client.client_type,
+      status: client.status,
+      is_active: client.is_active
+    };
+  }
+
+  updateClient() {
+    if (!this.editingClient || !this.form.name || !this.form.email || !this.form.phone) {
+      this.error = 'Completa los campos obligatorios';
+      return;
+    }
+    
+    this.error = null;
+    const updateData: ClientUpdate = {
+      name: this.form.name,
+      email: this.form.email,
+      phone: this.form.phone,
+      company: this.form.company,
+      client_type: this.form.client_type,
+      status: this.form.status
+    };
+
+    this.clientsService.updateClient(this.editingClient.id, updateData).subscribe({
+      next: (updated) => {
+        const index = this.clients.findIndex(c => c.id === updated.id);
+        if (index !== -1) {
+          this.clients[index] = updated;
+        }
+        this.resetForm();
+      },
+      error: (err) => {
+        this.error = err?.error?.detail || 'No se pudo actualizar el cliente';
+      }
+    });
+  }
+
+  deleteClient(client: ClientSummary) {
+    if (confirm(`¿Estás seguro de que quieres eliminar al cliente ${client.name}?`)) {
+      this.clientsService.deleteClient(client.id).subscribe({
+        next: () => {
+          this.clients = this.clients.filter(c => c.id !== client.id);
+          if (this.selected?.id === client.id) {
+            this.selected = null;
+          }
+        },
+        error: (err) => {
+          this.error = err?.error?.detail || 'No se pudo eliminar el cliente';
+        }
+      });
+    }
   }
 }
 
