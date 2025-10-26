@@ -3,9 +3,18 @@ from app.models.users import User
 from app.schemas.users_schemas import UserCreate
 from passlib.context import CryptContext
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Configurar bcrypt con límite de rounds más bajo para evitar problemas
+pwd_context = CryptContext(
+    schemes=["bcrypt"], 
+    deprecated="auto",
+    bcrypt__rounds=12,
+    bcrypt__ident="2b"
+)
 
 def get_password_hash(password: str):
+    # Truncar password si es muy largo (límite de bcrypt es 72 bytes)
+    if len(password.encode('utf-8')) > 72:
+        password = password[:72]
     return pwd_context.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str):
@@ -27,3 +36,4 @@ def get_user_by_username(db: Session, username: str):
 
 def get_users(db: Session):
     return db.query(User).all()
+

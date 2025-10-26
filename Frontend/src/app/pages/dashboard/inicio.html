@@ -1,0 +1,103 @@
+<div class="homepage-container">
+  <!-- HERO SECTION -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Rutas Logísticas Inteligentes</h1>
+      <p class="hero-subtitle">
+        Optimiza tus rutas de entrega con tecnología avanzada de geolocalización y gestión integral
+      </p>
+      <div class="hero-features">
+        <div class="feature-item">
+          <div class="feature-icon">🚚</div>
+          <span>Gestión de Vehículos</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">👥</div>
+          <span>Control de Conductores</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">📍</div>
+          <span>Geolocalización Precisa</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🏢</div>
+          <span>Gestión de Clientes</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GEOLOCATION PREVIEW SECTION -->
+  <section class="geolocation-preview">
+    <div class="container">
+      <h2 class="section-title">Geolocalización Inteligente</h2>
+      <p class="section-subtitle">Encuentra ubicaciones, calcula rutas y optimiza tus entregas con tecnología de mapas avanzada</p>
+      
+      <div class="preview-features">
+        <div class="preview-feature">
+          <div class="preview-icon">🔍</div>
+          <h3>Búsqueda Precisa</h3>
+          <p>Encuentra cualquier dirección con geocodificación automática</p>
+        </div>
+        <div class="preview-feature">
+          <div class="preview-icon">📍</div>
+          <h3>Geolocalización</h3>
+          <p>Obtén tu ubicación actual con un solo clic</p>
+        </div>
+        <div class="preview-feature">
+          <div class="preview-icon">🗺️</div>
+          <h3>Mapas Interactivos</h3>
+          <p>Visualiza ubicaciones en mapas de alta calidad y responsivos</p>
+        </div>
+      </div>
+
+      <div class="preview-cta">
+        <button class="btn-primary btn-large" (click)="navigateToMap()">
+          <i class="fas fa-map"></i> Explorar Mapa
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES SECTION -->
+  <section class="features-section">
+    <div class="container">
+      <h2 class="section-title">Características Principales</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🗺️</div>
+          <h3>Mapas Interactivos</h3>
+          <p>Visualiza ubicaciones y rutas con mapas responsivos y de alta calidad</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Gestión Integral</h3>
+          <p>Administra clientes, conductores, vehículos y direcciones desde una sola plataforma</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Optimización de Rutas</h3>
+          <p>Calcula las rutas más eficientes para reducir tiempos y costos de transporte</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>Responsive Design</h3>
+          <p>Accede desde cualquier dispositivo con una interfaz adaptada a móviles y tablets</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA SECTION -->
+  <section class="cta-section">
+    <div class="container">
+      <h2>¿Listo para optimizar tus rutas?</h2>
+      <p>Comienza a gestionar tus operaciones logísticas de manera inteligente</p>
+      <div class="cta-buttons">
+        <button class="btn-primary btn-large" (click)="navigateToMap()">Ver Mapa</button>
+        <button class="btn-secondary btn-large" (click)="navigateToClients()">Gestionar Clientes</button>
+        <button class="btn-secondary btn-large" (click)="navigateToVehicles()">Gestionar Vehículos</button>
+      </div>
+    </div>
+  </section>
+</div>

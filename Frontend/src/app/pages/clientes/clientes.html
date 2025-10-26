@@ -1,0 +1,101 @@
+<div class="page-content">
+  <h2>Clientes</h2>
+
+  <div *ngIf="error" class="error-text">{{ error }}</div>
+
+  <div class="panel clientes-grid">
+    <div>
+      <h3 style="margin-top:0">{{ isEditing ? 'Editar cliente' : 'Crear cliente' }}</h3>
+      <form (ngSubmit)="isEditing ? updateClient() : submit()" #clientForm="ngForm" class="clientes-form">
+        <label>Nombre
+          <input name="name" [(ngModel)]="form.name" required />
+        </label>
+        <label>Email
+          <input name="email" type="email" [(ngModel)]="form.email" required />
+        </label>
+        <label>Teléfono
+          <input name="phone" [(ngModel)]="form.phone" required />
+        </label>
+        <label>Empresa
+          <input name="company" [(ngModel)]="form.company" />
+        </label>
+        <label>Tipo
+          <select name="client_type" [(ngModel)]="form.client_type">
+            <option value="individual">Individual</option>
+            <option value="empresa">Empresa</option>
+          </select>
+        </label>
+        <label>Estado
+          <select name="status" [(ngModel)]="form.status">
+            <option value="activo">Activo</option>
+            <option value="inactivo">Inactivo</option>
+            <option value="suspendido">Suspendido</option>
+          </select>
+        </label>
+        <label style="display:flex; align-items:center; gap:8px">
+          <input type="checkbox" name="is_active" [(ngModel)]="form.is_active" /> Activo
+        </label>
+
+        <div class="clientes-actions">
+          <button type="submit">{{ isEditing ? 'Actualizar' : 'Crear' }}</button>
+          <button type="button" (click)="resetForm()">{{ isEditing ? 'Cancelar' : 'Limpiar' }}</button>
+        </div>
+      </form>
+    </div>
+
+    <div>
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px">
+        <h3 style="margin-top:0">Listado</h3>
+        <div style="display:flex; gap:8px; align-items:center">
+          <input placeholder="Filtrar por empresa" [(ngModel)]="companyFilter" (keyup.enter)="filterByCompany()" />
+          <button type="button" (click)="filterByCompany()">Filtrar</button>
+        </div>
+        <span *ngIf="loading">Cargando…</span>
+      </div>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Empresa</th>
+              <th>Tipo</th>
+              <th>Estado</th>
+              <th>Activo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of clients" (click)="select(c)" style="cursor:pointer">
+              <td>{{ c.name }}</td>
+              <td>{{ c.email }}</td>
+              <td>{{ c.phone }}</td>
+              <td>{{ c.company || '-' }}</td>
+              <td>{{ c.client_type }}</td>
+              <td>{{ c.status }}</td>
+              <td>{{ c.is_active ? 'Sí' : 'No' }}</td>
+              <td>
+                <button type="button" (click)="editClient(c); $event.stopPropagation()" class="btn-edit">Editar</button>
+                <button type="button" (click)="deleteClient(c); $event.stopPropagation()" class="btn-delete">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="selected" class="panel" style="margin-top:12px">
+        <h3 style="margin-top:0">Detalle</h3>
+        <div><strong>Nombre:</strong> {{ selected.name }}</div>
+        <div><strong>Email:</strong> {{ selected.email }}</div>
+        <div><strong>Teléfono:</strong> {{ selected.phone }}</div>
+        <div><strong>Empresa:</strong> {{ selected.company || '-' }}</div>
+        <div><strong>Tipo:</strong> {{ selected.client_type }}</div>
+        <div><strong>Estado:</strong> {{ selected.status }}</div>
+        <div><strong>Activo:</strong> {{ selected.is_active ? 'Sí' : 'No' }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

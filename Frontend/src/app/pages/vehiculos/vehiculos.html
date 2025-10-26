@@ -1,0 +1,97 @@
+<div class="page-content">
+  <h2>Vehículos</h2>
+
+  <div *ngIf="error" class="error-text">{{ error }}</div>
+
+  <div class="panel vehiculos-grid">
+    <div>
+      <h3 style="margin-top:0">{{ isEditing ? 'Editar vehículo' : 'Crear vehículo' }}</h3>
+      <form (ngSubmit)="isEditing ? updateVehicle() : submit()" #vehForm="ngForm" class="vehiculos-form">
+        <label>Placa
+          <input name="license_plate" [(ngModel)]="form.license_plate" required />
+        </label>
+        <label>Marca
+          <input name="brand" [(ngModel)]="form.brand" required />
+        </label>
+        <label>Modelo
+          <input name="model" [(ngModel)]="form.model" required />
+        </label>
+        <label>Año
+          <input name="year" type="number" [(ngModel)]="form.year" min="1900" max="2100" />
+        </label>
+        <label>Tipo
+          <select name="vehicle_type" [(ngModel)]="form.vehicle_type">
+            <option value="camioneta">Camioneta</option>
+            <option value="furgon">Furgón</option>
+            <option value="camion">Camión</option>
+            <option value="moto">Moto</option>
+          </select>
+        </label>
+        <label>Estado
+          <select name="status" [(ngModel)]="form.status">
+            <option value="disponible">Disponible</option>
+            <option value="en_ruta">En ruta</option>
+            <option value="mantenimiento">Mantenimiento</option>
+          </select>
+        </label>
+        <label style="display:flex; align-items:center; gap:8px">
+          <input type="checkbox" name="is_available" [(ngModel)]="form.is_available" /> Disponible
+        </label>
+
+        <div class="vehiculos-actions">
+          <button type="submit">{{ isEditing ? 'Actualizar' : 'Crear' }}</button>
+          <button type="button" (click)="resetForm()">{{ isEditing ? 'Cancelar' : 'Limpiar' }}</button>
+        </div>
+      </form>
+    </div>
+
+    <div>
+      <div style="display:flex; justify-content:space-between; align-items:center">
+        <h3 style="margin-top:0">Listado</h3>
+        <span *ngIf="loading">Cargando…</span>
+      </div>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Placa</th>
+              <th>Marca</th>
+              <th>Modelo</th>
+              <th>Año</th>
+              <th>Tipo</th>
+              <th>Estado</th>
+              <th>Disponible</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let v of vehicles" (click)="select(v)" style="cursor:pointer">
+              <td>{{ v.license_plate }}</td>
+              <td>{{ v.brand }}</td>
+              <td>{{ v.model }}</td>
+              <td>{{ v.year }}</td>
+              <td>{{ v.vehicle_type }}</td>
+              <td>{{ v.status }}</td>
+              <td>{{ v.is_available ? 'Sí' : 'No' }}</td>
+              <td>
+                <button type="button" (click)="editVehicle(v); $event.stopPropagation()" class="btn-edit">Editar</button>
+                <button type="button" (click)="deleteVehicle(v); $event.stopPropagation()" class="btn-delete">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="selected" class="panel" style="margin-top:12px">
+        <h3 style="margin-top:0">Detalle</h3>
+        <div><strong>Placa:</strong> {{ selected.license_plate }}</div>
+        <div><strong>Marca:</strong> {{ selected.brand }}</div>
+        <div><strong>Modelo:</strong> {{ selected.model }}</div>
+        <div><strong>Año:</strong> {{ selected.year }}</div>
+        <div><strong>Tipo:</strong> {{ selected.vehicle_type }}</div>
+        <div><strong>Estado:</strong> {{ selected.status }}</div>
+        <div><strong>Disponible:</strong> {{ selected.is_available ? 'Sí' : 'No' }}</div>
+      </div>
+    </div>
+  </div>
+</div>

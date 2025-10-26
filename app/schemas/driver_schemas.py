@@ -16,6 +16,16 @@ class DriverCreate(BaseModel):
     status: str = "disponible"
 
 
+class DriverUpdate(BaseModel):
+    """Schema para actualizar conductores"""
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    license_type: Optional[str] = None
+    status: Optional[str] = None
+
+
 class DriverResponse(BaseModel):
     """Schema para respuesta de conductores"""
     id: int

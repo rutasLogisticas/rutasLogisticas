@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_db, get_address_service
 from app.services.address_service import AddressService
-from app.schemas.address_schemas import AddressCreate, AddressResponse, AddressSummary
+from app.schemas.address_schemas import AddressCreate, AddressUpdate, AddressResponse, AddressSummary
 
 router = APIRouter(prefix="/addresses", tags=["addresses"])
 
@@ -99,5 +99,64 @@ async def get_addresses_by_city(
     try:
         addresses = address_service.get_by_city(db, city)
         return addresses
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
+
+
+@router.put("/{address_id}", response_model=AddressResponse)
+async def update_address(
+    address_id: int,
+    address_data: AddressUpdate,
+    db: Session = Depends(get_db),
+    address_service: AddressService = Depends(get_address_service)
+):
+    """Actualiza una dirección"""
+    try:
+        # Verificar que la dirección existe
+        existing_address = address_service.get_by_id(db, address_id)
+        if not existing_address:
+            raise HTTPException(status_code=404, detail="Dirección no encontrada")
+        
+        # Si se está marcando como principal, desmarcar otras direcciones del mismo cliente
+        if address_data.is_primary is True:
+            from app.repositories.address_repository import AddressRepository
+            address_repo = AddressRepository()
+            existing_addresses = address_repo.get_by_client_id(db, existing_address.client_id)
+            for addr in existing_addresses:
+                if addr.id != address_id:
+                    addr.is_primary = False
+            db.commit()
+        
+        # Actualizar solo los campos proporcionados
+        update_data = address_data.model_dump(exclude_unset=True)
+        updated_address = address_service.update(db, address_id, **update_data)
+        return updated_address
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
+
+
+@router.delete("/{address_id}")
+async def delete_address(
+    address_id: int,
+    db: Session = Depends(get_db),
+    address_service: AddressService = Depends(get_address_service)
+):
+    """Elimina una dirección (soft delete)"""
+    try:
+        # Verificar que la dirección existe
+        existing_address = address_service.get_by_id(db, address_id)
+        if not existing_address:
+            raise HTTPException(status_code=404, detail="Dirección no encontrada")
+        
+        # Realizar eliminación lógica
+        success = address_service.delete(db, address_id)
+        if success:
+            return {"message": "Dirección eliminada exitosamente"}
+        else:
+            raise HTTPException(status_code=500, detail="Error al eliminar la dirección")
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail="Error interno del servidor")
