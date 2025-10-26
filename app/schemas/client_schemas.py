@@ -15,6 +15,16 @@ class ClientCreate(BaseModel):
     status: str = "activo"
 
 
+class ClientUpdate(BaseModel):
+    """Schema para actualizar clientes"""
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    company: Optional[str] = None
+    client_type: Optional[str] = None
+    status: Optional[str] = None
+
+
 class ClientResponse(BaseModel):
     """Schema para respuesta de clientes"""
     id: int

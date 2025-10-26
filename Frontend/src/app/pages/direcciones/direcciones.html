@@ -5,8 +5,8 @@
 
   <div class="panel direcciones-grid">
     <div>
-      <h3 style="margin-top:0">Crear dirección</h3>
-      <form (ngSubmit)="submit()" #addrForm="ngForm" class="direcciones-form">
+      <h3 style="margin-top:0">{{ isEditing ? 'Editar dirección' : 'Crear dirección' }}</h3>
+      <form (ngSubmit)="isEditing ? updateAddress() : submit()" #addrForm="ngForm" class="direcciones-form">
         <label>ID Cliente
           <input name="client_id" type="number" [(ngModel)]="form.client_id" required />
         </label>
@@ -37,8 +37,8 @@
         </label>
 
         <div class="direcciones-actions">
-          <button type="submit">Crear</button>
-          <button type="button" (click)="resetForm()">Limpiar</button>
+          <button type="submit">{{ isEditing ? 'Actualizar' : 'Crear' }}</button>
+          <button type="button" (click)="resetForm()">{{ isEditing ? 'Cancelar' : 'Limpiar' }}</button>
         </div>
       </form>
     </div>
@@ -65,6 +65,7 @@
               <th>País</th>
               <th>Tipo</th>
               <th>Principal</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -77,6 +78,10 @@
               <td>{{ a.country }}</td>
               <td>{{ a.address_type }}</td>
               <td>{{ a.is_primary ? 'Sí' : 'No' }}</td>
+              <td>
+                <button type="button" (click)="editAddress(a); $event.stopPropagation()" class="btn-edit">Editar</button>
+                <button type="button" (click)="deleteAddress(a); $event.stopPropagation()" class="btn-delete">Eliminar</button>
+              </td>
             </tr>
           </tbody>
         </table>

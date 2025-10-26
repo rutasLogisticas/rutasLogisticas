@@ -1,39 +1,36 @@
 <div class="app-shell">
-  <aside class="sidebar" [class.collapsed]="!menuOpen">
-    <div class="brand">
+  <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+  <header class="top-navbar">
+    <div class="navbar-brand">
       <img src="/img/logo.jpg" alt="logo" class="brand-img"/>
       <h1>RUTAS LOGISTICAS</h1>
     </div>
 
-    <button class="menu-btn" (click)="toggleMenu()" aria-label="Toggle menu">☰</button>
+    <!-- MENÚ DE NAVEGACIÓN -->
+    <nav class="navbar-menu">
+      <ul class="nav-list">
+        <li><a routerLink="inicio" routerLinkActive="active"><i class="fas fa-home"></i> Inicio</a></li>
+        <li><a routerLink="mapa" routerLinkActive="active"><i class="fas fa-map"></i> Mapa</a></li>
+        <li><a routerLink="clientes" routerLinkActive="active"><i class="fas fa-users"></i> Clientes</a></li>
+        <li><a routerLink="vehiculos" routerLinkActive="active"><i class="fas fa-truck"></i> Vehículos</a></li>
+        <li><a routerLink="conductores" routerLinkActive="active"><i class="fas fa-id-card"></i> Conductores</a></li>
+        <li><a routerLink="direcciones" routerLinkActive="active"><i class="fas fa-map-marker-alt"></i> Direcciones</a></li>
+        <!-- <li><a routerLink="reportes" routerLinkActive="active"><i class="fas fa-chart-bar"></i> Reportes</a></li> -->
+      </ul>
+    </nav>
 
-<ul class="nav-list" *ngIf="menuOpen">
-  <li><a routerLink="inicio" routerLinkActive="active"><i class="fas fa-home"></i> Inicio</a></li>
-  <li><a routerLink="clientes" routerLinkActive="active"><i class="fas fa-users"></i> Clientes</a></li>
-  <li><a routerLink="vehiculos" routerLinkActive="active"><i class="fas fa-truck"></i> Vehículos</a></li>
-  <li><a routerLink="conductores" routerLinkActive="active"><i class="fas fa-id-card"></i> Conductores</a></li>
-  <li><a routerLink="direcciones" routerLinkActive="active"><i class="fas fa-map-marker-alt"></i> Direcciones</a></li>
-  <!--  <li><a routerLink="reportes" routerLinkActive="active"><i class="fas fa-chart-bar"></i> Reportes</a></li> -->
-</ul>
-
-
-  </aside>
-
-  <div class="main">
-    <header class="topbar">
-  <div class="topbar-right">
-    <div class="topbar-userbox">
-      <div class="topbar-userinfo">
+    <!-- ÁREA DE USUARIO -->
+    <div class="navbar-user">
+      <div class="user-info">
         <div class="profile">👤</div>
-        <div class="topbar-username" *ngIf="username">{{ username }}</div>
+        <div class="username" *ngIf="username">{{ username }}</div>
       </div>
-      <button type="button" (click)="logout()" class="topbar-logout">Salir</button>
+      <button type="button" (click)="logout()" class="logout-btn">Salir</button>
     </div>
-  </div>
-</header>
+  </header>
 
-    <section class="panel">
-      <router-outlet></router-outlet>
-    </section>
-  </div>
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
 </div>

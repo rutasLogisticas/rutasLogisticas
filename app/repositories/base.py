@@ -26,7 +26,7 @@ class BaseRepository(Generic[ModelType], ABC):
         """Crea un nuevo registro"""
         db_obj = self.model(**kwargs)
         db.add(db_obj)
-        db.flush()
+        db.commit()
         db.refresh(db_obj)
         return db_obj
     
@@ -58,7 +58,7 @@ class BaseRepository(Generic[ModelType], ABC):
                 setattr(db_obj, field, value)
         
         db.add(db_obj)
-        db.flush()
+        db.commit()
         db.refresh(db_obj)
         return db_obj
     
@@ -68,7 +68,7 @@ class BaseRepository(Generic[ModelType], ABC):
         if db_obj:
             db_obj.soft_delete()
             db.add(db_obj)
-            db.flush()
+            db.commit()
             return True
         return False
     
@@ -77,7 +77,7 @@ class BaseRepository(Generic[ModelType], ABC):
         db_obj = self.get_by_id(db, id)
         if db_obj:
             db.delete(db_obj)
-            db.flush()
+            db.commit()
             return True
         return False
     
@@ -140,7 +140,7 @@ class BaseRepository(Generic[ModelType], ABC):
             objects.append(obj)
         
         db.add_all(objects)
-        db.flush()
+        db.commit()
         
         for obj in objects:
             db.refresh(obj)

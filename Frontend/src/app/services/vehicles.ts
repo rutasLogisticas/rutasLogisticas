@@ -24,6 +24,14 @@ export interface VehicleCreate {
   is_available?: boolean;
 }
 
+export interface VehicleUpdate {
+  brand?: string;
+  model?: string;
+  year?: number;
+  vehicle_type?: string;
+  status?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class VehiclesService {
   private apiUrl: string;
@@ -47,6 +55,14 @@ export class VehiclesService {
 
   createVehicle(data: VehicleCreate): Observable<VehicleSummary> {
     return this.http.post<VehicleSummary>(`${this.apiUrl}/vehicles/`, data);
+  }
+
+  updateVehicle(id: number, data: VehicleUpdate): Observable<VehicleSummary> {
+    return this.http.put<VehicleSummary>(`${this.apiUrl}/vehicles/${id}`, data);
+  }
+
+  deleteVehicle(id: number): Observable<{message: string}> {
+    return this.http.delete<{message: string}>(`${this.apiUrl}/vehicles/${id}`);
   }
 }
 

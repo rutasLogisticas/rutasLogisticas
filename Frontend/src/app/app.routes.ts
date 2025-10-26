@@ -9,6 +9,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.DashboardComponent),
     children: [
       { path: 'inicio', loadComponent: () => import('./pages/dashboard/inicio').then(m => m.InicioComponent) },
+      { path: 'mapa', loadComponent: () => import('./pages/mapa/mapa').then(m => m.MapaComponent) },
       { path: 'vehiculos', loadComponent: () => import('./pages/vehiculos/vehiculos').then(m => m.VehiculosComponent) },
       { path: 'conductores', loadComponent: () => import('./pages/conductores/conductores').then(m => m.ConductoresComponent) },
       { path: 'direcciones', loadComponent: () => import('./pages/direcciones/direcciones').then(m => m.DireccionesComponent) },

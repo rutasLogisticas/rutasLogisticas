@@ -5,8 +5,8 @@
 
   <div class="panel conductores-grid">
     <div>
-      <h3 style="margin-top:0">Crear conductor</h3>
-      <form (ngSubmit)="submit()" #driverForm="ngForm" class="conductores-form">
+      <h3 style="margin-top:0">{{ isEditing ? 'Editar conductor' : 'Crear conductor' }}</h3>
+      <form (ngSubmit)="isEditing ? updateDriver() : submit()" #driverForm="ngForm" class="conductores-form">
         <label>Nombre
           <input name="first_name" [(ngModel)]="form.first_name" required />
         </label>
@@ -40,8 +40,8 @@
         </label>
 
         <div class="conductores-actions">
-          <button type="submit">Crear</button>
-          <button type="button" (click)="resetForm()">Limpiar</button>
+          <button type="submit">{{ isEditing ? 'Actualizar' : 'Crear' }}</button>
+          <button type="button" (click)="resetForm()">{{ isEditing ? 'Cancelar' : 'Limpiar' }}</button>
         </div>
       </form>
     </div>
@@ -68,6 +68,7 @@
               <th>Licencia</th>
               <th>Estado</th>
               <th>Disponible</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -80,6 +81,10 @@
               <td>{{ d.license_type }}</td>
               <td>{{ d.status }}</td>
               <td>{{ d.is_available ? 'Sí' : 'No' }}</td>
+              <td>
+                <button type="button" (click)="editDriver(d); $event.stopPropagation()" class="btn-edit">Editar</button>
+                <button type="button" (click)="deleteDriver(d); $event.stopPropagation()" class="btn-delete">Eliminar</button>
+              </td>
             </tr>
           </tbody>
         </table>

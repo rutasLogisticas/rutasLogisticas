@@ -10,12 +10,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./dashboard.css']
 })
 export class DashboardComponent {
-  menuOpen = true;
   username: string | null = null;
-
-  toggleMenu() {
-    this.menuOpen = !this.menuOpen;
-  }
 
   ngOnInit() {
     try {

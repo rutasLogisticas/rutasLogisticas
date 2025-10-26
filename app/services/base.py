@@ -28,7 +28,10 @@ class BaseService(Generic[T]):
     
     def update(self, db: Session, record_id: int, **kwargs) -> Optional[T]:
         """Actualiza un registro"""
-        return self.repository.update(db, record_id, **kwargs)
+        record = self.repository.get_by_id(db, record_id)
+        if record:
+            return self.repository.update(db, record, **kwargs)
+        return None
     
     def delete(self, db: Session, record_id: int) -> bool:
         """Elimina un registro"""
