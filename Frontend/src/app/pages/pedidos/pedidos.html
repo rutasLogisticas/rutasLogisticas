@@ -1,0 +1,259 @@
+<div class="orders-container">
+  <div class="header">
+    <h1>Gestión de Pedidos</h1>
+    <button class="btn btn-primary" (click)="showCreateForm()">
+      <i class="fas fa-plus"></i> Nuevo Pedido
+    </button>
+  </div>
+
+  <!-- Modal para formulario de pedido -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="cancelForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ editingOrder ? 'Editar Pedido' : 'Nuevo Pedido' }}</h3>
+        <button class="btn-close" (click)="cancelForm()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Mensaje de error -->
+        <div class="alert alert-danger" *ngIf="errorMessage">
+          <i class="fas fa-exclamation-triangle"></i>
+          {{ errorMessage }}
+        </div>
+
+        <!-- Mensaje de éxito -->
+        <div class="alert alert-success" *ngIf="successMessage">
+          <i class="fas fa-check-circle"></i>
+          {{ successMessage }}
+        </div>
+
+        <form (ngSubmit)="saveOrder()" class="order-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="client_id">Cliente *</label>
+              <select id="client_id" [(ngModel)]="newOrder.client_id" name="client_id" required>
+                <option value="">Seleccionar cliente</option>
+                <option *ngFor="let client of clients" [value]="client.id">
+                  {{ client.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="priority">Prioridad</label>
+              <select id="priority" [(ngModel)]="newOrder.priority" name="priority">
+                <option *ngFor="let priority of priorities" [value]="priority">
+                  {{ priority | titlecase }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="origin_address">Dirección de Origen *</label>
+              <input type="text" id="origin_address" [(ngModel)]="newOrder.origin_address" 
+                     name="origin_address" required placeholder="Ej: Calle 100 #15-20">
+            </div>
+
+            <div class="form-group">
+              <label for="destination_address">Dirección de Destino *</label>
+              <input type="text" id="destination_address" [(ngModel)]="newOrder.destination_address" 
+                     name="destination_address" required placeholder="Ej: Carrera 7 #32-10">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="origin_city">Ciudad de Origen *</label>
+              <input type="text" id="origin_city" [(ngModel)]="newOrder.origin_city" 
+                     name="origin_city" required placeholder="Ej: Bogotá">
+            </div>
+
+            <div class="form-group">
+              <label for="destination_city">Ciudad de Destino *</label>
+              <input type="text" id="destination_city" [(ngModel)]="newOrder.destination_city" 
+                     name="destination_city" required placeholder="Ej: Medellín">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Descripción del Pedido *</label>
+            <textarea id="description" [(ngModel)]="newOrder.description" 
+                      name="description" required rows="3" 
+                      placeholder="Describe el contenido del pedido"></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="weight">Peso (kg)</label>
+              <input type="number" id="weight" [(ngModel)]="newOrder.weight" 
+                     name="weight" step="0.1" min="0" placeholder="0.0">
+            </div>
+
+            <div class="form-group">
+              <label for="volume">Volumen (m³)</label>
+              <input type="number" id="volume" [(ngModel)]="newOrder.volume" 
+                     name="volume" step="0.1" min="0" placeholder="0.0">
+            </div>
+
+            <div class="form-group">
+              <label for="value">Valor ($)</label>
+              <input type="number" id="value" [(ngModel)]="newOrder.value" 
+                     name="value" step="0.01" min="0" placeholder="0.00">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="driver_id">Conductor</label>
+              <select id="driver_id" [(ngModel)]="newOrder.driver_id" name="driver_id">
+                <option value="">Sin asignar</option>
+                <option *ngFor="let driver of drivers" [value]="driver.id">
+                  {{ driver.first_name }} {{ driver.last_name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="vehicle_id">Vehículo</label>
+              <select id="vehicle_id" [(ngModel)]="newOrder.vehicle_id" name="vehicle_id">
+                <option value="">Sin asignar</option>
+                <option *ngFor="let vehicle of vehicles" [value]="vehicle.id">
+                  {{ vehicle.brand }} {{ vehicle.model }} ({{ vehicle.license_plate }})
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="delivery_date">Fecha de Entrega</label>
+            <input type="datetime-local" id="delivery_date" [(ngModel)]="newOrder.delivery_date" 
+                   name="delivery_date">
+          </div>
+
+          <div class="form-group">
+            <label for="notes">Notas</label>
+            <textarea id="notes" [(ngModel)]="newOrder.notes" 
+                      name="notes" rows="2" 
+                      placeholder="Notas adicionales sobre el pedido"></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+              <i class="fas fa-spinner fa-spin" *ngIf="isLoading"></i>
+              <i class="fas fa-save" *ngIf="!isLoading"></i>
+              {{ isLoading ? 'Guardando...' : (editingOrder ? 'Actualizar' : 'Crear') }} Pedido
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="cancelForm()" [disabled]="isLoading">
+              <i class="fas fa-times"></i> Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de pedidos -->
+  <div class="orders-list">
+    <div class="list-header">
+      <h3>Lista de Pedidos ({{ orders.length }})</h3>
+    </div>
+
+    <div class="table-container">
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Número</th>
+            <th>Cliente</th>
+            <th>Origen</th>
+            <th>Destino</th>
+            <th>Conductor</th>
+            <th>Vehículo</th>
+            <th>Estado</th>
+            <th>Prioridad</th>
+            <th>Fecha Entrega</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of orders" class="order-row">
+            <td>
+              <strong>{{ order.order_number }}</strong>
+              <br>
+              <small class="text-muted">{{ order.tracking_code || 'Sin código' }}</small>
+            </td>
+            <td>{{ getClientName(order.client_id) }}</td>
+            <td>
+              <div class="address-info">
+                <strong>{{ order.origin_city }}</strong>
+                <br>
+                <small>{{ order.origin_address }}</small>
+              </div>
+            </td>
+            <td>
+              <div class="address-info">
+                <strong>{{ order.destination_city }}</strong>
+                <br>
+                <small>{{ order.destination_address }}</small>
+              </div>
+            </td>
+            <td>{{ getDriverName(order.driver_id) }}</td>
+            <td>{{ getVehicleName(order.vehicle_id) }}</td>
+            <td>
+              <div class="status-container">
+                <select (change)="onStatusChange(order.id, $event)" 
+                        [ngModel]="order.status" 
+                        [disabled]="isUpdatingStatus(order.id)"
+                        class="status-select">
+                  <option *ngFor="let status of statuses" [value]="status">
+                    {{ status | titlecase }}
+                  </option>
+                </select>
+                <i class="fas fa-spinner fa-spin status-loading" 
+                   *ngIf="isUpdatingStatus(order.id)"></i>
+              </div>
+            </td>
+            <td>
+              <span class="priority-badge priority-{{ order.priority }}">
+                {{ order.priority | titlecase }}
+              </span>
+            </td>
+            <td>
+              <span *ngIf="getDeliveryDateInfo(order).showDate">
+                <strong>{{ getDeliveryDateInfo(order).label }}:</strong><br>
+                {{ getDeliveryDateInfo(order).date | date:'short' }}
+              </span>
+              <span *ngIf="!getDeliveryDateInfo(order).showDate" class="text-muted">
+                {{ getDeliveryDateInfo(order).label }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn btn-sm btn-outline-primary" 
+                        (click)="showEditForm(order)" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" 
+                        (click)="deleteOrder(order)" title="Eliminar">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="orders.length === 0" class="empty-state">
+      <i class="fas fa-box-open"></i>
+      <h4>No hay pedidos registrados</h4>
+      <p>Crea tu primer pedido para comenzar</p>
+      <button class="btn btn-primary" (click)="showCreateForm()">
+        <i class="fas fa-plus"></i> Crear Pedido
+      </button>
+    </div>
+  </div>
+</div>

@@ -45,18 +45,98 @@ export class ApiService {
     return this.http.get(`${this.apiUrl}/drivers`);
   }
 
+  getDriver(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/drivers/${id}`);
+  }
+
+  createDriver(driver: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/drivers`, driver);
+  }
+
+  updateDriver(id: number, driver: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/drivers/${id}`, driver);
+  }
+
+  deleteDriver(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/drivers/${id}`);
+  }
+
   // Clientes
   getClients(): Observable<any> {
     return this.http.get(`${this.apiUrl}/clients`);
   }
 
-  // Direcciones
-  getAddresses(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/addresses`);
+  getClient(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/clients/${id}`);
+  }
+
+  createClient(client: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/clients`, client);
+  }
+
+  updateClient(id: number, client: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/clients/${id}`, client);
+  }
+
+  deleteClient(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/clients/${id}`);
   }
 
   // Usuarios
   getUsers(): Observable<any> {
     return this.http.get(`${this.apiUrl}/users`);
+  }
+
+  // Pedidos
+  getOrders(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/orders`);
+  }
+
+  getOrder(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/orders/${id}`);
+  }
+
+  createOrder(order: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/orders`, order);
+  }
+
+  updateOrder(id: number, order: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/orders/${id}`, order);
+  }
+
+  deleteOrder(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/orders/${id}`);
+  }
+
+  getOrdersByClient(clientId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/orders/client/${clientId}`);
+  }
+
+  getOrdersByDriver(driverId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/orders/driver/${driverId}`);
+  }
+
+  getOrdersByVehicle(vehicleId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/orders/vehicle/${vehicleId}`);
+  }
+
+  getOrdersByStatus(status: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/orders/status/${status}`);
+  }
+
+  getUnassignedOrders(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/orders/unassigned/list`);
+  }
+
+  getOrderByTracking(trackingCode: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/orders/tracking/${trackingCode}`);
+  }
+
+  assignOrderToRoute(orderId: number, assignment: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/orders/${orderId}/assign`, assignment);
+  }
+
+  updateOrderStatus(orderId: number, status: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/orders/${orderId}/status?status=${status}`, {});
   }
 }

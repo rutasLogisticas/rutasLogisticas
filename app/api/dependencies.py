@@ -4,13 +4,12 @@ Dependencias simples para la API
 from typing import Generator
 from sqlalchemy.orm import Session
 from fastapi import Depends
-from app.core.database import SessionLocal
 
 from app.core.database import db_manager
 from app.services.vehicle_service import VehicleService
 from app.services.driver_service import DriverService
 from app.services.client_service import ClientService
-from app.services.address_service import AddressService
+from app.services.order_service import OrderService
 
 
 def get_db() -> Generator[Session, None, None]:
@@ -34,16 +33,6 @@ def get_client_service() -> ClientService:
     return ClientService()
 
 
-def get_address_service() -> AddressService:
-    """Dependency para obtener servicio de direcciones"""
-    return AddressService()
-
-
-def get_db():
-
-    """Dependency para inicio y cierre de sesion"""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+def get_order_service() -> OrderService:
+    """Dependency para obtener servicio de pedidos"""
+    return OrderService()

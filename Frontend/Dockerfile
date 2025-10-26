@@ -1,6 +1,11 @@
 # Dockerfile para Frontend Angular
 FROM node:20-alpine
 
+# Configurar variables de entorno para UTF-8
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV PYTHONIOENCODING=utf-8
+
 # Establecer directorio de trabajo
 WORKDIR /app
 

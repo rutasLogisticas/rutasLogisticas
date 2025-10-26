@@ -25,7 +25,7 @@ class Config:
     @classmethod
     def get_database_url(cls) -> str:
         """URL de conexión a la base de datos"""
-        return f"mysql+pymysql://{cls.DB_USER}:{cls.DB_PASSWORD}@{cls.DB_HOST}:{cls.DB_PORT}/{cls.DB_NAME}"
+        return f"mysql+pymysql://{cls.DB_USER}:{cls.DB_PASSWORD}@{cls.DB_HOST}:{cls.DB_PORT}/{cls.DB_NAME}?charset=utf8mb4&use_unicode=1"
 
 
 # Instancia global
