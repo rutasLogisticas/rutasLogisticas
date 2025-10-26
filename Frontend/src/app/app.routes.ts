@@ -12,8 +12,8 @@ export const routes: Routes = [
       { path: 'mapa', loadComponent: () => import('./pages/mapa/mapa').then(m => m.MapaComponent) },
       { path: 'vehiculos', loadComponent: () => import('./pages/vehiculos/vehiculos').then(m => m.VehiculosComponent) },
       { path: 'conductores', loadComponent: () => import('./pages/conductores/conductores').then(m => m.ConductoresComponent) },
-      { path: 'direcciones', loadComponent: () => import('./pages/direcciones/direcciones').then(m => m.DireccionesComponent) },
       { path: 'clientes', loadComponent: () => import('./pages/clientes/clientes').then(m => m.ClientesComponent) },
+      { path: 'pedidos', loadComponent: () => import('./pages/pedidos/pedidos').then(m => m.OrdersComponent) },
       { path: 'reportes', loadComponent: () => import('./pages/reportes/reportes').then(m => m.ReportesComponent) }
     ]
   }

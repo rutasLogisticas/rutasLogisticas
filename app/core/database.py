@@ -27,7 +27,12 @@ class DatabaseManager:
         self.engine = create_engine(
             database_url,
             pool_pre_ping=True,
-            echo=config.DEBUG
+            echo=config.DEBUG,
+            connect_args={
+                "charset": "utf8mb4",
+                "use_unicode": True,
+                "init_command": "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
+            }
         )
         
         self.SessionLocal = sessionmaker(
