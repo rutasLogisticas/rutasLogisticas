@@ -1,9 +1,8 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
+import { ApiService } from './api';
 
-export interface VehicleSummary {
+export interface Vehicle {
   id: number;
   license_plate: string;
   brand: string;
@@ -12,58 +11,38 @@ export interface VehicleSummary {
   vehicle_type: string;
   status: string;
   is_available: boolean;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface VehicleCreate {
-  license_plate: string;
-  brand: string;
-  model: string;
-  year: number;
-  vehicle_type: string;
-  status?: string;
-  is_available?: boolean;
-}
+export type VehicleSummary = Vehicle;
+export type VehicleCreate = Partial<Vehicle>;
+export type VehicleUpdate = Partial<Vehicle>;
 
-export interface VehicleUpdate {
-  brand?: string;
-  model?: string;
-  year?: number;
-  vehicle_type?: string;
-  status?: string;
-}
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class VehiclesService {
-  private apiUrl: string;
+  constructor(private apiService: ApiService) {}
 
-  constructor(
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {
-    this.apiUrl = isPlatformBrowser(this.platformId) 
-      ? 'http://localhost:8000/api/v1'
-      : 'http://app:8000/api/v1';
+  getVehicles(): Observable<Vehicle[]> {
+    return this.apiService.getVehicles();
   }
 
-  getVehicles(): Observable<VehicleSummary[]> {
-    return this.http.get<VehicleSummary[]>(`${this.apiUrl}/vehicles/`);
+  getVehicle(id: number): Observable<Vehicle> {
+    return this.apiService.getVehicle(id);
   }
 
-  getVehicle(id: number): Observable<VehicleSummary> {
-    return this.http.get<VehicleSummary>(`${this.apiUrl}/vehicles/${id}`);
+  createVehicle(vehicle: VehicleCreate): Observable<Vehicle> {
+    return this.apiService.createVehicle(vehicle);
   }
 
-  createVehicle(data: VehicleCreate): Observable<VehicleSummary> {
-    return this.http.post<VehicleSummary>(`${this.apiUrl}/vehicles/`, data);
+  updateVehicle(id: number, vehicle: VehicleUpdate): Observable<Vehicle> {
+    return this.apiService.updateVehicle(id, vehicle);
   }
 
-  updateVehicle(id: number, data: VehicleUpdate): Observable<VehicleSummary> {
-    return this.http.put<VehicleSummary>(`${this.apiUrl}/vehicles/${id}`, data);
-  }
-
-  deleteVehicle(id: number): Observable<{message: string}> {
-    return this.http.delete<{message: string}>(`${this.apiUrl}/vehicles/${id}`);
+  deleteVehicle(id: number): Observable<void> {
+    return this.apiService.deleteVehicle(id);
   }
 }
-
-

@@ -10,7 +10,7 @@ import asyncio
 
 from app.core.config import config
 from app.core.database import db_manager
-from app.api.routes import userses, vehicles, drivers, clients, addresses, geocoding
+from app.api.routes import userses, vehicles, drivers, clients, geocoding, orders
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
@@ -45,29 +45,44 @@ async def lifespan(app: FastAPI):
 # Crear aplicación FastAPI
 app = FastAPI(
     title="Rutas Logísticas API",
-    description="API para gestión de vehículos, conductores, clientes y direcciones",
+    description="API para gestión de vehículos, conductores, clientes y pedidos",
     version="1.0.0",
     docs_url="/docs",
     lifespan=lifespan
 )
 
-# Configurar CORS
+# Configurar CORS ANTES de incluir las rutas
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # En producción, especificar dominios exactos
+    allow_origins=[
+        "http://localhost:4200",
+        "http://127.0.0.1:4200",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000"
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=[
+        "Accept",
+        "Accept-Language",
+        "Content-Language",
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "Origin",
+        "Access-Control-Request-Method",
+        "Access-Control-Request-Headers",
+    ],
+    expose_headers=["*"],
 )
-
 
 # Incluir rutas de la API
 app.include_router(vehicles.router, prefix="/api/v1")
 app.include_router(drivers.router, prefix="/api/v1")
 app.include_router(clients.router, prefix="/api/v1")
-app.include_router(addresses.router, prefix="/api/v1")
 app.include_router(userses.router, prefix="/api/v1")
 app.include_router(geocoding.router, prefix="/api/v1")
+app.include_router(orders.router, prefix="/api/v1")
 
 
 

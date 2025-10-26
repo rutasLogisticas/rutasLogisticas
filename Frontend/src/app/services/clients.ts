@@ -1,74 +1,51 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
+import { ApiService } from './api';
 
-export interface ClientSummary {
+export interface Client {
   id: number;
   name: string;
   email: string;
   phone: string;
-  company?: string | null;
+  company?: string;
   client_type: string;
   status: string;
   is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface ClientCreate {
-  name: string;
-  email: string;
-  phone: string;
-  company?: string | null;
-  client_type?: string;
-  status?: string;
-  is_active?: boolean;
-}
+export type ClientSummary = Client;
+export type ClientCreate = Partial<Client>;
+export type ClientUpdate = Partial<Client>;
 
-export interface ClientUpdate {
-  name?: string;
-  email?: string;
-  phone?: string;
-  company?: string | null;
-  client_type?: string;
-  status?: string;
-}
-
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class ClientsService {
-  private apiUrl: string;
+  constructor(private apiService: ApiService) {}
 
-  constructor(
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {
-    this.apiUrl = isPlatformBrowser(this.platformId) 
-      ? 'http://localhost:8000/api/v1'
-      : 'http://app:8000/api/v1';
+  getClients(): Observable<Client[]> {
+    return this.apiService.getClients();
   }
 
-  getClients(): Observable<ClientSummary[]> {
-    return this.http.get<ClientSummary[]>(`${this.apiUrl}/clients/`);
+  getClient(id: number): Observable<Client> {
+    return this.apiService.getClient(id);
   }
 
-  getClientsByCompany(company: string): Observable<ClientSummary[]> {
-    return this.http.get<ClientSummary[]>(`${this.apiUrl}/clients/company/${encodeURIComponent(company)}`);
+  createClient(client: ClientCreate): Observable<Client> {
+    return this.apiService.createClient(client);
   }
 
-  getClient(id: number): Observable<ClientSummary> {
-    return this.http.get<ClientSummary>(`${this.apiUrl}/clients/${id}`);
+  updateClient(id: number, client: ClientUpdate): Observable<Client> {
+    return this.apiService.updateClient(id, client);
   }
 
-  createClient(data: ClientCreate): Observable<ClientSummary> {
-    return this.http.post<ClientSummary>(`${this.apiUrl}/clients/`, data);
+  deleteClient(id: number): Observable<void> {
+    return this.apiService.deleteClient(id);
   }
 
-  updateClient(id: number, data: ClientUpdate): Observable<ClientSummary> {
-    return this.http.put<ClientSummary>(`${this.apiUrl}/clients/${id}`, data);
-  }
-
-  deleteClient(id: number): Observable<{message: string}> {
-    return this.http.delete<{message: string}>(`${this.apiUrl}/clients/${id}`);
+  getClientsByCompany(company: string): Observable<Client[]> {
+    return this.apiService.getClients();
   }
 }
-
-
