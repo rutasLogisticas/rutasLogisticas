@@ -18,18 +18,20 @@
           <input name="password" [(ngModel)]="password" type="password" placeholder="Contraseña" required />
         </div>
 
-        <button type="submit" class="btn-login" [disabled]="loading">{{ loading ? 'Ingresando…' : 'LOGIN' }}</button>
+        <button type="submit" class="btn-login" [disabled]="loading">
+          {{ loading ? 'Ingresando…' : 'LOGIN' }}
+        </button>
       </form>
 
       <div class="options">
-        <a routerLink="/register">Forgot password?</a>
-        <p>Don't have an account? <a routerLink="/register">Register here</a></p>
+        <a routerLink="/recover">¿Olvidaste tu contraseña?</a>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <a routerLink="/register">¿No tienes cuenta? Regístrate</a>
       </div>
 
       <div class="terms">
         <a href="#">Terms of use.</a> <a href="#">Privacy policy</a>
       </div>
-      
-         </div>
-      </div>
     </div>
+  </div>
+</div>

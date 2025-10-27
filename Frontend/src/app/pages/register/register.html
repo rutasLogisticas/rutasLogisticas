@@ -1,48 +1,67 @@
 <div class="login-container">
   <div class="login-card">
+    <!-- Imagen izquierda -->
     <div class="login-image">
-      <img src="/img/login-photo.jpg" alt="Register Image">
+      <img src="/img/login-photo.jpg" alt="Register Image" />
     </div>
 
+    <!-- Formulario derecho -->
     <div class="login-form">
-      <h2 class="logo">🔶 Registro</h2>
-      <h3>Crea tu cuenta</h3>
+      <div class="form-inner">
+        <h2 class="logo">🔶 Logotipo</h2>
+        <h3>Crea tu cuenta</h3>
 
-      <form (ngSubmit)="onSubmit()">
-        <div class="form-group">
-          <input 
-            type="text" 
-            [(ngModel)]="username" 
-            name="username"
-            placeholder="Nombre de usuario" 
-            required 
-          />
-        </div>
-        <div class="form-group">
-          <input 
-            type="password" 
-            [(ngModel)]="password" 
-            name="password"
-            placeholder="Contraseña" 
-            required 
-          />
-        </div>
-        <div class="form-group">
-          <input 
-            type="password" 
-            [(ngModel)]="confirmPassword" 
-            name="confirmPassword"
-            placeholder="Confirmar contraseña" 
-          />
+        <form (ngSubmit)="onSubmit()" #formRef="ngForm">
+          <div class="form-group">
+            <input name="username" [(ngModel)]="username" placeholder="Usuario" required />
+          </div>
+
+          <div class="form-group">
+            <input name="password" [(ngModel)]="password" type="password" placeholder="Contraseña" required />
+          </div>
+
+          <div class="form-group">
+            <input name="confirmPassword" [(ngModel)]="confirmPassword" type="password" placeholder="Confirmar contraseña" required />
+          </div>
+
+          <hr />
+
+          <h4 class="section-title">Preguntas de seguridad</h4>
+
+          <div class="form-group">
+            <label>¿Cuál es el nombre de tu primera mascota?</label>
+            <input
+              name="security_answer1"
+              [(ngModel)]="security_answer1"
+              placeholder="Respuesta 1"
+              required
+            />
+          </div>
+
+          <!-- Pregunta 2 fija -->
+          <div class="form-group">
+            <label>¿En qué ciudad naciste?</label>
+            <input
+              name="security_answer2"
+              [(ngModel)]="security_answer2"
+              placeholder="Respuesta 2"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn-login" [disabled]="loading">
+            {{ loading ? 'Creando cuenta...' : 'Registrar cuenta' }}
+          </button>
+
+        </form>
+
+        <div class="options">
+          <a (click)="router.navigate(['/login'])">← Volver al inicio de sesión</a>
         </div>
 
-        <button type="submit" class="btn-login" [disabled]="loading">
-          {{ loading ? 'Creando cuenta...' : 'Crear cuenta' }}
-        </button>
-      </form>
-
-      <div class="options">
-        <p>¿Ya tienes cuenta? <a routerLink="/login">Iniciar sesión</a></p>
+        <div class="terms">
+          <a href="#">Condiciones de uso</a> · <a href="#">Política de privacidad</a>
+        </div>
       </div>
     </div>
   </div>

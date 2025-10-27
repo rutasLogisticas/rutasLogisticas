@@ -1,0 +1,87 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-image">
+      <img src="/img/login-photo.jpg" alt="Recover Image" />
+    </div>
+
+    <div class="login-form">
+      <div class="form-inner">
+        <h2 class="logo">🔶 Logotipo</h2>
+        <h3>Recuperar contraseña</h3>
+
+        <!-- 🔹 Paso 1: Usuario -->
+        <form *ngIf="step === 1" (ngSubmit)="startRecovery()">
+          <div class="form-group">
+            <input
+              name="username"
+              [(ngModel)]="username"
+              placeholder="Usuario"
+              required
+            />
+          </div>
+          <button type="submit" class="btn-login" [disabled]="loading">
+            {{ loading ? 'Buscando...' : 'Continuar' }}
+          </button>
+        </form>
+
+        <!-- 🔹 Paso 2: Preguntas de seguridad fijas -->
+        <form *ngIf="step === 2" (ngSubmit)="verifyAnswers()">
+          <div class="form-group">
+            <label>¿Nombre de tu primera mascota?</label>
+            <input
+              name="answer1"
+              [(ngModel)]="answer1"
+              placeholder="Respuesta 1"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>¿Ciudad donde naciste?</label>
+            <input
+              name="answer2"
+              [(ngModel)]="answer2"
+              placeholder="Respuesta 2"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn-login" [disabled]="loading">
+            {{ loading ? 'Verificando...' : 'Verificar respuestas' }}
+          </button>
+        </form>
+
+        <!-- 🔹 Paso 3: Nueva contraseña -->
+        <form *ngIf="step === 3" (ngSubmit)="resetPassword()">
+          <div class="form-group">
+            <input
+              type="password"
+              name="newPassword"
+              [(ngModel)]="newPassword"
+              placeholder="Nueva contraseña"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <input
+              type="password"
+              name="confirmPassword"
+              [(ngModel)]="confirmPassword"
+              placeholder="Confirmar contraseña"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn-login" [disabled]="loading">
+            {{ loading ? 'Guardando...' : 'Cambiar contraseña' }}
+          </button>
+        </form>
+
+        <div class="options">
+          <a routerLink="/login">Volver al inicio de sesión</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

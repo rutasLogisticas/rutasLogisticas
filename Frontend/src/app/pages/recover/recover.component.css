@@ -1,26 +1,31 @@
-/* Fondo general */
+/* Fondo y estructura general (igual que register) */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #cc7b45; /* fondo vinotinto */
+  min-height: 100vh;
+  background-color: #cc7b45;
+  overflow: hidden;
 }
 
-/* Tarjeta principal */
 .login-card {
   display: flex;
+  flex-direction: row;
   width: 900px;
-  height: 500px;
+  max-height: 90vh;
   background-color: #2e2e2e;
   border-radius: 20px;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  scrollbar-width: thin;
+  scrollbar-color: #555 #2e2e2e;
 }
 
-/* Imagen del lado izquierdo */
 .login-image {
   flex: 1;
+  min-width: 45%;
+  background-color: #1e1e1e;
 }
 
 .login-image img {
@@ -29,14 +34,13 @@
   object-fit: cover;
 }
 
-/* Formulario del lado derecho */
 .login-form {
   flex: 1;
   padding: 60px;
   color: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .login-form h2.logo {
@@ -48,9 +52,10 @@
 .login-form h3 {
   margin-bottom: 30px;
   color: #ccc;
+  text-align: left;
 }
 
-/* Campos de formulario */
+/* Inputs */
 .form-group {
   margin-bottom: 20px;
 }
@@ -65,7 +70,7 @@ input {
   font-size: 15px;
 }
 
-/* Botón login */
+/* Botón principal */
 .btn-login {
   width: 100%;
   padding: 12px;
@@ -82,34 +87,21 @@ input {
   background-color: #444;
 }
 
-/* Enlaces y opciones */
+/* Enlace inferior */
 .options {
-  margin-top: 15px;
-  font-size: 14px;
+  margin-top: 20px;
   text-align: center;
+  font-size: 14px;
 }
 
 .options a {
   color: #6aa3ff;
   text-decoration: none;
+  border: none;
 }
 
 .options a:hover {
   text-decoration: underline;
 }
 
-.terms {
-  margin-top: 30px;
-  font-size: 13px;
-  color: #aaa;
-  text-align: center;
-}
 
-.terms a {
-  color: #aaa;
-  text-decoration: none;
-}
-
-.terms a:hover {
-  text-decoration: underline;
-}
