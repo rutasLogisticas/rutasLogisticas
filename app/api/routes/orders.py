@@ -12,7 +12,8 @@ from sqlalchemy.orm import Session
 from app.api.dependencies import get_db, get_order_service
 from app.services.order_service import OrderService
 from app.schemas.order_schemas import (
-    OrderCreate, OrderUpdate, OrderResponse, OrderSummary, OrderWithDetails, OrderAssignment
+    OrderCreate, OrderUpdate, OrderResponse, OrderSummary, OrderWithDetails, OrderAssignment,
+    OrderRouteResponse, MultipleOrderRoutesRequest
 )
 
 router = APIRouter(prefix="/orders", tags=["orders"])
@@ -223,3 +224,63 @@ async def update_order_status(
     if not order:
         raise HTTPException(status_code=404, detail="Pedido no encontrado")
     return order
+
+
+@router.get("/{order_id}/route", response_model=OrderRouteResponse)
+async def get_order_route(
+    order_id: int,
+    mode: str = Query("driving", description="Modo de transporte: driving, walking, bicycling, transit"),
+    db: Session = Depends(get_db),
+    order_service: OrderService = Depends(get_order_service)
+):
+    """Obtiene la ruta calculada para un pedido específico"""
+    try:
+        route_data = order_service.get_order_route(db, order_id, mode)
+        if not route_data:
+            raise HTTPException(status_code=404, detail="Pedido no encontrado")
+        return route_data
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al calcular ruta: {str(e)}")
+
+
+@router.post("/batch-routes", response_model=List[OrderRouteResponse])
+async def get_multiple_order_routes(
+    request: MultipleOrderRoutesRequest,
+    db: Session = Depends(get_db),
+    order_service: OrderService = Depends(get_order_service)
+):
+    """Calcula rutas para múltiples pedidos simultáneamente"""
+    try:
+        routes = order_service.get_multiple_order_routes(db, request.order_ids, request.mode)
+        if not routes:
+            raise HTTPException(status_code=404, detail="No se encontraron pedidos válidos")
+        return routes
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al calcular rutas: {str(e)}")
+
+
+@router.get("/driver/{driver_id}/routes", response_model=List[OrderRouteResponse])
+async def get_driver_routes(
+    driver_id: int,
+    mode: str = Query("driving", description="Modo de transporte"),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=20),
+    db: Session = Depends(get_db),
+    order_service: OrderService = Depends(get_order_service)
+):
+    """Obtiene rutas de todos los pedidos asignados a un conductor"""
+    try:
+        # Obtener pedidos del conductor
+        orders = order_service.get_by_driver(db, driver_id, skip, limit)
+        if not orders:
+            raise HTTPException(status_code=404, detail="No se encontraron pedidos para este conductor")
+        
+        # Calcular rutas para cada pedido
+        order_ids = [order.id for order in orders]
+        routes = order_service.get_multiple_order_routes(db, order_ids, mode)
+        
+        return routes
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener rutas del conductor: {str(e)}")

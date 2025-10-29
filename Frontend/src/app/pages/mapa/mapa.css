@@ -490,3 +490,321 @@
     font-size: 0.85rem;
   }
 }
+
+/* === SECCIÓN DE PEDIDOS === */
+.orders-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.orders-section h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.2rem;
+  border-bottom: 2px solid #28a745;
+  padding-bottom: 8px;
+}
+
+/* === SELECTOR DE MODO DE TRANSPORTE === */
+.route-mode-selector {
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.route-mode-selector label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.route-mode-selector select {
+  margin-top: 5px;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background: white;
+  font-size: 0.9rem;
+}
+
+/* === LISTA DE PEDIDOS === */
+.orders-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 15px;
+}
+
+.order-item {
+  padding: 12px;
+  margin-bottom: 8px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.order-item:hover {
+  background: #f8f9fa;
+  border-color: #007bff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+}
+
+.order-item.selected {
+  background: #e3f2fd;
+  border-color: #2196f3;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.order-number {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.order-status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.order-route {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+}
+
+.origin, .destination {
+  color: #333;
+  font-weight: 500;
+}
+
+.arrow {
+  margin: 0 8px;
+  color: #666;
+  font-weight: bold;
+}
+
+.order-priority {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* === INFORMACIÓN DE RUTA === */
+.route-info {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  border: 1px solid #e9ecef;
+}
+
+.route-info h4 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 8px;
+}
+
+.route-details {
+  margin-bottom: 15px;
+}
+
+.detail-item {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.detail-item strong {
+  color: #495057;
+}
+
+/* === PUNTOS DE RUTA === */
+.route-points {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 10px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.route-point {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.origin-point {
+  background: #e3f2fd;
+  border-left: 4px solid #2196f3;
+}
+
+.destination-point {
+  background: #e8f5e8;
+  border-left: 4px solid #4caf50;
+}
+
+.point-marker {
+  font-size: 1.5rem;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.origin-marker {
+  color: #2196f3;
+}
+
+.destination-marker {
+  color: #4caf50;
+}
+
+.point-info {
+  flex: 1;
+}
+
+.point-info strong {
+  display: block;
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.point-address {
+  font-size: 0.9rem;
+  color: #333;
+  line-height: 1.3;
+}
+
+/* === PASOS DE LA RUTA === */
+.route-steps {
+  border-top: 1px solid #dee2e6;
+  padding-top: 15px;
+}
+
+.route-steps h5 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 1rem;
+}
+
+.steps-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.step-item {
+  display: flex;
+  margin-bottom: 10px;
+  padding: 8px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.step-number {
+  background: #007bff;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-instruction {
+  font-size: 0.85rem;
+  color: #333;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.step-details {
+  display: flex;
+  gap: 15px;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.step-distance, .step-duration {
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* === CONTROLES DE RUTA === */
+.route-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.route-controls button {
+  flex: 1;
+  min-width: 120px;
+}
+
+/* === INDICADOR DE CARGA DE RUTA === */
+.route-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.loading-content {
+  text-align: center;
+  color: #333;
+}
+
+.loading-spinner {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
