@@ -36,6 +36,7 @@ class VerifyAnswersIn(BaseModel):
 
 class ResetPasswordIn(BaseModel):
     token: str
+    username: str
     new_password: str
 
 # Este es el que usarás como response_model

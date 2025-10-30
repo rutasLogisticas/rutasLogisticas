@@ -50,12 +50,13 @@ export class AuthService {
 }
 
   // 🔹 Paso 3: Restablecer contraseña con token temporal
-  recoveryReset(token: string, newPassword: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/userses/recovery/reset`, {
-      token,
-      new_password: newPassword,
-    });
-  }
+  recoveryReset(token: string, newPassword: string, username: string): Observable<any> {
+  return this.http.post(`${this.apiUrl}/userses/recovery/reset`, {
+    token,
+    username,           // ✅ <-- Este campo es obligatorio
+    new_password: newPassword
+  });
+}
   // 🔹 Método simplificado para compatibilidad
   recoverPassword(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/userses/recovery`, data);

@@ -21,7 +21,8 @@ export class RecoverComponent {
   newPassword = '';
   confirmPassword = '';
   loading = false;
-  tempToken = '';
+  tempToken: string = '';
+  token: string = 'token-fijo';
 
   constructor(private auth: AuthService, private router: Router) {}
 
@@ -77,7 +78,7 @@ export class RecoverComponent {
     }
 
     this.loading = true;
-    this.auth.recoveryReset('token-fijo', this.newPassword).subscribe({
+    this.auth.recoveryReset(this.token, this.newPassword, this.username).subscribe({
       next: () => {
         alert('Contraseña actualizada correctamente');
         this.router.navigate(['/login']);

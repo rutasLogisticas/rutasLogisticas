@@ -124,5 +124,7 @@ INSERT INTO orders (order_number, client_id, driver_id, vehicle_id, origin_addre
 
 -- 01_add_security_questions.sql
 ALTER TABLE users
+  ADD COLUMN security_question1 VARCHAR(255),
   ADD COLUMN security_answer1_hash VARCHAR(255),
+  ADD COLUMN security_question2 VARCHAR(255),  
   ADD COLUMN security_answer2_hash VARCHAR(255);

@@ -4,9 +4,10 @@ from app.schemas.users_schemas import UserCreate
 from passlib.context import CryptContext
 from app.core.security import get_password_hash, hash_answer, verify_answer
 from passlib.context import CryptContext
+from app.core.security import pwd_context
 
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12, bcrypt__ident="2b")
+
 
 def create_user(db: Session, user: UserCreate):
     db_user = User(
@@ -25,10 +26,6 @@ def create_user(db: Session, user: UserCreate):
 def get_user_by_username(db: Session, username: str):
     return db.query(User).filter(User.username == username).first()
 
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verifica si la contraseña en texto plano coincide con el hash almacenado."""
-    return pwd_context.verify(plain_password, hashed_password)
 
 def get_users(db: Session):
     return db.query(User).all()
@@ -54,11 +51,17 @@ def verify_security_answers(db: Session, username: str, answers: list[str]) -> b
     return True
 
 def update_password(db: Session, username: str, new_password: str):
-    u = get_user_by_username(db, username)
-    if not u:
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
         return None
-    u.password_hash = get_password_hash(new_password)
-    db.add(u)
+
+    # Genera el hash seguro de la nueva contraseña
+    hashed = get_password_hash(new_password)
+    user.password_hash = hashed
+
+    # ✅ No uses db.add(user); el objeto ya está en la sesión
     db.commit()
-    db.refresh(u)
-    return u
+    db.refresh(user)
+
+    return user
+
