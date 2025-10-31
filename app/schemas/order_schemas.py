@@ -4,7 +4,7 @@ Esquemas de Pedidos para el sistema de rutas logísticas
 Este módulo define los esquemas Pydantic para validación y serialización
 de datos relacionados con pedidos.
 """
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from decimal import Decimal
 from pydantic import BaseModel, Field, field_validator, model_validator
@@ -126,3 +126,19 @@ class OrderAssignment(BaseModel):
     driver_id: int = Field(..., description="ID del conductor")
     vehicle_id: int = Field(..., description="ID del vehículo")
     tracking_code: Optional[str] = Field(None, description="Código de seguimiento personalizado")
+
+
+class OrderRouteResponse(BaseModel):
+    """Esquema que combina información del pedido con la ruta calculada"""
+    order: OrderWithDetails
+    route: dict = Field(..., description="Información de la ruta calculada")
+    estimated_delivery_time: Optional[datetime] = Field(None, description="Tiempo estimado de entrega")
+    route_distance: Optional[str] = Field(None, description="Distancia total de la ruta")
+    route_duration: Optional[str] = Field(None, description="Duración estimada de la ruta")
+    polyline: Optional[str] = Field(None, description="Polyline para mostrar en el mapa")
+
+
+class MultipleOrderRoutesRequest(BaseModel):
+    """Esquema para solicitar rutas de múltiples pedidos"""
+    order_ids: List[int] = Field(..., min_items=1, max_items=10, description="Lista de IDs de pedidos")
+    mode: Optional[str] = Field("driving", description="Modo de transporte: driving, walking, bicycling, transit")

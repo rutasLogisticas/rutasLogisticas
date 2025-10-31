@@ -11,6 +11,8 @@ from app.services.base import BaseService
 from app.models.order import Order
 from app.repositories.order_repository import OrderRepository
 from app.schemas.order_schemas import OrderCreate, OrderUpdate, OrderAssignment
+from app.services.directions_service import DirectionsService
+from app.services.geocoding_service import GeocodingService
 
 
 class OrderService(BaseService):
@@ -19,6 +21,8 @@ class OrderService(BaseService):
     def __init__(self):
         super().__init__()
         self.repository = OrderRepository()
+        self.directions_service = DirectionsService()
+        self.geocoding_service = GeocodingService()
     
     def create_order(self, db: Session, order_data: OrderCreate) -> Order:
         """Crea un nuevo pedido con número automático"""
@@ -195,3 +199,100 @@ class OrderService(BaseService):
             # Verificar que no exista
             if not self.repository.get_by_tracking_code(db, tracking_code):
                 return tracking_code
+    
+    def get_order_route(self, db: Session, order_id: int, mode: str = "driving") -> Optional[dict]:
+        """
+        Obtiene la ruta calculada para un pedido específico
+        
+        Args:
+            db: Sesión de base de datos
+            order_id: ID del pedido
+            mode: Modo de transporte (driving, walking, bicycling, transit)
+            
+        Returns:
+            Dict con información del pedido y su ruta calculada
+        """
+        try:
+            # Obtener el pedido con detalles
+            order_details = self.get_order_with_details(db, order_id)
+            if not order_details:
+                return None
+            
+            # Obtener las direcciones del pedido
+            origin_address = order_details["origin_address"]
+            destination_address = order_details["destination_address"]
+            
+            # Calcular la ruta usando DirectionsService
+            try:
+                route_response = self.directions_service.get_directions(
+                    origin_address, 
+                    destination_address, 
+                    mode
+                )
+            except Exception as e:
+                raise ValueError(f"Error calculando ruta: {str(e)}")
+            
+            # Calcular tiempo estimado de entrega
+            estimated_delivery_time = None
+            if order_details.get("delivery_date"):
+                # Si ya hay una fecha programada, usarla
+                estimated_delivery_time = order_details["delivery_date"]
+            else:
+                # Calcular basado en la duración de la ruta
+                from datetime import datetime, timedelta
+                duration_text = route_response.duration_text
+                # Extraer horas y minutos de la duración (formato: "2 horas 30 minutos")
+                import re
+                hours_match = re.search(r'(\d+)\s*hora', duration_text)
+                minutes_match = re.search(r'(\d+)\s*minuto', duration_text)
+                
+                hours = int(hours_match.group(1)) if hours_match else 0
+                minutes = int(minutes_match.group(1)) if minutes_match else 0
+                
+                estimated_delivery_time = datetime.now() + timedelta(hours=hours, minutes=minutes)
+            
+            # Combinar información del pedido con la ruta
+            order_route = {
+                "order": order_details,
+                "route": {
+                    "origin": route_response.origin,
+                    "destination": route_response.destination,
+                    "distance_text": route_response.distance_text,
+                    "duration_text": route_response.duration_text,
+                    "steps": [step.model_dump() for step in route_response.steps]
+                },
+                "estimated_delivery_time": estimated_delivery_time,
+                "route_distance": route_response.distance_text,
+                "route_duration": route_response.duration_text,
+                "polyline": route_response.polyline
+            }
+            
+            return order_route
+            
+        except Exception as e:
+            raise ValueError(f"Error al calcular ruta del pedido: {str(e)}")
+    
+    def get_multiple_order_routes(self, db: Session, order_ids: List[int], mode: str = "driving") -> List[dict]:
+        """
+        Obtiene rutas para múltiples pedidos
+        
+        Args:
+            db: Sesión de base de datos
+            order_ids: Lista de IDs de pedidos
+            mode: Modo de transporte
+            
+        Returns:
+            Lista de diccionarios con información de pedidos y sus rutas
+        """
+        routes = []
+        for order_id in order_ids:
+            try:
+                route = self.get_order_route(db, order_id, mode)
+                if route:
+                    routes.append(route)
+            except Exception as e:
+                # Log error pero continuar con otros pedidos
+                print(f"Error calculando ruta para pedido {order_id}: {str(e)}")
+                continue
+        
+        return routes
