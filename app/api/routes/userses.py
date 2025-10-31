@@ -7,6 +7,9 @@ from app.schemas.users_schemas import (
     RecoveryStartIn, SecurityQuestionsOut, VerifyAnswersIn, ResetPasswordIn
 )
 from app.core.security import create_reset_token, verify_reset_token, verify_password
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/userses", tags=["Usuarios"])
 service = UsersService()
@@ -18,11 +21,14 @@ service = UsersService()
 @router.post("/", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     try:
+        logger.info(f"Intentando crear usuario: {user.username}")
         return service.create_user(db, user)
     except ValueError as e:
+        logger.warning(f"Error de validación al crear usuario {user.username}: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
+        logger.error(f"Error en base de datos al crear usuario {user.username}: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
 
 
 # -------------------------------------------------
@@ -89,18 +95,31 @@ def recovery_verify(payload: VerifyAnswersIn, db: Session = Depends(get_db)):
 # -------------------------------------------------
 @router.post("/recovery/reset")
 def recovery_reset(payload: ResetPasswordIn, db: Session = Depends(get_db)):
-    # modo prueba:
-    if payload.token == "token-fijo":
-        username = payload.username  # <-- usa el username que mande el front
-    else:
-        try:
-            username = verify_reset_token(payload.token)
-        except Exception:
-            raise HTTPException(status_code=401, detail="Token inválido o vencido")
+    try:
+        # modo prueba:
+        if payload.token == "token-fijo":
+            username = payload.username  # <-- usa el username que mande el front
+        else:
+            try:
+                username = verify_reset_token(payload.token)
+            except Exception as e:
+                logger.warning(f"Token inválido para reset: {str(e)}")
+                raise HTTPException(status_code=401, detail="Token inválido o vencido")
 
-    updated = service.update_password(db, username, payload.new_password)
+        logger.info(f"Intentando resetear contraseña para usuario: {username}")
+        updated = service.update_password(db, username, payload.new_password)
 
-    if not updated:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        if not updated:
+            logger.warning(f"Usuario no encontrado para reset: {username}")
+            raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    return {"message": "Contraseña actualizada"}
+        logger.info(f"Contraseña actualizada exitosamente para usuario: {username}")
+        return {"message": "Contraseña actualizada"}
+    except HTTPException:
+        raise
+    except ValueError as e:
+        logger.warning(f"Error de validación en reset: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error inesperado en recovery/reset: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
