@@ -54,7 +54,7 @@ class DatabaseManager:
             session.commit()
         except Exception as e:
             session.rollback()
-            logger.error(f"Error en base de datos: {e}")
+            logger.error(f"Error en base de datos: {str(e)}", exc_info=True)
             raise
         finally:
             session.close()

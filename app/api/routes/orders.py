@@ -240,7 +240,17 @@ async def get_order_route(
             raise HTTPException(status_code=404, detail="Pedido no encontrado")
         return route_data
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        error_msg = str(e)
+        # Determinar el código de estado según el tipo de error
+        if "NOT_FOUND" in error_msg or "ZERO_RESULTS" in error_msg:
+            # Error de direcciones no encontradas - 422 (Unprocessable Entity)
+            raise HTTPException(status_code=422, detail=error_msg)
+        elif "REQUEST_DENIED" in error_msg or "OVER_QUERY_LIMIT" in error_msg:
+            # Error de API - 503 (Service Unavailable)
+            raise HTTPException(status_code=503, detail=error_msg)
+        else:
+            # Otros errores de validación - 400 (Bad Request)
+            raise HTTPException(status_code=400, detail=error_msg)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al calcular ruta: {str(e)}")
 

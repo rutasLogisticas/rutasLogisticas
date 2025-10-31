@@ -402,11 +402,33 @@ export class MapaComponent implements OnInit, OnDestroy {
         // Usar el nuevo método con geocodificación para mostrar ambos puntos
         await this.showRouteOnMapWithGeocoding(route);
         this.routeLoading = false;
+        this.error = null; // Limpiar errores anteriores
       },
       error: (err) => {
         console.error('Error cargando ruta:', err);
-        this.error = 'Error calculando ruta del pedido';
+        
+        // Mensajes de error más descriptivos según el tipo de error
+        let errorMessage = 'Error calculando ruta del pedido';
+        
+        if (err.status === 422) {
+          // Unprocessable Entity - Direcciones no encontradas
+          errorMessage = err.error?.detail || 'No se pudo encontrar una ruta entre las direcciones del pedido. Verifica que las direcciones sean válidas y completas.';
+        } else if (err.status === 503) {
+          // Service Unavailable - Problema con la API
+          errorMessage = err.error?.detail || 'Servicio de mapas temporalmente no disponible. Por favor intenta más tarde.';
+        } else if (err.status === 400) {
+          // Bad Request - Error de validación
+          errorMessage = err.error?.detail || 'Error al procesar la solicitud de ruta.';
+        } else if (err.status === 404) {
+          // Not Found - Pedido no existe
+          errorMessage = 'Pedido no encontrado';
+        } else if (err.error?.detail) {
+          errorMessage = err.error.detail;
+        }
+        
+        this.error = errorMessage;
         this.routeLoading = false;
+        this.orderRoute = null; // Limpiar ruta si hay error
       }
     });
   }
