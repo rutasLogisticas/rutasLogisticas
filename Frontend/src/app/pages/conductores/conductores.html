@@ -1,105 +1,152 @@
-<div class="page-content">
-  <h2>Conductores</h2>
+<div class="orders-container">
+  <!-- Encabezado -->
+  <div class="header">
+    <h1>Gestión de Conductores</h1>
+    <button class="btn btn-primary" (click)="showCreateForm()">
+      <i class="fas fa-plus"></i> Nuevo Conductor
+    </button>
+  </div>
 
-  <div *ngIf="error" class="error-text">{{ error }}</div>
+  <!-- Modal -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="cancelForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ isEditing ? 'Editar Conductor' : 'Nuevo Conductor' }}</h3>
+        <button class="btn-close" (click)="cancelForm()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
 
-  <div class="panel conductores-grid">
-    <div>
-      <h3 style="margin-top:0">{{ isEditing ? 'Editar conductor' : 'Crear conductor' }}</h3>
-      <form (ngSubmit)="isEditing ? updateDriver() : submit()" #driverForm="ngForm" class="conductores-form">
-        <label>Nombre
-          <input name="first_name" [(ngModel)]="form.first_name" required />
-        </label>
-        <label>Apellido
-          <input name="last_name" [(ngModel)]="form.last_name" required />
-        </label>
-        <label>Email
-          <input name="email" type="email" [(ngModel)]="form.email" required />
-        </label>
-        <label>Teléfono
-          <input name="phone" [(ngModel)]="form.phone" />
-        </label>
-        <label>Documento
-          <input name="document_number" [(ngModel)]="form.document_number" required />
-        </label>
-        <label>Licencia
-          <select name="license_type" [(ngModel)]="form.license_type">
-            <option value="A">A</option>
-            <option value="B">B</option>
-            <option value="C">C</option>
-          </select>
-        </label>
-        <label>Estado
-          <select name="status" [(ngModel)]="form.status">
-            <option value="disponible">Disponible</option>
-            <option value="en_ruta">En ruta</option>
-          </select>
-        </label>
-        <label style="display:flex; align-items:center; gap:8px">
-          <input type="checkbox" name="is_available" [(ngModel)]="form.is_available" /> Disponible
-        </label>
-
-        <div class="conductores-actions">
-          <button type="submit">{{ isEditing ? 'Actualizar' : 'Crear' }}</button>
-          <button type="button" (click)="resetForm()">{{ isEditing ? 'Cancelar' : 'Limpiar' }}</button>
+      <div class="modal-body">
+        <div class="alert alert-danger" *ngIf="errorMessage">
+          <i class="fas fa-exclamation-triangle"></i> {{ errorMessage }}
         </div>
-      </form>
-    </div>
-
-    <div>
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px">
-        <h3 style="margin-top:0">Listado</h3>
-        <div style="display:flex; gap:8px; align-items:center">
-          <label style="display:flex; gap:6px; align-items:center">
-            <input type="checkbox" [checked]="onlyAvailable" (change)="toggleAvailable()" /> Solo disponibles
-          </label>
+        <div class="alert alert-success" *ngIf="successMessage">
+          <i class="fas fa-check-circle"></i> {{ successMessage }}
         </div>
-        <span *ngIf="loading">Cargando…</span>
-      </div>
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Apellido</th>
-              <th>Email</th>
-              <th>Teléfono</th>
-              <th>Documento</th>
-              <th>Licencia</th>
-              <th>Estado</th>
-              <th>Disponible</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let d of drivers" (click)="select(d)" style="cursor:pointer">
-              <td>{{ d.first_name }}</td>
-              <td>{{ d.last_name }}</td>
-              <td>{{ d.email }}</td>
-              <td>{{ d.phone }}</td>
-              <td>{{ d.document_number }}</td>
-              <td>{{ d.license_type }}</td>
-              <td>{{ d.status }}</td>
-              <td>{{ d.is_available ? 'Sí' : 'No' }}</td>
-              <td>
-                <button type="button" (click)="editDriver(d); $event.stopPropagation()" class="btn-edit">Editar</button>
-                <button type="button" (click)="deleteDriver(d); $event.stopPropagation()" class="btn-delete">Eliminar</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
 
-      <div *ngIf="selected" class="panel" style="margin-top:12px">
-        <h3 style="margin-top:0">Detalle</h3>
-        <div><strong>Nombre:</strong> {{ selected.first_name }} {{ selected.last_name }}</div>
-        <div><strong>Email:</strong> {{ selected.email }}</div>
-        <div><strong>Teléfono:</strong> {{ selected.phone }}</div>
-        <div><strong>Documento:</strong> {{ selected.document_number }}</div>
-        <div><strong>Licencia:</strong> {{ selected.license_type }}</div>
-        <div><strong>Estado:</strong> {{ selected.status }}</div>
-        <div><strong>Disponible:</strong> {{ selected.is_available ? 'Sí' : 'No' }}</div>
-      </div>
-    </div>
+        <form (ngSubmit)="isEditing ? updateDriver() : submit()" class="order-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="first_name">Nombre *</label>
+              <input id="first_name" name="first_name" [(ngModel)]="form.first_name" required />
+            </div>
+            <div class="form-group">
+              <label for="last_name">Apellido *</label>
+              <input id="last_name" name="last_name" [(ngModel)]="form.last_name" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input id="email" name="email" type="email" [(ngModel)]="form.email" required />
+            </div>
+            <div class="form-group">
+              <label for="phone">Teléfono</label>
+              <input id="phone" name="phone" [(ngModel)]="form.phone" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="document_number">Documento *</label>
+              <input id="document_number" name="document_number" [(ngModel)]="form.document_number" required />
+            </div>
+            <div class="form-group">
+              <label for="license_type">Licencia</label>
+              <select id="license_type" name="license_type" [(ngModel)]="form.license_type">
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="status">Estado</label>
+              <select id="status" name="status" [(ngModel)]="form.status">
+                <option value="disponible">Disponible</option>
+                <option value="en_ruta">En ruta</option>
+              </select>
+            </div>
+            <div class="form-group checkbox-group">
+              <input type="checkbox" id="is_available" name="is_available" [(ngModel)]="form.is_available" />
+              <label for="is_available">Disponible</label>
+            </div>
+          </div>
+<div class="modal-actions">
+  <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+    <i class="fas fa-spinner fa-spin" *ngIf="isLoading"></i>
+    <i class="fas fa-save" *ngIf="!isLoading"></i>
+    {{ isLoading ? 'Guardando...' : (isEditing ? 'Actualizar' : 'Crear') }} Conductor
+  </button>
+  <button type="button" class="btn btn-secondary" (click)="cancelForm()" [disabled]="isLoading">
+    <i class="fas fa-times"></i> Cancelar
+  </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<!-- Lista de conductores -->
+<div class="orders-list">
+  <div class="list-header">
+    <h3>Lista de Conductores ({{ drivers.length }})</h3>
+  </div>
+
+  <div class="table-container">
+    <table class="orders-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Email</th>
+          <th>Teléfono</th>
+          <th>Documento</th>
+          <th>Licencia</th>
+          <th>Estado</th>
+          <th>Disponible</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let d of drivers" class="order-row">
+          <td>{{ d.first_name }}</td>
+          <td>{{ d.last_name }}</td>
+          <td>{{ d.email }}</td>
+          <td>{{ d.phone || '-' }}</td>
+          <td>{{ d.document_number || '-' }}</td>
+          <td>{{ d.license_type }}</td>
+          <td>{{ d.status }}</td>
+          <td>
+            <span class="priority-badge" [ngClass]="d.is_available ? 'priority-baja' : 'priority-alta'">
+              {{ d.is_available ? 'Sí' : 'No' }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn btn-sm btn-outline-primary" (click)="showEditForm(d)" title="Editar">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" (click)="deleteDriver(d)" title="Eliminar">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Estado vacío -->
+  <div *ngIf="drivers.length === 0" class="empty-state">
+    <i class="fas fa-id-card"></i>
+    <h4>No hay conductores registrados</h4>
+    <p>Crea tu primer conductor para comenzar</p>
+    <button class="btn btn-primary" (click)="showCreateForm()">
+      <i class="fas fa-plus"></i> Crear Conductor
+    </button>
   </div>
 </div>

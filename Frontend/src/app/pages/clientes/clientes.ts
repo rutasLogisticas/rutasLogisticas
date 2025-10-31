@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClientsService, ClientSummary, ClientCreate, ClientUpdate } from '../../services/clients';
@@ -8,16 +8,23 @@ import { ClientsService, ClientSummary, ClientCreate, ClientUpdate } from '../..
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './clientes.html',
-  styleUrl: './clientes.css'
+  styleUrls: ['./clientes.css']
 })
-export class ClientesComponent {
+export class ClientesComponent implements OnInit {
   clients: ClientSummary[] = [];
   selected: ClientSummary | null = null;
-  loading = false;
-  error: string | null = null;
-  companyFilter = '';
-  editingClient: ClientSummary | null = null;
+
+  // Estados
+  isLoading = false;
+  errorMessage: string = '';
+  successMessage: string = '';
+
+  // Modal
+  showModal = false;
   isEditing = false;
+  editingClient: ClientSummary | null = null;
+
+  companyFilter = '';
 
   form: ClientCreate = {
     name: '',
@@ -31,82 +38,39 @@ export class ClientesComponent {
 
   constructor(private clientsService: ClientsService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.load();
   }
 
-  load() {
-    this.loading = true;
-    this.error = null;
+  load(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
     this.clientsService.getClients().subscribe({
       next: (data) => {
         this.clients = data;
-        this.loading = false;
+        console.log('Clientes cargados:', this.clients);
+        this.isLoading = false;
       },
       error: () => {
-        this.error = 'No se pudieron cargar los clientes';
-        this.loading = false;
+        this.errorMessage = 'No se pudieron cargar los clientes';
+        this.isLoading = false;
       }
     });
   }
 
-  filterByCompany() {
-    if (!this.companyFilter) {
-      this.load();
-      return;
-    }
-    this.loading = true;
-    this.error = null;
-    this.clientsService.getClientsByCompany(this.companyFilter).subscribe({
-      next: (data) => {
-        this.clients = data;
-        this.loading = false;
-      },
-      error: () => {
-        this.error = 'No se pudieron filtrar los clientes';
-        this.loading = false;
-      }
-    });
-  }
-
-  select(client: ClientSummary) {
-    this.selected = client;
-  }
-
-  submit() {
-    if (!this.form.name || !this.form.email || !this.form.phone) {
-      this.error = 'Completa los campos obligatorios';
-      return;
-    }
-    this.error = null;
-    this.clientsService.createClient(this.form).subscribe({
-      next: (created) => {
-        this.clients = [created, ...this.clients];
-        this.resetForm();
-      },
-      error: (err) => {
-        this.error = err?.error?.detail || 'No se pudo crear el cliente';
-      }
-    });
-  }
-
-  resetForm() {
-    this.form = {
-      name: '',
-      email: '',
-      phone: '',
-      company: '',
-      client_type: 'individual',
-      status: 'activo',
-      is_active: true
-    };
+  // --- Modal ---
+  showCreateForm(): void {
     this.isEditing = false;
     this.editingClient = null;
+    this.resetForm();
+    this.showModal = true;
+    this.errorMessage = '';
+    this.successMessage = '';
   }
 
-  editClient(client: ClientSummary) {
-    this.editingClient = client;
+  showEditForm(client: ClientSummary): void {
     this.isEditing = true;
+    this.editingClient = client;
     this.form = {
       name: client.name,
       email: client.email,
@@ -116,15 +80,70 @@ export class ClientesComponent {
       status: client.status,
       is_active: client.is_active
     };
+    this.showModal = true;
+    this.errorMessage = '';
+    this.successMessage = '';
   }
 
-  updateClient() {
-    if (!this.editingClient || !this.form.name || !this.form.email || !this.form.phone) {
-      this.error = 'Completa los campos obligatorios';
+  cancelForm(): void {
+    this.showModal = false;
+    this.isEditing = false;
+    this.editingClient = null;
+    this.resetForm();
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.isLoading = false;
+  }
+
+  resetForm(): void {
+    this.form = {
+      name: '',
+      email: '',
+      phone: '',
+      company: '',
+      client_type: 'individual',
+      status: 'activo',
+      is_active: true
+    };
+  }
+
+  // --- CRUD ---
+  submit(): void {
+    if (!this.form.name || !this.form.email || !this.form.phone) {
+      this.errorMessage = 'Completa los campos obligatorios';
       return;
     }
-    
-    this.error = null;
+
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.clientsService.createClient(this.form).subscribe({
+      next: (created) => {
+        this.clients = [created, ...this.clients];
+        this.resetForm();
+        this.showModal = false;
+        this.isLoading = false;
+        this.successMessage = 'Cliente creado exitosamente';
+        setTimeout(() => (this.successMessage = ''), 3000);
+      },
+      error: (err) => {
+        this.errorMessage = err?.error?.detail || 'No se pudo crear el cliente';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  updateClient(): void {
+    if (!this.editingClient || !this.form.name || !this.form.email || !this.form.phone) {
+      this.errorMessage = 'Completa los campos obligatorios';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
     const updateData: ClientUpdate = {
       name: this.form.name,
       email: this.form.email,
@@ -141,14 +160,19 @@ export class ClientesComponent {
           this.clients[index] = updated;
         }
         this.resetForm();
+        this.showModal = false;
+        this.isLoading = false;
+        this.successMessage = 'Cliente actualizado exitosamente';
+        setTimeout(() => (this.successMessage = ''), 3000);
       },
       error: (err) => {
-        this.error = err?.error?.detail || 'No se pudo actualizar el cliente';
+        this.errorMessage = err?.error?.detail || 'No se pudo actualizar el cliente';
+        this.isLoading = false;
       }
     });
   }
 
-  deleteClient(client: ClientSummary) {
+  deleteClient(client: ClientSummary): void {
     if (confirm(`¿Estás seguro de que quieres eliminar al cliente ${client.name}?`)) {
       this.clientsService.deleteClient(client.id).subscribe({
         next: () => {
@@ -156,13 +180,13 @@ export class ClientesComponent {
           if (this.selected?.id === client.id) {
             this.selected = null;
           }
+          this.successMessage = 'Cliente eliminado exitosamente';
+          setTimeout(() => (this.successMessage = ''), 3000);
         },
         error: (err) => {
-          this.error = err?.error?.detail || 'No se pudo eliminar el cliente';
+          this.errorMessage = err?.error?.detail || 'No se pudo eliminar el cliente';
         }
       });
     }
   }
 }
-
-

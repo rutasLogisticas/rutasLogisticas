@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, FormsModule, SanitizeUrlPipe],
+  imports: [CommonModule, FormsModule],
   templateUrl: './inicio.html',
   styleUrls: ['./inicio.css']
 })
