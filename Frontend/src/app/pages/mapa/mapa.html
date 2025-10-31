@@ -85,6 +85,115 @@
         </div>
         <button (click)="clearHistory()" class="btn-clear btn-small">Limpiar historial</button>
       </div>
+
+      <!-- Sección de Rutas de Pedidos -->
+      <div class="orders-section">
+        <h3>Rutas de Pedidos</h3>
+        
+        <!-- Selector de modo de transporte -->
+        <div class="route-mode-selector" *ngIf="showRouteMode">
+          <label>
+            Modo de transporte:
+            <select [(ngModel)]="routeMode" (change)="changeRouteMode()">
+              <option value="driving">En vehículo</option>
+              <option value="walking">Caminando</option>
+              <option value="bicycling">En bicicleta</option>
+              <option value="transit">Transporte público</option>
+            </select>
+          </label>
+        </div>
+
+        <!-- Lista de pedidos -->
+        <div class="orders-list" *ngIf="orders.length > 0">
+          <div 
+            *ngFor="let order of orders" 
+            class="order-item"
+            [class.selected]="selectedOrderId === order.id"
+            (click)="selectOrder(order.id)"
+          >
+            <div class="order-header">
+              <span class="order-number">{{ order.order_number }}</span>
+              <span class="order-status" [style.background-color]="getStatusColor(order.status)">
+                {{ order.status }}
+              </span>
+            </div>
+            <div class="order-route">
+              <span class="origin">{{ order.origin_city }}</span>
+              <span class="arrow">→</span>
+              <span class="destination">{{ order.destination_city }}</span>
+            </div>
+            <div class="order-priority">
+              Prioridad: <strong>{{ order.priority }}</strong>
+            </div>
+          </div>
+        </div>
+
+          <!-- Información de la ruta seleccionada -->
+        <div *ngIf="orderRoute" class="route-info">
+          <h4>Información de la Ruta</h4>
+          
+          <!-- Indicadores visuales de origen y destino -->
+          <div class="route-points">
+            <div class="route-point origin-point">
+              <div class="point-marker origin-marker">📍</div>
+              <div class="point-info">
+                <strong>ORIGEN</strong>
+                <div class="point-address">{{ orderRoute.route.origin }}</div>
+              </div>
+            </div>
+            <div class="route-point destination-point">
+              <div class="point-marker destination-marker">🏁</div>
+              <div class="point-info">
+                <strong>DESTINO</strong>
+                <div class="point-address">{{ orderRoute.route.destination }}</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="route-details">
+            <div class="detail-item">
+              <strong>Distancia:</strong> {{ orderRoute.route_distance }}
+            </div>
+            <div class="detail-item">
+              <strong>Duración:</strong> {{ orderRoute.route_duration }}
+            </div>
+            <div class="detail-item" *ngIf="orderRoute.estimated_delivery_time">
+              <strong>Tiempo estimado de entrega:</strong> 
+              {{ orderRoute.estimated_delivery_time | date:'short' }}
+            </div>
+          </div>
+          
+          <!-- Pasos de la ruta -->
+          <div class="route-steps" *ngIf="orderRoute.route.steps.length > 0">
+            <h5>Pasos de la Ruta</h5>
+            <div class="steps-list">
+              <div *ngFor="let step of orderRoute.route.steps; let i = index" class="step-item">
+                <span class="step-number">{{ i + 1 }}</span>
+                <div class="step-content">
+                  <div class="step-instruction" [innerHTML]="step.instruction"></div>
+                  <div class="step-details">
+                    <span class="step-distance">{{ step.distance_text }}</span>
+                    <span class="step-duration">{{ step.duration_text }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controles de rutas -->
+        <div class="route-controls">
+          <button (click)="toggleRouteMode()" class="btn-primary">
+            {{ showRouteMode ? 'Ocultar' : 'Mostrar' }} Modo de Transporte
+          </button>
+          <button (click)="toggleMapProvider()" class="btn-secondary">
+            Cambiar a {{ useGoogleMaps ? 'OpenStreetMap' : 'Google Maps' }}
+          </button>
+          <button (click)="clearRoute()" class="btn-clear" [disabled]="!selectedOrderId">
+            Limpiar Ruta
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- CONTENEDOR DEL MAPA -->
@@ -97,23 +206,37 @@
             scrolling="no"
             class="map-frame"
           ></iframe>
-          <div class="map-overlay" *ngIf="!result">
+          <div class="map-overlay" *ngIf="!result && !orderRoute">
             <div class="overlay-content">
               <div class="overlay-icon">🗺️</div>
               <p>Ingresa una dirección para ver la ubicación en el mapa</p>
-              <p class="overlay-subtitle">O usa el botón "Mi ubicación" para encontrar tu posición actual</p>
+              <p class="overlay-subtitle">O selecciona un pedido para ver su ruta</p>
+            </div>
+          </div>
+          
+          <!-- Indicador de carga de ruta -->
+          <div class="route-loading-overlay" *ngIf="routeLoading">
+            <div class="loading-content">
+              <div class="loading-spinner">⏳</div>
+              <p>Calculando ruta...</p>
             </div>
           </div>
         </div>
         
         <!-- Información del mapa -->
-        <div class="map-info" *ngIf="result">
+        <div class="map-info" *ngIf="result || orderRoute">
           <div class="map-stats">
-            <span class="stat-item">
+            <span class="stat-item" *ngIf="result">
               <strong>Latitud:</strong> {{ result.latitude.toFixed(6) }}
             </span>
-            <span class="stat-item">
+            <span class="stat-item" *ngIf="result">
               <strong>Longitud:</strong> {{ result.longitude.toFixed(6) }}
+            </span>
+            <span class="stat-item" *ngIf="orderRoute">
+              <strong>Ruta:</strong> {{ orderRoute.route.origin }} → {{ orderRoute.route.destination }}
+            </span>
+            <span class="stat-item">
+              <strong>Proveedor:</strong> {{ getMapProviderName() }}
             </span>
             <span class="stat-item">
               <strong>Zoom:</strong> {{ currentZoom }}

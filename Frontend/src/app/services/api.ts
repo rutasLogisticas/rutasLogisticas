@@ -139,4 +139,34 @@ export class ApiService {
   updateOrderStatus(orderId: number, status: string): Observable<any> {
     return this.http.patch(`${this.apiUrl}/orders/${orderId}/status?status=${status}`, {});
   }
+
+  // Rutas de pedidos
+  getOrderRoute(orderId: number, mode: string = 'driving'): Observable<any> {
+    return this.http.get(`${this.apiUrl}/orders/${orderId}/route?mode=${mode}`);
+  }
+
+  getMultipleOrderRoutes(orderIds: number[], mode: string = 'driving'): Observable<any> {
+    return this.http.post(`${this.apiUrl}/orders/batch-routes`, {
+      order_ids: orderIds,
+      mode: mode
+    });
+  }
+
+  getDriverRoutes(driverId: number, mode: string = 'driving'): Observable<any> {
+    return this.http.get(`${this.apiUrl}/orders/driver/${driverId}/routes?mode=${mode}`);
+  }
+
+  // Geocodificación
+  geocodeAddress(address: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/geocoding/`, { address });
+  }
+
+  // Direcciones
+  getDirections(origin: string, destination: string, mode: string = 'driving'): Observable<any> {
+    return this.http.post(`${this.apiUrl}/directions/`, {
+      origin,
+      destination,
+      mode
+    });
+  }
 }

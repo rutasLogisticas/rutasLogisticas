@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DriversService, DriverSummary, DriverCreate, DriverUpdate } from '../../services/drivers';
@@ -8,16 +8,21 @@ import { DriversService, DriverSummary, DriverCreate, DriverUpdate } from '../..
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './conductores.html',
-  styleUrl: './conductores.css'
+  styleUrls: ['./conductores.css']
 })
-export class ConductoresComponent {
+export class ConductoresComponent implements OnInit {
   drivers: DriverSummary[] = [];
   selected: DriverSummary | null = null;
-  loading = false;
-  error: string | null = null;
-  onlyAvailable = false;
-  editingDriver: DriverSummary | null = null;
+
+  isLoading = false;
+  errorMessage: string = '';
+  successMessage: string = '';
+
+  showModal = false;
   isEditing = false;
+  editingDriver: DriverSummary | null = null;
+
+  onlyAvailable = false;
 
   form: DriverCreate = {
     first_name: '',
@@ -32,53 +37,57 @@ export class ConductoresComponent {
 
   constructor(private driversService: DriversService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.load();
   }
 
-  load() {
-    this.loading = true;
-    this.error = null;
-    const source$ = this.onlyAvailable ? this.driversService.getAvailableDrivers() : this.driversService.getDrivers();
+  load(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+    const source$ = this.onlyAvailable
+      ? this.driversService.getAvailableDrivers()
+      : this.driversService.getDrivers();
+
     source$.subscribe({
-      next: (data: any) => {
+      next: (data) => {
         this.drivers = data;
-        this.loading = false;
+        console.log('Conductores cargados:', this.drivers);
+        this.isLoading = false;
       },
       error: () => {
-        this.error = 'No se pudieron cargar los conductores';
-        this.loading = false;
+        this.errorMessage = 'No se pudieron cargar los conductores';
+        this.isLoading = false;
       }
     });
   }
 
-  toggleAvailable() {
+  toggleAvailable(): void {
     this.onlyAvailable = !this.onlyAvailable;
     this.load();
   }
 
-  select(driver: DriverSummary) {
-    this.selected = driver;
+  showCreateForm(): void {
+    this.isEditing = false;
+    this.editingDriver = null;
+    this.resetForm();
+    this.showModal = true;
   }
 
-  submit() {
-    if (!this.form.first_name || !this.form.last_name || !this.form.email || !this.form.document_number) {
-      this.error = 'Completa los campos obligatorios';
-      return;
-    }
-    this.error = null;
-    this.driversService.createDriver(this.form).subscribe({
-      next: (created: any) => {
-        this.drivers = [created, ...this.drivers];
-        this.resetForm();
-      },
-      error: (err: any) => {
-        this.error = err?.error?.detail || 'No se pudo crear el conductor';
-      }
-    });
+  showEditForm(driver: DriverSummary): void {
+    this.isEditing = true;
+    this.editingDriver = driver;
+    this.form = { ...driver };
+    this.showModal = true;
   }
 
-  resetForm() {
+  cancelForm(): void {
+    this.showModal = false;
+    this.isEditing = false;
+    this.editingDriver = null;
+    this.resetForm();
+  }
+
+  resetForm(): void {
     this.form = {
       first_name: '',
       last_name: '',
@@ -89,32 +98,33 @@ export class ConductoresComponent {
       status: 'disponible',
       is_available: true
     };
-    this.isEditing = false;
-    this.editingDriver = null;
   }
 
-  editDriver(driver: DriverSummary) {
-    this.editingDriver = driver;
-    this.isEditing = true;
-    this.form = {
-      first_name: driver.first_name,
-      last_name: driver.last_name,
-      email: driver.email,
-      phone: driver.phone,
-      document_number: driver.document_number,
-      license_type: driver.license_type,
-      status: driver.status,
-      is_available: driver.is_available
-    };
-  }
-
-  updateDriver() {
-    if (!this.editingDriver || !this.form.first_name || !this.form.last_name || !this.form.email) {
-      this.error = 'Completa los campos obligatorios';
+  submit(): void {
+    if (!this.form.first_name || !this.form.last_name || !this.form.email || !this.form.document_number) {
+      this.errorMessage = 'Completa los campos obligatorios';
       return;
     }
-    
-    this.error = null;
+    this.isLoading = true;
+    this.driversService.createDriver(this.form).subscribe({
+      next: (created) => {
+        this.drivers = [created, ...this.drivers];
+        this.showModal = false;
+        this.resetForm();
+        this.isLoading = false;
+        this.successMessage = 'Conductor creado exitosamente';
+        setTimeout(() => (this.successMessage = ''), 3000);
+      },
+      error: (err) => {
+        this.errorMessage = err?.error?.detail || 'No se pudo crear el conductor';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  updateDriver(): void {
+    if (!this.editingDriver) return;
+    this.isLoading = true;
     const updateData: DriverUpdate = {
       first_name: this.form.first_name,
       last_name: this.form.last_name,
@@ -123,34 +133,37 @@ export class ConductoresComponent {
       license_type: this.form.license_type,
       status: this.form.status
     };
-
     this.driversService.updateDriver(this.editingDriver.id, updateData).subscribe({
-      next: (updated: any) => {
+      next: (updated) => {
         const index = this.drivers.findIndex(d => d.id === updated.id);
-        if (index !== -1) {
-          this.drivers[index] = updated;
-        }
+        if (index !== -1) this.drivers[index] = updated;
+        this.showModal = false;
         this.resetForm();
+        this.isLoading = false;
+        this.successMessage = 'Conductor actualizado exitosamente';
+        setTimeout(() => (this.successMessage = ''), 3000);
       },
-      error: (err: any) => {
-        this.error = err?.error?.detail || 'No se pudo actualizar el conductor';
+      error: (err) => {
+        this.errorMessage = err?.error?.detail || 'No se pudo actualizar el conductor';
+        this.isLoading = false;
       }
     });
   }
 
-  deleteDriver(driver: DriverSummary) {
-    if (confirm(`¿Estás seguro de que quieres eliminar al conductor ${driver.first_name} ${driver.last_name}?`)) {
+  deleteDriver(driver: DriverSummary): void {
+    if (confirm(`¿Eliminar al conductor ${driver.first_name} ${driver.last_name}?`)) {
       this.driversService.deleteDriver(driver.id).subscribe({
         next: () => {
           this.drivers = this.drivers.filter(d => d.id !== driver.id);
-          if (this.selected?.id === driver.id) {
-            this.selected = null;
-          }
+          this.successMessage = 'Conductor eliminado exitosamente';
+          setTimeout(() => (this.successMessage = ''), 3000);
         },
-        error: (err: any) => {
-          this.error = err?.error?.detail || 'No se pudo eliminar el conductor';
+        error: (err) => {
+          this.errorMessage = err?.error?.detail || 'No se pudo eliminar el conductor';
         }
       });
     }
   }
 }
+
+
