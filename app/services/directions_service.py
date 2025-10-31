@@ -35,9 +35,23 @@ class DirectionsService:
             response.raise_for_status()
 
             data = response.json()
+            status = data.get("status")
 
-            if data.get("status") != "OK":
-                raise ValueError(f"Error en Directions API: {data.get('status')}")
+            if status != "OK":
+                error_message = data.get("error_message", "")
+                # Mensajes más descriptivos según el estado
+                if status == "NOT_FOUND":
+                    raise ValueError(f"NOT_FOUND: No se pudieron encontrar las direcciones. Origen: {origin}, Destino: {destination}. {error_message}")
+                elif status == "ZERO_RESULTS":
+                    raise ValueError(f"ZERO_RESULTS: No se encontró una ruta entre las direcciones. {error_message}")
+                elif status == "REQUEST_DENIED":
+                    raise ValueError(f"REQUEST_DENIED: La solicitud fue denegada. Verifica la API key. {error_message}")
+                elif status == "OVER_QUERY_LIMIT":
+                    raise ValueError(f"OVER_QUERY_LIMIT: Se excedió el límite de consultas de la API. {error_message}")
+                elif status == "INVALID_REQUEST":
+                    raise ValueError(f"INVALID_REQUEST: La solicitud es inválida. {error_message}")
+                else:
+                    raise ValueError(f"Error en Directions API: {status}. {error_message}")
 
             route = data["routes"][0]
             leg = route["legs"][0]

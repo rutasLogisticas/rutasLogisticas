@@ -222,6 +222,17 @@ class OrderService(BaseService):
             origin_address = order_details["origin_address"]
             destination_address = order_details["destination_address"]
             
+            # Mejorar direcciones agregando ciudad si falta
+            origin_city = order_details.get("origin_city", "")
+            destination_city = order_details.get("destination_city", "")
+            
+            # Si la dirección no incluye la ciudad, agregarla
+            if origin_city and origin_city.lower() not in origin_address.lower():
+                origin_address = f"{origin_address}, {origin_city}, Colombia"
+            
+            if destination_city and destination_city.lower() not in destination_address.lower():
+                destination_address = f"{destination_address}, {destination_city}, Colombia"
+            
             # Calcular la ruta usando DirectionsService
             try:
                 route_response = self.directions_service.get_directions(
@@ -229,6 +240,15 @@ class OrderService(BaseService):
                     destination_address, 
                     mode
                 )
+            except ValueError as e:
+                error_msg = str(e)
+                # Mensajes más claros para el usuario
+                if "NOT_FOUND" in error_msg:
+                    raise ValueError(f"No se pudo encontrar una ruta entre las direcciones proporcionadas. Verifica que las direcciones de origen ({order_details['origin_address']}) y destino ({order_details['destination_address']}) sean válidas.")
+                elif "ZERO_RESULTS" in error_msg:
+                    raise ValueError(f"No se encontró una ruta entre las direcciones. Puede que no exista una ruta {mode} entre estos puntos.")
+                else:
+                    raise ValueError(f"Error calculando ruta: {error_msg}")
             except Exception as e:
                 raise ValueError(f"Error calculando ruta: {str(e)}")
             
