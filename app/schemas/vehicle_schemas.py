@@ -34,6 +34,9 @@ class VehicleResponse(BaseModel):
     vehicle_type: str
     status: str
     is_available: bool
+    is_active: bool
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
     
     model_config = {"from_attributes": True}
 
@@ -44,7 +47,9 @@ class VehicleSummary(BaseModel):
     license_plate: str
     brand: str
     model: str
+    year: Optional[int] = None
     vehicle_type: str
     status: str
+    is_available: bool
     
     model_config = {"from_attributes": True}

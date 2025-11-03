@@ -48,7 +48,14 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "public",
+                  "assets": ["src/favicon.ico", "src/assets"]
+                }
+              ]
             },
             "development": {
               "optimization": false,
