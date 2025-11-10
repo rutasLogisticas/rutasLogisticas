@@ -40,23 +40,23 @@ export class AuthService {
   }
 
   // 🔹 Paso 2: Validar respuestas de seguridad
-  recoveryVerify(username: string, answers: { a1: string; a2: string }): Observable<any> {
-  const body = {
-    username,
-    answers: [answers.a1, answers.a2], // ✅ ahora se envía como lista
-  };
-  console.log('📤 Body enviado a FastAPI:', body);
-  return this.http.post(`${this.apiUrl}/userses/recovery/verify`, body);
-}
+  recoveryVerify(username: string, answers: string[]): Observable<any> {
+    const body = {
+      username,
+      answers,
+    };
+    console.log('📤 Body enviado a FastAPI:', body);
+    return this.http.post(`${this.apiUrl}/userses/recovery/verify`, body);
+  }
 
   // 🔹 Paso 3: Restablecer contraseña con token temporal
   recoveryReset(token: string, newPassword: string, username: string): Observable<any> {
-  return this.http.post(`${this.apiUrl}/userses/recovery/reset`, {
-    token,
-    username,           // ✅ <-- Este campo es obligatorio
-    new_password: newPassword
-  });
-}
+    return this.http.post(`${this.apiUrl}/userses/recovery/reset`, {
+      token,
+      username,           // ✅ <-- Este campo es obligatorio
+      new_password: newPassword
+    });
+  }
   // 🔹 Método simplificado para compatibilidad
   recoverPassword(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/userses/recovery`, data);

@@ -95,7 +95,9 @@ class OrderSummary(BaseModel):
     client_id: int
     driver_id: Optional[int]
     vehicle_id: Optional[int]
+    origin_address: str
     origin_city: str
+    destination_address: str
     destination_city: str
     status: str
     priority: str

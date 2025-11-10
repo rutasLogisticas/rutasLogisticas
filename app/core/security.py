@@ -1,6 +1,7 @@
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
+import re
 
 SECRET_KEY = "secret-key-aqui"  # cámbiala en producción
 ALGORITHM = "HS256"
@@ -20,6 +21,34 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         return pwd_context.verify(plain_password, hashed_password)
     except Exception:
         return False
+
+
+PASSWORD_POLICY_DESCRIPTION = (
+    "La contraseña debe tener al menos 8 caracteres, incluir una letra mayúscula, "
+    "una letra minúscula y un carácter especial, y no puede contener espacios."
+)
+
+
+def validate_password_policy(password: str) -> None:
+    """Valida la contraseña contra la política de seguridad definida."""
+    if password is None:
+        raise ValueError(PASSWORD_POLICY_DESCRIPTION)
+
+    if len(password) < 8:
+        raise ValueError("La contraseña debe tener al menos 8 caracteres.")
+
+    if re.search(r"\s", password):
+        raise ValueError("La contraseña no puede contener espacios en blanco.")
+
+    if not re.search(r"[A-Z]", password):
+        raise ValueError("La contraseña debe incluir al menos una letra mayúscula.")
+
+    if not re.search(r"[a-z]", password):
+        raise ValueError("La contraseña debe incluir al menos una letra minúscula.")
+
+    if not re.search(r"[^\w\s]", password):
+        raise ValueError("La contraseña debe incluir al menos un carácter especial.")
+
 
 # === Preguntas de seguridad ===
 def hash_answer(answer: str) -> str:

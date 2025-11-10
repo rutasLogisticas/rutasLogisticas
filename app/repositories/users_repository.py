@@ -2,7 +2,12 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app.models.users import User
 from app.schemas.users_schemas import UserCreate
-from app.core.security import get_password_hash, hash_answer, verify_answer
+from app.core.security import (
+    get_password_hash,
+    hash_answer,
+    verify_answer,
+    validate_password_policy,
+)
 import logging
 
 logger = logging.getLogger(__name__)
@@ -14,6 +19,9 @@ def create_user(db: Session, user: UserCreate):
     try:
         logger.info(f"Iniciando creación de usuario: {user.username}")
         
+        # Validar política de contraseña
+        validate_password_policy(user.password)
+
         # Hash de contraseña
         try:
             password_hash = get_password_hash(user.password)
@@ -125,7 +133,12 @@ def update_password(db: Session, username: str, new_password: str):
         if not user:
             return None
 
-        # Genera el hash seguro de la nueva contraseña
+        # Validar y generar el hash seguro de la nueva contraseña
+        try:
+            validate_password_policy(new_password)
+        except ValueError as e:
+            raise ValueError(str(e)) from e
+
         hashed = get_password_hash(new_password)
         user.password_hash = hashed
 

@@ -150,7 +150,8 @@ export class ClientesComponent implements OnInit {
       phone: this.form.phone,
       company: this.form.company,
       client_type: this.form.client_type,
-      status: this.form.status
+      status: this.form.status,
+      is_active: this.form.is_active
     };
 
     this.clientsService.updateClient(this.editingClient.id, updateData).subscribe({
