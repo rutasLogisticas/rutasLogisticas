@@ -219,11 +219,6 @@ export class OrdersComponent implements OnInit {
       return false;
     }
 
-    if (this.newOrder.origin_city.toLowerCase() === this.newOrder.destination_city.toLowerCase()) {
-      this.errorMessage = 'Las ciudades de origen y destino deben ser diferentes';
-      return false;
-    }
-
     return true;
   }
 
