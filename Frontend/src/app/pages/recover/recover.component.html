@@ -24,27 +24,19 @@
           </button>
         </form>
 
-        <!-- 🔹 Paso 2: Preguntas de seguridad fijas -->
+        <!-- 🔹 Paso 2: Preguntas de seguridad -->
         <form *ngIf="step === 2" (ngSubmit)="verifyAnswers()">
-          <div class="form-group">
-            <label>¿Nombre de tu primera mascota?</label>
-            <input
-              name="answer1"
-              [(ngModel)]="answer1"
-              placeholder="Respuesta 1"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label>¿Ciudad donde naciste?</label>
-            <input
-              name="answer2"
-              [(ngModel)]="answer2"
-              placeholder="Respuesta 2"
-              required
-            />
-          </div>
+          <ng-container *ngFor="let question of questions; let idx = index">
+            <div class="form-group">
+              <label>{{ question }}</label>
+              <input
+                [name]="'answer' + idx"
+                [(ngModel)]="answers[idx]"
+                [placeholder]="'Respuesta ' + (idx + 1)"
+                required
+              />
+            </div>
+          </ng-container>
 
           <button type="submit" class="btn-login" [disabled]="loading">
             {{ loading ? 'Verificando...' : 'Verificar respuestas' }}

@@ -130,8 +130,10 @@ export class ConductoresComponent implements OnInit {
       last_name: this.form.last_name,
       email: this.form.email,
       phone: this.form.phone,
+      document_number: this.form.document_number,
       license_type: this.form.license_type,
-      status: this.form.status
+      status: this.form.status,
+      is_available: this.form.is_available
     };
     this.driversService.updateDriver(this.editingDriver.id, updateData).subscribe({
       next: (updated) => {

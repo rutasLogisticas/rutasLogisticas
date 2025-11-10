@@ -50,8 +50,6 @@ class OrderCreate(OrderBase):
     def validate_different_addresses(self):
         if self.origin_address.lower() == self.destination_address.lower():
             raise ValueError('La dirección de origen y destino deben ser diferentes')
-        if self.origin_city.lower() == self.destination_city.lower():
-            raise ValueError('Las ciudades de origen y destino deben ser diferentes')
         return self
 
 
@@ -97,7 +95,9 @@ class OrderSummary(BaseModel):
     client_id: int
     driver_id: Optional[int]
     vehicle_id: Optional[int]
+    origin_address: str
     origin_city: str
+    destination_address: str
     destination_city: str
     status: str
     priority: str

@@ -16,13 +16,15 @@ import { RouterModule } from '@angular/router';
 export class RecoverComponent {
   step = 1;
   username = '';
-  answer1 = '';
-  answer2 = '';
+  questions: string[] = [];
+  answers: string[] = [];
   newPassword = '';
   confirmPassword = '';
   loading = false;
   tempToken: string = '';
   token: string = 'token-fijo';
+  readonly passwordPolicyMessage =
+    'La contraseña debe tener al menos 8 caracteres, incluir una letra mayúscula, una letra minúscula y un carácter especial.';
 
   constructor(private auth: AuthService, private router: Router) {}
 
@@ -35,7 +37,14 @@ export class RecoverComponent {
 
     this.loading = true;
     this.auth.recoveryStart(this.username).subscribe({
-      next: () => {
+      next: (res) => {
+        this.questions = res?.questions ?? [];
+        this.answers = this.questions.map(() => '');
+        if (this.questions.length === 0) {
+          this.loading = false;
+          alert('Este usuario no tiene preguntas de seguridad configuradas.');
+          return;
+        }
         this.loading = false;
         this.step = 2; // pasa a preguntas
       },
@@ -49,22 +58,25 @@ export class RecoverComponent {
 
   /** 🔹 Paso 2: Validar respuestas */
   verifyAnswers() {
-    if (!this.answer1 || !this.answer2) {
-      alert('Por favor, responde ambas preguntas.');
+    const trimmedAnswers = this.answers.map(a => a?.trim()).filter((a): a is string => !!a);
+    if (trimmedAnswers.length !== this.questions.length) {
+      alert('Por favor, responde todas las preguntas.');
       return;
     }
 
     this.loading = true;
-    this.auth.recoveryVerify(this.username, { a1: this.answer1, a2: this.answer2 }).subscribe({
+    this.auth.recoveryVerify(this.username, trimmedAnswers).subscribe({
       next: (res) => {
         console.log('✅ Respuesta backend:', res);
-        this.tempToken = res.temp_token; // guardamos token del backend
+        this.tempToken = res.reset_token;
+        this.token = this.tempToken || this.token;
         this.step = 3; // pasa a nueva contraseña
         this.loading = false;
       },
       error: (err) => {
         console.error(err);
-        alert('Las respuestas no coinciden.');
+        const message = err?.error?.detail ?? 'Las respuestas no coinciden.';
+        alert(message);
         this.loading = false;
       }
     });
@@ -72,22 +84,34 @@ export class RecoverComponent {
 
   /** 🔹 Paso 3: Resetear contraseña */
   resetPassword() {
+    if (!this.isPasswordValid(this.newPassword)) {
+      alert(this.passwordPolicyMessage);
+      return;
+    }
+
     if (this.newPassword !== this.confirmPassword) {
       alert('Las contraseñas no coinciden');
       return;
     }
 
     this.loading = true;
-    this.auth.recoveryReset(this.token, this.newPassword, this.username).subscribe({
+    const tokenToUse = this.tempToken || this.token;
+    this.auth.recoveryReset(tokenToUse, this.newPassword, this.username).subscribe({
       next: () => {
         alert('Contraseña actualizada correctamente');
         this.router.navigate(['/login']);
       },
       error: (err) => {
         console.error(err);
-        alert('Error al actualizar la contraseña');
+        const message = err?.error?.detail ?? 'Error al actualizar la contraseña';
+        alert(message);
         this.loading = false;
       }
     });
+  }
+
+  private isPasswordValid(password: string): boolean {
+    const policyRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9\s])[^\s]{8,}$/;
+    return policyRegex.test(password);
   }
 }
