@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.schemas.users_schemas import UserCreate, UserLogin
+from app.schemas.users_schemas import UserCreate, UserLogin, UserUpdate
 from app.repositories import users_repository
 import logging
 
@@ -66,3 +66,30 @@ class UsersService:
         except Exception as e:
             logger.error(f"Error inesperado en update_password: {str(e)}")
             raise ValueError(f"Error al actualizar contraseña: {str(e)}")
+
+    def get_user_by_id(self, db: Session, user_id: int):
+        return self.repository.get_user_by_id(db, user_id)
+
+    def update_user(self, db: Session, user_id: int, user_update: UserUpdate):
+        try:
+            result = self.repository.update_user(db, user_id, user_update)
+            if not result:
+                raise ValueError("Usuario no encontrado")
+            return result
+        except ValueError as e:
+            raise
+        except Exception as e:
+            logger.error(f"Error inesperado en update_user: {str(e)}")
+            raise ValueError(f"Error al actualizar usuario: {str(e)}")
+
+    def delete_user(self, db: Session, user_id: int):
+        try:
+            result = self.repository.delete_user(db, user_id)
+            if not result:
+                raise ValueError("Usuario no encontrado")
+            return result
+        except ValueError as e:
+            raise
+        except Exception as e:
+            logger.error(f"Error inesperado en delete_user: {str(e)}")
+            raise ValueError(f"Error al eliminar usuario: {str(e)}")

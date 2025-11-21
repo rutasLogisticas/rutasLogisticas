@@ -16,16 +16,31 @@
         <li><a routerLink="vehiculos" routerLinkActive="active"><i class="fas fa-truck"></i> Vehículos</a></li>
         <li><a routerLink="conductores" routerLinkActive="active"><i class="fas fa-id-card"></i> Conductores</a></li>
         <li><a routerLink="reportes" routerLinkActive="active"><i class="fas fa-chart-bar"></i> Reportes</a></li>
+        <li><a routerLink="roles" routerLinkActive="active"><i class="fas fa-shield-alt"></i> Roles</a></li>
+        <li><a routerLink="usuarios" routerLinkActive="active"><i class="fas fa-user-cog"></i> Usuarios</a></li>
       </ul>
     </nav>
 
     <!-- ÁREA DE USUARIO -->
     <div class="navbar-user">
-      <div class="user-info">
-        <div class="profile">👤</div>
-        <div class="username" *ngIf="username">{{ username }}</div>
+      <div class="user-dropdown">
+        <button class="user-toggle" (click)="toggleUserMenu()">
+          <div class="user-info">
+            <div class="profile">👤</div>
+            <div class="username" *ngIf="username">{{ username }}</div>
+          </div>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        
+        <div class="user-menu" [class.show]="showUserMenu">
+          <a routerLink="perfil" class="user-menu-item" (click)="closeUserMenu()">
+            <i class="fas fa-user-circle"></i> Mi Perfil
+          </a>
+          <button type="button" (click)="logout()" class="user-menu-item logout">
+            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+          </button>
+        </div>
       </div>
-      <button type="button" (click)="logout()" class="logout-btn">Salir</button>
     </div>
   </header>
 

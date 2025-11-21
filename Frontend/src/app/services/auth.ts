@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({ providedIn: 'root' })
@@ -19,7 +19,64 @@ export class AuthService {
 
   // 🔹 Inicio de sesión
   login(data: { username: string; password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/userses/login`, data);
+    return this.http.post(`${this.apiUrl}/userses/login`, data).pipe(
+      tap((response: any) => {
+        if (response.access_token) {
+          this.saveToken(response.access_token);
+          if (isPlatformBrowser(this.platformId)) {
+            localStorage.setItem('username', response.username);
+            localStorage.setItem('user_id', response.user_id);
+            if (response.role) {
+              localStorage.setItem('role_id', response.role.id);
+              localStorage.setItem('role_name', response.role.name);
+            }
+          }
+        }
+      })
+    );
+  }
+
+  // 🔹 Guardar token
+  saveToken(token: string): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem('token', token);
+    }
+  }
+
+  // 🔹 Obtener token
+  getToken(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('token');
+    }
+    return null;
+  }
+
+  // 🔹 Verificar si está autenticado
+  isAuthenticated(): boolean {
+    return this.getToken() !== null;
+  }
+
+  // 🔹 Cerrar sesión
+  logout(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('username');
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('role_id');
+      localStorage.removeItem('role_name');
+    }
+  }
+
+  // 🔹 Obtener headers con autorización
+  getAuthHeaders(): HttpHeaders {
+    const token = this.getToken();
+    if (token) {
+      return new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      });
+    }
+    return new HttpHeaders({ 'Content-Type': 'application/json' });
   }
 
   // 🔹 Registro (incluye preguntas de seguridad)
@@ -31,7 +88,7 @@ export class AuthService {
     security_question2?: string;
     security_answer2?: string;
   }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/userses`, data);
+    return this.http.post(`${this.apiUrl}/userses/register`, data);
   }
 
   // 🔹 Paso 1: Solicitar recuperación (envía usuario)

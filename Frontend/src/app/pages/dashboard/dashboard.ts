@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,8 +10,11 @@ import { CommonModule } from '@angular/common';
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   username: string | null = null;
+  showUserMenu = false;
+
+  constructor(private authService: AuthService) {}
 
   ngOnInit() {
     try {
@@ -20,10 +24,16 @@ export class DashboardComponent {
     }
   }
 
+  toggleUserMenu() {
+    this.showUserMenu = !this.showUserMenu;
+  }
+
+  closeUserMenu() {
+    this.showUserMenu = false;
+  }
+
   logout() {
-    try {
-      localStorage.removeItem('username');
-    } catch {}
+    this.authService.logout();
     location.assign('/login');
   }
 }
