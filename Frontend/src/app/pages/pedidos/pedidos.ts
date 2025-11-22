@@ -6,6 +6,7 @@ import { OrdersService, Order, OrderCreate, OrderUpdate } from '../../services/o
 import { ClientsService } from '../../services/clients';
 import { DriversService } from '../../services/drivers';
 import { VehiclesService } from '../../services/vehicles';
+import { ExportService } from '../../services/export.service';
 
 @Component({
   selector: 'app-orders',
@@ -48,16 +49,18 @@ export class OrdersComponent implements OnInit {
   statuses: string[] = [];
   priorities: string[] = [];
   
-  constructor(
+    constructor(
     private ordersService: OrdersService,
     private clientsService: ClientsService,
     private driversService: DriversService,
     private vehiclesService: VehiclesService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private exportService: ExportService 
   ) {
     this.statuses = this.ordersService.getOrderStatuses();
     this.priorities = this.ordersService.getOrderPriorities();
   }
+
 
   ngOnInit(): void {
     this.loadOrders();
@@ -429,4 +432,130 @@ export class OrdersComponent implements OnInit {
     this.successMessage = '';
     this.isLoading = false;
   }
+    exportOrdersCSV(): void {
+    if (!this.orders || this.orders.length === 0) {
+      console.warn('No hay pedidos para exportar');
+      return;
+    }
+
+    const headers = [
+      'Número',
+      'Cliente',
+      'Origen',
+      'Destino',
+      'Conductor',
+      'Vehículo',
+      'Estado',
+      'Prioridad',
+      'Fecha Entrega'
+    ];
+
+    const rows = this.orders.map((order) => {
+      const cliente = this.getClientName(order.client_id);
+      const conductor = this.getDriverName(order.driver_id);
+      const vehiculo = this.getVehicleName(order.vehicle_id);
+      const origen = `${order.origin_city} - ${order.origin_address}`;
+      const destino = `${order.destination_city} - ${order.destination_address}`;
+      const fechaEntrega = order.delivery_date || '';
+
+      return [
+        order.order_number,
+        cliente,
+        origen,
+        destino,
+        conductor,
+        vehiculo,
+        order.status,
+        order.priority,
+        fechaEntrega
+      ];
+    });
+
+    this.exportService.downloadCSV('pedidos', headers, rows);
+  }
+
+  exportOrdersExcel(): void {
+    if (!this.orders || this.orders.length === 0) {
+      console.warn('No hay pedidos para exportar');
+      return;
+    }
+
+    const headers = [
+      'Número',
+      'Cliente',
+      'Origen',
+      'Destino',
+      'Conductor',
+      'Vehículo',
+      'Estado',
+      'Prioridad',
+      'Fecha Entrega'
+    ];
+
+    const rows = this.orders.map((order) => {
+      const cliente = this.getClientName(order.client_id);
+      const conductor = this.getDriverName(order.driver_id);
+      const vehiculo = this.getVehicleName(order.vehicle_id);
+      const origen = `${order.origin_city} - ${order.origin_address}`;
+      const destino = `${order.destination_city} - ${order.destination_address}`;
+      const fechaEntrega = order.delivery_date || '';
+
+      return [
+        order.order_number,
+        cliente,
+        origen,
+        destino,
+        conductor,
+        vehiculo,
+        order.status,
+        order.priority,
+        fechaEntrega
+      ];
+    });
+
+    this.exportService.downloadExcel('pedidos', headers, rows);
+  }
+
+  exportOrdersPDF(): void {
+    if (!this.orders || this.orders.length === 0) {
+      console.warn('No hay pedidos para exportar');
+      return;
+    }
+
+    const headers = [
+      'Número',
+      'Cliente',
+      'Origen',
+      'Destino',
+      'Conductor',
+      'Vehículo',
+      'Estado',
+      'Prioridad',
+      'Fecha Entrega'
+    ];
+
+    const rows = this.orders.map((order) => {
+      const cliente = this.getClientName(order.client_id);
+      const conductor = this.getDriverName(order.driver_id);
+      const vehiculo = this.getVehicleName(order.vehicle_id);
+      const origen = `${order.origin_city} - ${order.origin_address}`;
+      const destino = `${order.destination_city} - ${order.destination_address}`;
+      const fechaEntrega = order.delivery_date || '';
+
+      return [
+        order.order_number,
+        cliente,
+        origen,
+        destino,
+        conductor,
+        vehiculo,
+        order.status,
+        order.priority,
+        fechaEntrega
+      ];
+    });
+
+    this.exportService.downloadPdf('pedidos', 'Reporte de Pedidos', headers, rows);
+  }
+
 }

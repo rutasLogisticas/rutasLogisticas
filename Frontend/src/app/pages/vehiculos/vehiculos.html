@@ -1,11 +1,23 @@
 <div class="orders-container">
   <!-- Encabezado -->
   <div class="header">
-    <h1>Gestión de Vehículos</h1>
+  <h1>Gestión de Vehículos</h1>
+  <div class="header-buttons">
+    <button class="btn btn-secondary" (click)="exportVehiclesCSV()">
+      <i class="fas fa-file-csv"></i> CSV
+    </button>
+    <button class="btn btn-secondary" (click)="exportVehiclesExcel()">
+      <i class="fas fa-file-excel"></i> Excel
+    </button>
+    <button class="btn btn-outline-primary" (click)="exportVehiclesPDF()">
+      <i class="fas fa-file-pdf"></i> PDF
+    </button>
     <button class="btn btn-primary" (click)="showCreateForm()">
       <i class="fas fa-plus"></i> Nuevo Vehículo
     </button>
   </div>
+</div>
+
 
   <!-- Modal -->
   <div class="modal-overlay" *ngIf="showModal" (click)="cancelForm()">

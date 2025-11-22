@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DriversService, DriverSummary, DriverCreate, DriverUpdate } from '../../services/drivers';
+import {
+  DriversService,
+  DriverSummary,
+  DriverCreate,
+  DriverUpdate
+} from '../../services/drivers';
+import { ExportService } from '../../services/export.service';
 
 @Component({
   selector: 'app-conductores',
@@ -35,7 +41,10 @@ export class ConductoresComponent implements OnInit {
     is_available: true
   };
 
-  constructor(private driversService: DriversService) {}
+  constructor(
+    private driversService: DriversService,
+    private exportService: ExportService
+  ) {}
 
   ngOnInit(): void {
     this.load();
@@ -101,10 +110,16 @@ export class ConductoresComponent implements OnInit {
   }
 
   submit(): void {
-    if (!this.form.first_name || !this.form.last_name || !this.form.email || !this.form.document_number) {
+    if (
+      !this.form.first_name ||
+      !this.form.last_name ||
+      !this.form.email ||
+      !this.form.document_number
+    ) {
       this.errorMessage = 'Completa los campos obligatorios';
       return;
     }
+
     this.isLoading = true;
     this.driversService.createDriver(this.form).subscribe({
       next: (created) => {
@@ -124,6 +139,7 @@ export class ConductoresComponent implements OnInit {
 
   updateDriver(): void {
     if (!this.editingDriver) return;
+
     this.isLoading = true;
     const updateData: DriverUpdate = {
       first_name: this.form.first_name,
@@ -135,9 +151,10 @@ export class ConductoresComponent implements OnInit {
       status: this.form.status,
       is_available: this.form.is_available
     };
+
     this.driversService.updateDriver(this.editingDriver.id, updateData).subscribe({
       next: (updated) => {
-        const index = this.drivers.findIndex(d => d.id === updated.id);
+        const index = this.drivers.findIndex((d) => d.id === updated.id);
         if (index !== -1) this.drivers[index] = updated;
         this.showModal = false;
         this.resetForm();
@@ -156,7 +173,7 @@ export class ConductoresComponent implements OnInit {
     if (confirm(`¿Eliminar al conductor ${driver.first_name} ${driver.last_name}?`)) {
       this.driversService.deleteDriver(driver.id).subscribe({
         next: () => {
-          this.drivers = this.drivers.filter(d => d.id !== driver.id);
+          this.drivers = this.drivers.filter((d) => d.id !== driver.id);
           this.successMessage = 'Conductor eliminado exitosamente';
           setTimeout(() => (this.successMessage = ''), 3000);
         },
@@ -166,6 +183,101 @@ export class ConductoresComponent implements OnInit {
       });
     }
   }
-}
 
+  // =========================
+  // EXPORTAR CONDUCTORES
+  // =========================
+  exportDriversCSV(): void {
+    if (!this.drivers || this.drivers.length === 0) {
+      console.warn('No hay conductores para exportar');
+      return;
+    }
+
+    const headers = [
+      'Nombre',
+      'Apellido',
+      'Email',
+      'Teléfono',
+      'Documento',
+      'Licencia',
+      'Estado',
+      'Disponible'
+    ];
+
+    const rows = this.drivers.map((d) => [
+      d.first_name,
+      d.last_name,
+      d.email,
+      d.phone || '-',
+      d.document_number || '-',
+      d.license_type,
+      d.status,
+      d.is_available ? 'Sí' : 'No'
+    ]);
+
+    this.exportService.downloadCSV('conductores', headers, rows);
+  }
+
+  exportDriversExcel(): void {
+    if (!this.drivers || this.drivers.length === 0) {
+      console.warn('No hay conductores para exportar');
+      return;
+    }
+
+    const headers = [
+      'Nombre',
+      'Apellido',
+      'Email',
+      'Teléfono',
+      'Documento',
+      'Licencia',
+      'Estado',
+      'Disponible'
+    ];
+
+    const rows = this.drivers.map((d) => [
+      d.first_name,
+      d.last_name,
+      d.email,
+      d.phone || '-',
+      d.document_number || '-',
+      d.license_type,
+      d.status,
+      d.is_available ? 'Sí' : 'No'
+    ]);
+
+    this.exportService.downloadExcel('conductores', headers, rows);
+  }
+
+  exportDriversPDF(): void {
+    if (!this.drivers || this.drivers.length === 0) {
+      console.warn('No hay conductores para exportar');
+      return;
+    }
+
+    const headers = [
+      'Nombre',
+      'Apellido',
+      'Email',
+      'Teléfono',
+      'Documento',
+      'Licencia',
+      'Estado',
+      'Disponible'
+    ];
+
+    const rows = this.drivers.map((d) => [
+      d.first_name,
+      d.last_name,
+      d.email,
+      d.phone || '-',
+      d.document_number || '-',
+      d.license_type,
+      d.status,
+      d.is_available ? 'Sí' : 'No'
+    ]);
+
+    this.exportService.downloadPdf('conductores', 'Reporte de Conductores', headers, rows);
+  }
+}
 
