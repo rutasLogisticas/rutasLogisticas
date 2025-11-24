@@ -119,5 +119,25 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/userses/recovery`, data);
   }
 
+  // 🔹 Obtener rol del usuario actual
+  getCurrentRole(): string | null {
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem('role_name');
+    }
+    return null;
+  }
+
+  // 🔹 Verificar si el usuario es admin
+  isAdmin(): boolean {
+    const role = this.getCurrentRole();
+    return role?.toLowerCase() === 'admin';
+  }
+
+  // 🔹 Verificar si el usuario es operador (acepta operador, operadores, o user)
+  isOperador(): boolean {
+    const role = this.getCurrentRole()?.toLowerCase();
+    return role === 'operador' || role === 'operadores' || role === 'user';
+  }
+
 }
 

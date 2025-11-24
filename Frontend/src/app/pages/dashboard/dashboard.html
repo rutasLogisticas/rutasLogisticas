@@ -9,15 +9,15 @@
     <!-- MENÚ DE NAVEGACIÓN -->
     <nav class="navbar-menu">
       <ul class="nav-list">
-        <li><a routerLink="inicio" routerLinkActive="active"><i class="fas fa-home"></i> Inicio</a></li>
-        <li><a routerLink="mapa" routerLinkActive="active"><i class="fas fa-map"></i> Mapa</a></li>
-        <li><a routerLink="clientes" routerLinkActive="active"><i class="fas fa-users"></i> Clientes</a></li>
-        <li><a routerLink="pedidos" routerLinkActive="active"><i class="fas fa-box"></i> Pedidos</a></li>
-        <li><a routerLink="vehiculos" routerLinkActive="active"><i class="fas fa-truck"></i> Vehículos</a></li>
-        <li><a routerLink="conductores" routerLinkActive="active"><i class="fas fa-id-card"></i> Conductores</a></li>
-        <li><a routerLink="reportes" routerLinkActive="active"><i class="fas fa-chart-bar"></i> Reportes</a></li>
-        <li><a routerLink="roles" routerLinkActive="active"><i class="fas fa-shield-alt"></i> Roles</a></li>
-        <li><a routerLink="usuarios" routerLinkActive="active"><i class="fas fa-user-cog"></i> Usuarios</a></li>
+        <li *ngIf="canViewInicio()"><a routerLink="inicio" routerLinkActive="active"><i class="fas fa-home"></i> Inicio</a></li>
+        <li *ngIf="canViewMapa()"><a routerLink="mapa" routerLinkActive="active"><i class="fas fa-map"></i> Mapa</a></li>
+        <li *ngIf="canViewClientes()"><a routerLink="clientes" routerLinkActive="active"><i class="fas fa-users"></i> Clientes</a></li>
+        <li *ngIf="canViewPedidos()"><a routerLink="pedidos" routerLinkActive="active"><i class="fas fa-box"></i> Pedidos</a></li>
+        <li *ngIf="canViewVehiculos()"><a routerLink="vehiculos" routerLinkActive="active"><i class="fas fa-truck"></i> Vehículos</a></li>
+        <li *ngIf="canViewConductores()"><a routerLink="conductores" routerLinkActive="active"><i class="fas fa-id-card"></i> Conductores</a></li>
+        <li *ngIf="canViewReportes()"><a routerLink="reportes" routerLinkActive="active"><i class="fas fa-chart-bar"></i> Reportes</a></li>
+        <li *ngIf="canViewRoles()"><a routerLink="roles" routerLinkActive="active"><i class="fas fa-shield-alt"></i> Roles</a></li>
+        <li *ngIf="canViewUsuarios()"><a routerLink="usuarios" routerLinkActive="active"><i class="fas fa-user-cog"></i> Usuarios</a></li>
       </ul>
     </nav>
 
