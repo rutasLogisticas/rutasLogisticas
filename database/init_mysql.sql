@@ -128,3 +128,20 @@ ALTER TABLE users
   ADD COLUMN security_answer1_hash VARCHAR(255),
   ADD COLUMN security_question2 VARCHAR(255),  
   ADD COLUMN security_answer2_hash VARCHAR(255);
+
+-- Tabla de auditoría
+CREATE TABLE audit_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    actor_id INT NULL,
+    event_type VARCHAR(100) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    ip_address VARCHAR(50) NOT NULL,
+    extra_data TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+
+
+

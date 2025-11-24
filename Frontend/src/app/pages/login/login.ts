@@ -24,11 +24,14 @@ export class LoginComponent {
     this.loading = true;
     this.error = null;
     this.auth.login({ username: this.username, password: this.password }).subscribe({
-      next: () => {
+      next: (resp) => {
         this.loading = false;
+
         try {
-          localStorage.setItem('username', this.username);
+          localStorage.setItem('userId', String(resp.user_id));
+          localStorage.setItem('username', resp.username);
         } catch {}
+
         this.router.navigate(['/dashboard/inicio']);
       },
       error: (err) => {

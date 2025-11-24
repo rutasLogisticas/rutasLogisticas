@@ -62,5 +62,21 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/userses/recovery`, data);
   }
 
+  logout() {
+    const storedUserId = localStorage.getItem("userId");
+    const storedUsername = localStorage.getItem("username");
+
+    return this.http.post(
+      `${this.apiUrl}/userses/logout`,
+      {},
+      {
+        headers: {
+          "X-User-Id": storedUserId ?? "",
+          "X-Username": storedUsername ?? ""
+        }
+      }
+    );
+  }
+
 }
 

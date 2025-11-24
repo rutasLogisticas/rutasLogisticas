@@ -1,7 +1,8 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http'; // ← agregamos HttpParams
 import { Observable } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
+
 
 @Injectable({
   providedIn: 'root'
@@ -156,6 +157,44 @@ export class ApiService {
     return this.http.get(`${this.apiUrl}/orders/driver/${driverId}/routes?mode=${mode}`);
   }
 
+  // MÓDULO DE AUDITORÍA
+
+  /**
+   * Obtiene los registros de auditoría desde el backend.
+   *  - event_type: tipo de evento (LOGIN_SUCCESS, ORDER_CREATED, etc.)
+   *  - actor_id: id del usuario responsable
+   *  - start_date: fecha inicial (YYYY-MM-DD)
+   *  - end_date: fecha final (YYYY-MM-DD)
+   */
+  getAuditLogs(params?: {
+    event_type?: string;
+    actor_id?: number;
+    start_date?: string;
+    end_date?: string;
+  }): Observable<any> {
+    let httpParams = new HttpParams();
+
+    // Construimos los query params solo con los filtros que vengan definidos
+    if (params) {
+      if (params.event_type) {
+        httpParams = httpParams.set('event_type', params.event_type);
+      }
+      if (params.actor_id !== undefined && params.actor_id !== null) {
+        httpParams = httpParams.set('actor_id', params.actor_id.toString());
+      }
+      if (params.start_date) {
+        httpParams = httpParams.set('start_date', params.start_date);
+      }
+      if (params.end_date) {
+        httpParams = httpParams.set('end_date', params.end_date);
+      }
+    }
+
+    // Llamamos al endpoint del backend /api/v1/audit/
+    return this.http.get(`${this.apiUrl}/audit/`, { params: httpParams });
+  }
+
+
   // Geocodificación
   geocodeAddress(address: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/geocoding/`, { address });
@@ -169,4 +208,9 @@ export class ApiService {
       mode
     });
   }
+
+  post(endpoint: string, body: any) {
+    return this.http.post(`${this.apiUrl}${endpoint}`, body);
+  }
+
 }

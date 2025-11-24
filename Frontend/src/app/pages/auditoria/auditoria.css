@@ -1,0 +1,105 @@
+.audit-container {
+  padding: 1.5rem;
+}
+
+.audit-container h2 {
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  margin-bottom: 1.5rem;
+  color: #555;
+}
+
+/* Formulario de filtros */
+.filters {
+  background-color: #f7f7f7;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.filter-group label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.filter-group input {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.buttons-row {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn {
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.btn.primary {
+  background-color: #2563eb;
+  color: white;
+}
+
+.btn.secondary {
+  background-color: #e5e7eb;
+  color: #111827;
+}
+
+/* Mensajes de estado */
+.status {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.status.loading {
+  color: #2563eb;
+}
+
+.status.error {
+  color: #b91c1c;
+}
+
+.status.empty {
+  color: #6b7280;
+}
+
+/* Tabla */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.audit-table th,
+.audit-table td {
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.audit-table th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+}

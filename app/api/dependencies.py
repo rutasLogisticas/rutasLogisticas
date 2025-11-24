@@ -10,6 +10,8 @@ from app.services.vehicle_service import VehicleService
 from app.services.driver_service import DriverService
 from app.services.client_service import ClientService
 from app.services.order_service import OrderService
+from app.services.audit_service import AuditService
+
 
 
 def get_db() -> Generator[Session, None, None]:
@@ -36,3 +38,7 @@ def get_client_service() -> ClientService:
 def get_order_service() -> OrderService:
     """Dependency para obtener servicio de pedidos"""
     return OrderService()
+
+def get_audit_service() -> AuditService:
+    """Dependency para obtener servicio de auditoría"""
+    return AuditService()

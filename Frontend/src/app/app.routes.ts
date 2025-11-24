@@ -16,6 +16,7 @@ export const routes: Routes = [
       { path: 'clientes', loadComponent: () => import('./pages/clientes/clientes').then(m => m.ClientesComponent) },
       { path: 'pedidos', loadComponent: () => import('./pages/pedidos/pedidos').then(m => m.OrdersComponent) },
       { path: 'reportes', loadComponent: () => import('./pages/reportes/reportes').then(m => m.ReportesComponent) },
+      { path: 'auditoria', loadComponent: () => import('./pages/auditoria/auditoria').then(m => m.AuditoriaComponent) },
     ]
   }
 ];
