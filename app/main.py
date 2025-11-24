@@ -14,6 +14,7 @@ from app.api.routes import (
     userses, vehicles, drivers, clients,
     geocoding, orders, directions, reports, audit
 )
+from app.api.routes import userses, vehicles, drivers, clients, geocoding, orders, directions, reports, roles 
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
@@ -79,6 +80,8 @@ app.include_router(userses.router, prefix="/api/v1")
 app.include_router(vehicles.router, prefix="/api/v1")
 app.include_router(drivers.router, prefix="/api/v1")
 app.include_router(clients.router, prefix="/api/v1")
+app.include_router(userses.router, prefix="/api/v1")
+app.include_router(roles.router, prefix="/api/v1")
 app.include_router(geocoding.router, prefix="/api/v1")
 app.include_router(orders.router, prefix="/api/v1")
 app.include_router(directions.router, prefix="/api/v1")

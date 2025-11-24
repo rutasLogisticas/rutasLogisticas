@@ -65,6 +65,9 @@ def verify_answer(plain: str, hashed: str) -> bool:
 # === Tokens JWT ===
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
+    # Asegurar que 'sub' sea string (jose requiere string para validación)
+    if "sub" in to_encode:
+        to_encode["sub"] = str(to_encode["sub"])
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -80,5 +83,13 @@ def verify_reset_token(token: str) -> str:
         if payload.get("scope") != "password_reset":
             raise JWTError("Invalid scope")
         return payload.get("sub")
+    except JWTError:
+        raise
+
+def verify_access_token(token: str) -> dict:
+    """Verifica y decodifica un token de acceso"""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
     except JWTError:
         raise

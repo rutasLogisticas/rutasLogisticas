@@ -1,7 +1,7 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import IntegrityError
 from app.models.users import User
-from app.schemas.users_schemas import UserCreate
+from app.schemas.users_schemas import UserCreate, UserUpdate
 from app.core.security import (
     get_password_hash,
     hash_answer,
@@ -52,8 +52,10 @@ def create_user(db: Session, user: UserCreate):
                 security_answer1_hash=answer1_hash,
                 security_question2=user.security_question2,
                 security_answer2_hash=answer2_hash,
+                role_id=user.role_id,
+                is_active=user.is_active if user.is_active is not None else True
             )
-            logger.debug(f"Objeto User creado para: {user.username}")
+            logger.debug(f"Objeto User creado para: {user.username} con role_id: {user.role_id}, is_active: {user.is_active}")
         except Exception as e:
             logger.error(f"Error al crear objeto User: {str(e)}")
             raise ValueError(f"Error al crear usuario: {str(e)}")
@@ -101,11 +103,11 @@ def create_user(db: Session, user: UserCreate):
         raise ValueError(f"Error al crear usuario: {str(e)}")
 
 def get_user_by_username(db: Session, username: str):
-    return db.query(User).filter(User.username == username).first()
+    return db.query(User).options(joinedload(User.role)).filter(User.username == username).first()
 
 
 def get_users(db: Session):
-    return db.query(User).all()
+    return db.query(User).options(joinedload(User.role)).all()
 
 # NUEVO
 def get_security_questions(db: Session, username: str):
@@ -152,4 +154,59 @@ def update_password(db: Session, username: str, new_password: str):
         db.rollback()
         logger.error(f"Error al actualizar contraseña para usuario {username}: {str(e)}", exc_info=True)
         raise ValueError(f"Error al actualizar contraseña: {str(e)}")
+
+
+def get_user_by_id(db: Session, user_id: int):
+    return db.query(User).options(joinedload(User.role)).filter(User.id == user_id).first()
+
+
+def update_user(db: Session, user_id: int, user_update: UserUpdate):
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            return None
+
+        # Actualizar campos proporcionados
+        if user_update.username is not None:
+            # Verificar que el nuevo username no exista
+            existing_user = db.query(User).filter(
+                User.username == user_update.username,
+                User.id != user_id
+            ).first()
+            if existing_user:
+                raise ValueError(f"Ya existe un usuario con el nombre '{user_update.username}'")
+            user.username = user_update.username
+
+        if user_update.role_id is not None:
+            user.role_id = user_update.role_id
+
+        if user_update.is_active is not None:
+            user.is_active = user_update.is_active
+
+        db.flush()
+        db.refresh(user)
+        return user
+    except ValueError:
+        raise
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error al actualizar usuario {user_id}: {str(e)}", exc_info=True)
+        raise ValueError(f"Error al actualizar usuario: {str(e)}")
+
+
+def delete_user(db: Session, user_id: int):
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            return None
+
+        # Eliminación lógica
+        user.is_active = False
+        db.flush()
+        db.refresh(user)
+        return user
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error al eliminar usuario {user_id}: {str(e)}", exc_info=True)
+        raise ValueError(f"Error al eliminar usuario: {str(e)}")
 

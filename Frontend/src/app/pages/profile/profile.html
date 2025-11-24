@@ -1,0 +1,194 @@
+<div class="profile-container">
+  <div class="header">
+    <h1><i class="fas fa-user-circle"></i> Mi Perfil</h1>
+  </div>
+
+  <!-- Success message -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    <i class="fas fa-check-circle"></i>
+    {{ successMessage }}
+    <button class="btn-close" (click)="clearMessages()">&times;</button>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error" class="alert alert-error">
+    <i class="fas fa-exclamation-circle"></i>
+    {{ error }}
+    <button class="btn-close" (click)="clearMessages()">&times;</button>
+  </div>
+
+  <!-- Profile sections -->
+  <div class="profile-sections">
+    <!-- Security Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2><i class="fas fa-shield-alt"></i> Seguridad</h2>
+        <p>Gestiona tu contraseña y preguntas de seguridad</p>
+      </div>
+      
+      <div class="section-content">
+        <div class="security-options">
+          <div class="security-option">
+            <div class="option-info">
+              <h3>Cambiar Contraseña</h3>
+              <p>Actualiza tu contraseña para mantener tu cuenta segura</p>
+            </div>
+            <button class="btn btn-primary" (click)="showChangePasswordForm()">
+              <i class="fas fa-key"></i> Cambiar Contraseña
+            </button>
+          </div>
+
+          <div class="security-option">
+            <div class="option-info">
+              <h3>Preguntas de Seguridad</h3>
+              <p>Configura preguntas para recuperar tu contraseña</p>
+              <small *ngIf="securityQuestions.length > 0" class="text-success">
+                <i class="fas fa-check"></i> {{ securityQuestions.length }} pregunta(s) configurada(s)
+              </small>
+              <small *ngIf="securityQuestions.length === 0" class="text-warning">
+                <i class="fas fa-exclamation-triangle"></i> Sin preguntas configuradas
+              </small>
+            </div>
+            <button class="btn btn-secondary" (click)="showSecurityQuestionsForm()">
+              <i class="fas fa-question-circle"></i> Gestionar Preguntas
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Change Password Modal -->
+<div *ngIf="showChangePasswordModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;" (click)="closeModals()">
+  <div style="background: white; border-radius: 8px; max-width: 500px; width: 90%; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);" (click)="$event.stopPropagation()">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #e9ecef;">
+      <h2 style="margin: 0; color: #2c3e50; font-size: 20px;"><i class="fas fa-key" style="margin-right: 8px; color: #3498db;"></i> Cambiar Contraseña</h2>
+      <button style="background: none; border: none; font-size: 18px; cursor: pointer; color: inherit; padding: 0;" (click)="closeModals()">&times;</button>
+    </div>
+    
+    <div style="padding: 20px;">
+      <form (ngSubmit)="changePassword()">
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #2c3e50;" for="current-password">Contraseña Actual *</label>
+          <input
+            type="password"
+            id="current-password"
+            [(ngModel)]="changePasswordForm.current_password"
+            name="current_password"
+            style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
+            placeholder="Ingresa tu contraseña actual"
+            required
+          />
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #2c3e50;" for="new-password">Nueva Contraseña *</label>
+          <input
+            type="password"
+            id="new-password"
+            [(ngModel)]="changePasswordForm.new_password"
+            name="new_password"
+            style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
+            placeholder="Ingresa tu nueva contraseña"
+            required
+          />
+          <small style="display: block; margin-top: 4px; font-size: 12px; color: #666;">
+            Mínimo 8 caracteres, incluir mayúscula, minúscula y carácter especial
+          </small>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #2c3e50;" for="confirm-password">Confirmar Nueva Contraseña *</label>
+          <input
+            type="password"
+            id="confirm-password"
+            [(ngModel)]="confirmPassword"
+            name="confirm_password"
+            style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
+            placeholder="Confirma tu nueva contraseña"
+            required
+          />
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid #e9ecef;">
+          <button type="button" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; background: #6c757d; color: white;" (click)="closeModals()">
+            Cancelar
+          </button>
+          <button type="submit" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;" [disabled]="loading">
+            <i class="fas fa-spinner fa-spin" *ngIf="loading" style="margin-right: 6px;"></i>
+            <i class="fas fa-save" *ngIf="!loading" style="margin-right: 6px;"></i>
+            {{ loading ? 'Cambiando...' : 'Cambiar Contraseña' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Security Questions Modal -->
+<div *ngIf="showSecurityQuestionsModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; display: flex; align-items: center; justify-content: center;" (click)="closeModals()">
+  <div style="background: white; border-radius: 8px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);" (click)="$event.stopPropagation()">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px; border-bottom: 1px solid #e9ecef;">
+      <h2 style="margin: 0; color: #2c3e50; font-size: 20px;"><i class="fas fa-question-circle" style="margin-right: 8px; color: #3498db;"></i> Preguntas de Seguridad</h2>
+      <button style="background: none; border: none; font-size: 18px; cursor: pointer; color: inherit; padding: 0;" (click)="closeModals()">&times;</button>
+    </div>
+    
+    <div style="padding: 20px;">
+      <p style="margin-bottom: 20px; color: #666; font-size: 14px;">
+        Las preguntas de seguridad te ayudarán a recuperar tu contraseña si la olvidas. Puedes configurar hasta 2 preguntas.
+      </p>
+
+      <form (ngSubmit)="updateSecurityQuestions()">
+        <div style="margin-bottom: 24px; padding: 16px; border: 1px solid #e9ecef; border-radius: 8px; background-color: #f8f9fa;">
+          <h4 style="margin: 0 0 16px 0; color: #2c3e50; font-size: 16px;">Pregunta 1</h4>
+          
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #2c3e50;">¿Cuál es el nombre de tu primera mascota?</label>
+          </div>
+
+          <div style="margin-bottom: 0;">
+            <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #2c3e50;">Respuesta</label>
+            <input
+              type="password"
+              [(ngModel)]="securityQuestionsForm[0].answer"
+              name="answer_1"
+              style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
+              placeholder="Tu respuesta (será encriptada)"
+            />
+          </div>
+        </div>
+
+        <div style="margin-bottom: 24px; padding: 16px; border: 1px solid #e9ecef; border-radius: 8px; background-color: #f8f9fa;">
+          <h4 style="margin: 0 0 16px 0; color: #2c3e50; font-size: 16px;">Pregunta 2</h4>
+          
+          <div style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #2c3e50;">¿En qué ciudad naciste?</label>
+          </div>
+
+          <div style="margin-bottom: 0;">
+            <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #2c3e50;">Respuesta</label>
+            <input
+              type="password"
+              [(ngModel)]="securityQuestionsForm[1].answer"
+              name="answer_2"
+              style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box;"
+              placeholder="Tu respuesta (será encriptada)"
+            />
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid #e9ecef;">
+          <button type="button" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; background: #6c757d; color: white;" (click)="closeModals()">
+            Cancelar
+          </button>
+          <button type="submit" style="padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;" [disabled]="loading">
+            <i class="fas fa-spinner fa-spin" *ngIf="loading" style="margin-right: 6px;"></i>
+            <i class="fas fa-save" *ngIf="!loading" style="margin-right: 6px;"></i>
+            {{ loading ? 'Guardando...' : 'Guardar Preguntas' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

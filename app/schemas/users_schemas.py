@@ -12,6 +12,8 @@ class UserCreate(UserBase):
     security_answer1: Optional[str] = None
     security_question2: Optional[str] = None
     security_answer2: Optional[str] = None
+    role_id: Optional[int] = None
+    is_active: Optional[bool] = True
 
     @field_validator("password")
     @classmethod
@@ -22,13 +24,28 @@ class UserCreate(UserBase):
             raise ValueError(str(e))
         return v
 
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    role_id: Optional[int] = None
+    is_active: Optional[bool] = None
+
 class UserLogin(BaseModel):
     username: str
     password: str
 
+class RoleInfo(BaseModel):
+    """Información básica del rol"""
+    id: int
+    name: str
+    
+    class Config:
+        from_attributes = True
+
 class UserOut(UserBase):
     id: int
-    is_active: bool   
+    role_id: Optional[int] = None
+    is_active: bool
+    role: Optional[RoleInfo] = None
 
     class Config:
         from_attributes = True
