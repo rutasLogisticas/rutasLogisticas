@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authChildGuard, authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -7,6 +8,8 @@ export const routes: Routes = [
   { path: 'recover', loadComponent: () => import('./pages/recover/recover.component').then(m => m.RecoverComponent) },
   {
     path: 'dashboard',
+    canActivate: [authGuard],
+    canActivateChild: [authChildGuard],
     loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.DashboardComponent),
     children: [
       { path: 'inicio', loadComponent: () => import('./pages/dashboard/inicio').then(m => m.InicioComponent) },
@@ -21,5 +24,6 @@ export const routes: Routes = [
       { path: 'usuarios', loadComponent: () => import('./pages/usuarios/usuarios').then(m => m.UsuariosComponent) },
       { path: 'perfil', loadComponent: () => import('./pages/profile/profile').then(m => m.ProfileComponent) },
     ]
-  }
+  },
+  { path: 'restricted', loadComponent: () => import('./pages/restricted/restricted').then(m => m.RestrictedComponent) }
 ];

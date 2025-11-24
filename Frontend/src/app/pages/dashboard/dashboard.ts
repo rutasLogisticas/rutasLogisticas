@@ -1,11 +1,8 @@
-import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuditService } from '../../services/audit';
-import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth';
 
 @Component({
@@ -18,30 +15,26 @@ import { AuthService } from '../../services/auth';
 export class DashboardComponent implements OnInit {
   username: string | null = null;
   userId: number | null = null;
-
-  constructor(
-    private auditService: AuditService,
-    private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
   showUserMenu = false;
   userRole: string | null = null;
   isAdmin: boolean = false;
   isOperador: boolean = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private auditService: AuditService,
+    private authService: AuthService,
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
   ngOnInit() {
-    // 🔥 Evita error en SSR
+    this.username = this.authService.getCurrentUsername();
+    // Mantener funcionalidad de roles para visibilidad del menú
     if (isPlatformBrowser(this.platformId)) {
-      this.username = localStorage.getItem('username');
-      this.userId = Number(localStorage.getItem('userId'));   // <-- AHORA SÍ la clave correcta
+      this.userId = Number(localStorage.getItem('userId') || localStorage.getItem('user_id'));
       this.userRole = this.authService.getCurrentRole();
       this.isAdmin = this.authService.isAdmin();
       this.isOperador = this.authService.isOperador();
-    } catch {
-      this.username = null;
-      this.userRole = null;
     }
   }
 
@@ -54,25 +47,23 @@ export class DashboardComponent implements OnInit {
   }
 
   logout() {
-    console.log("🟦 actorId enviado al backend:", this.userId);
-
-    this.auditService.registrarLogout(this.userId).subscribe({
-      next: () => {
-        if (isPlatformBrowser(this.platformId)) {
-          localStorage.clear();
+    // Registrar logout en auditoría si hay userId
+    if (this.userId) {
+      this.auditService.registrarLogout(this.userId).subscribe({
+        next: () => {
+          this.authService.clearSession();
+          this.router.navigate(['/login']);
+        },
+        error: (err) => {
+          console.error("Error registrando logout:", err);
+          this.authService.clearSession();
+          this.router.navigate(['/login']);
         }
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        console.error("Error registrando logout:", err);
-        if (isPlatformBrowser(this.platformId)) {
-          localStorage.clear();
-        }
-        this.router.navigate(['/login']);
-      }
-    });
-    this.authService.logout();
-    location.assign('/login');
+      });
+    } else {
+      this.authService.clearSession();
+      this.router.navigate(['/login']);
+    }
   }
 
   // Métodos para controlar visibilidad de elementos del menú

@@ -26,12 +26,12 @@ export class LoginComponent {
     this.auth.login({ username: this.username, password: this.password }).subscribe({
       next: (resp) => {
         this.loading = false;
-
         try {
-          localStorage.setItem('userId', String(resp.user_id));
-          localStorage.setItem('username', resp.username);
+          if (resp.user_id) {
+            localStorage.setItem('userId', String(resp.user_id));
+          }
         } catch {}
-
+        this.auth.setSession(this.username);
         this.router.navigate(['/dashboard/inicio']);
       },
       error: (err) => {

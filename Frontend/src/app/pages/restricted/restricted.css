@@ -1,0 +1,42 @@
+/* Fondo general */
+.restricted-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #cc7b45; /* fondo vinotinto */
+  overflow: hidden; /* evita scroll en la página */
+}
+
+.restricted-content {
+  text-align: center;
+  color: #fff;
+  padding: 2rem;
+}
+
+.restricted-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.restricted-content p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: #fff;
+}
+
+.restricted-link {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #2e2e2e;
+  color: #fff;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.restricted-link:hover {
+  background-color: #115293;
+}
+

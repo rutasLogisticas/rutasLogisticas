@@ -6,6 +6,7 @@ import { isPlatformBrowser } from '@angular/common';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private apiUrl: string;
+  private readonly storageKey = 'username';
 
   constructor(
     private http: HttpClient,
@@ -53,17 +54,13 @@ export class AuthService {
 
   // 🔹 Verificar si está autenticado
   isAuthenticated(): boolean {
-    return this.getToken() !== null;
-  }
-
-  // 🔹 Cerrar sesión
-  logout(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('username');
-      localStorage.removeItem('user_id');
-      localStorage.removeItem('role_id');
-      localStorage.removeItem('role_name');
+    if (!this.canUseBrowserStorage()) {
+      return false;
+    }
+    try {
+      return !!localStorage.getItem('token') && !!localStorage.getItem(this.storageKey);
+    } catch {
+      return false;
     }
   }
 
@@ -119,8 +116,38 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/userses/recovery`, data);
   }
 
-  logout() {
-    const storedUserId = localStorage.getItem("userId");
+  // 🔹 Establecer sesión
+  setSession(username: string): void {
+    if (!this.canUseBrowserStorage()) {
+      return;
+    }
+    try {
+      localStorage.setItem(this.storageKey, username);
+    } catch {
+      // ignored
+    }
+  }
+
+  // 🔹 Limpiar sesión
+  clearSession(): void {
+    if (!this.canUseBrowserStorage()) {
+      return;
+    }
+    try {
+      localStorage.removeItem('token');
+      localStorage.removeItem(this.storageKey);
+      localStorage.removeItem('user_id');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('role_id');
+      localStorage.removeItem('role_name');
+    } catch {
+      // ignored
+    }
+  }
+
+  // 🔹 Cerrar sesión (con llamada al backend)
+  logout(): Observable<any> {
+    const storedUserId = localStorage.getItem("userId") || localStorage.getItem("user_id");
     const storedUsername = localStorage.getItem("username");
 
     return this.http.post(
@@ -133,6 +160,20 @@ export class AuthService {
         }
       }
     );
+  }
+
+  // 🔹 Obtener nombre de usuario actual
+  getCurrentUsername(): string | null {
+    if (!this.canUseBrowserStorage()) {
+      return null;
+    }
+    try {
+      return localStorage.getItem(this.storageKey);
+    } catch {
+      return null;
+    }
+  }
+
   // 🔹 Obtener rol del usuario actual
   getCurrentRole(): string | null {
     if (isPlatformBrowser(this.platformId)) {
@@ -151,6 +192,11 @@ export class AuthService {
   isOperador(): boolean {
     const role = this.getCurrentRole()?.toLowerCase();
     return role === 'operador' || role === 'operadores' || role === 'user';
+  }
+
+  // 🔹 Verificar si se puede usar almacenamiento del navegador
+  private canUseBrowserStorage(): boolean {
+    return isPlatformBrowser(this.platformId);
   }
 
 }
