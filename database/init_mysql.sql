@@ -240,3 +240,28 @@ INSERT IGNORE INTO orders (order_number, client_id, driver_id, vehicle_id, origi
 ('ORD-20241026-0001', 1, 1, 1, 'Calle 100 #15-20, Bogotá', 'Carrera 7 #32-10, Medellín', 'Bogotá', 'Medellín', 'Envío de documentos importantes', 2.5, 50000.00, 'pendiente', 'alta'),
 ('ORD-20241026-0002', 2, 2, 2, 'Carrera 7 #32-10, Medellín', 'Avenida 68 #25-40, Cali', 'Medellín', 'Cali', 'Paquete de productos electrónicos', 15.0, 250000.00, 'asignado', 'media'),
 ('ORD-20241026-0003', 3, NULL, NULL, 'Avenida 68 #25-40, Cali', 'Calle 100 #15-20, Bogotá', 'Cali', 'Bogotá', 'Mercancía general', 8.0, 120000.00, 'pendiente', 'baja');
+
+-- 01_add_security_questions.sql
+ALTER TABLE users
+  ADD COLUMN security_question1 VARCHAR(255),
+  ADD COLUMN security_answer1_hash VARCHAR(255),
+  ADD COLUMN security_question2 VARCHAR(255),  
+  ADD COLUMN security_answer2_hash VARCHAR(255);
+
+-- Tabla de auditoría
+CREATE TABLE audit_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    actor_id INT NULL,
+    event_type VARCHAR(100) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    ip_address VARCHAR(50) NOT NULL,
+    extra_data TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+
+
+
+('ORD-20241026-0003', 3, NULL, NULL, 'Avenida 68 #25-40, Cali', 'Calle 100 #15-20, Bogotá', 'Cali', 'Bogotá', 'Mercancía general', 8.0, 120000.00, 'pendiente', 'baja');

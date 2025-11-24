@@ -16,6 +16,8 @@ from app.services.client_service import ClientService
 from app.services.driver_service import DriverService
 from app.services.vehicle_service import VehicleService
 from app.services.order_service import OrderService
+from app.services.audit_service import AuditService
+
 
 security = HTTPBearer()
 
@@ -76,4 +78,10 @@ def get_vehicle_service() -> VehicleService:
     return VehicleService()
 
 def get_order_service() -> OrderService:
+    """Dependency para obtener servicio de pedidos"""
+    return OrderService()
+
+def get_audit_service() -> AuditService:
+    """Dependency para obtener servicio de auditoría"""
+    return AuditService()
     return OrderService()

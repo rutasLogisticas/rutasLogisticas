@@ -6,6 +6,7 @@ from .vehicle import Vehicle
 from .driver import Driver
 from .client import Client
 from .order import Order
+from .audit_log import AuditLog
 from .users import User
 from .role import Role
 from .permission import Permission

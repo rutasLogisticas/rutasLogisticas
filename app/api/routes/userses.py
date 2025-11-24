@@ -1,3 +1,4 @@
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
@@ -13,11 +14,16 @@ from app.core.security import create_reset_token, verify_reset_token, verify_pas
 from app.api.dependencies import get_current_user
 from app.models.users import User
 import logging
+from app.services.audit_service import AuditService
+
+
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/userses", tags=["Usuarios"])
 service = UsersService()
+audit_service = AuditService()
+
 role_service = RoleService()
 
 
@@ -92,18 +98,43 @@ def get_users(
 # Login
 # -------------------------------------------------
 @router.post("/login")
-def login(user: UserLogin, db: Session = Depends(get_db)):
+def login(user: UserLogin, request: Request, db: Session = Depends(get_db)):
     # 1. Buscar usuario
     db_user = service.get_user_by_username(db, user.username)
     if not db_user:
+        audit_service.registrar_evento(
+        db=db,
+        actor=None,
+        event_type="login_fail",
+        description="Usuario no existe",
+        ip_address=request.client.host,
+        details={"username": user.username}
+    )
         # IMPORTANTE: devolvemos 404 si el usuario no existe
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
     # 2. Validar contraseña usando verify_password del core.security
     if not verify_password(user.password, db_user.password_hash):
         # Si el hash NO coincide con lo que el usuario escribió
+        audit_service.registrar_evento(
+        db=db,
+        actor=db_user.username,
+        event_type="login_fail",
+        description="Contraseña incorrecta",
+        ip_address=request.client.host,
+        details=None
+    )
         raise HTTPException(status_code=401, detail="Contraseña incorrecta")
 
+    # 3. Ok
+    audit_service.registrar_evento(
+        db=db,
+        actor=db_user.id,
+        event_type="login_success",
+        description="Inicio de sesión exitoso",
+        ip_address=request.client.host,
+        details={}
+    )
     # 3. Generar token JWT
     access_token = create_access_token(data={"sub": db_user.username})
     
@@ -164,7 +195,7 @@ def recovery_verify(payload: VerifyAnswersIn, db: Session = Depends(get_db)):
 # Paso 3: reset password
 # -------------------------------------------------
 @router.post("/recovery/reset")
-def recovery_reset(payload: ResetPasswordIn, db: Session = Depends(get_db)):
+def recovery_reset(payload: ResetPasswordIn, request: Request, db: Session = Depends(get_db)):
     try:
         # modo prueba:
         if payload.token == "token-fijo":
@@ -179,9 +210,22 @@ def recovery_reset(payload: ResetPasswordIn, db: Session = Depends(get_db)):
         logger.info(f"Intentando resetear contraseña para usuario: {username}")
         updated = service.update_password(db, username, payload.new_password)
 
+        db_user = service.get_user_by_username(db, username)
         if not updated:
             logger.warning(f"Usuario no encontrado para reset: {username}")
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        
+        service.update_password(db, username, payload.new_password)
+
+        audit_service.registrar_evento(
+            db=db,
+            actor=db_user.id,
+            event_type="PASSWORD_RESET",
+            description="Usuario cambió su contraseña",
+            ip_address=request.client.host,
+            details={}
+        )
+
 
         logger.info(f"Contraseña actualizada exitosamente para usuario: {username}")
         return {"message": "Contraseña actualizada"}
@@ -194,6 +238,26 @@ def recovery_reset(payload: ResetPasswordIn, db: Session = Depends(get_db)):
         logger.error(f"Error inesperado en recovery/reset: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
 
+# -------------------------------------------------
+# Logout (cierre de sesión)
+# -------------------------------------------------
+@router.post("/logout")
+async def logout(request: Request, db: Session = Depends(get_db)):
+    data = await request.json()
+    actor_id = data.get("actor_id")
+
+    ip = request.client.host
+
+    audit_service.registrar_evento(
+        db=db,
+        actor=actor_id,
+        event_type="logout",
+        description="Cierre de sesión",
+        ip_address=ip,
+        details={}
+    )
+
+    return {"message": "Logout registrado"}
 
 # -------------------------------------------------
 # Cambiar contraseña (usuario autenticado)

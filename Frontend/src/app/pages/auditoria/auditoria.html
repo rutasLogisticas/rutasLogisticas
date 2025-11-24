@@ -1,0 +1,102 @@
+<div class="audit-container">
+  <h2>Auditoría del sistema</h2>
+  <p class="subtitle">
+    Consulta de eventos clave para investigar incidencias y trazabilidad
+    de acciones dentro de la plataforma.
+  </p>
+
+  <!-- FORMULARIO DE FILTROS -->
+  <form class="filters" (ngSubmit)="loadLogs()">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="event_type">Tipo de evento</label>
+        <input
+          id="event_type"
+          type="text"
+          [(ngModel)]="filter.event_type"
+          name="event_type"
+          placeholder="LOGIN_SUCCESS, ORDER_CREATED..."
+        />
+      </div>
+
+      <div class="filter-group">
+        <label for="actor_id">ID Usuario</label>
+        <input
+          id="actor_id"
+          type="number"
+          [(ngModel)]="filter.actor_id"
+          name="actor_id"
+          placeholder="Ej: 1"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label for="start_date">Fecha desde</label>
+        <input
+          id="start_date"
+          type="date"
+          [(ngModel)]="filter.start_date"
+          name="start_date"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label for="end_date">Fecha hasta</label>
+        <input
+          id="end_date"
+          type="date"
+          [(ngModel)]="filter.end_date"
+          name="end_date"
+        />
+      </div>
+    </div>
+
+    <div class="buttons-row">
+      <button type="submit" class="btn primary" [disabled]="isLoading">
+        Buscar
+      </button>
+      <button type="button" class="btn secondary" (click)="clearFilters()" [disabled]="isLoading">
+        Limpiar filtros
+      </button>
+    </div>
+  </form>
+
+  <!-- MENSAJES DE ESTADO -->
+  <div *ngIf="isLoading" class="status loading">
+    Cargando registros de auditoría...
+  </div>
+
+  <div *ngIf="!isLoading && errorMessage" class="status error">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!isLoading && !errorMessage && logs.length === 0" class="status empty">
+    No se encontraron registros con los filtros aplicados.
+  </div>
+
+  <!-- TABLA DE RESULTADOS -->
+  <div *ngIf="!isLoading && logs.length > 0" class="table-wrapper">
+    <table class="audit-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha</th>
+          <th>Tipo de evento</th>
+          <th>Descripción</th>
+          <th>Usuario</th>
+          <th>IP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let log of logs">
+          <td>{{ log.id }}</td>
+          <td>{{ log.created_at | date:'short' }}</td>
+          <td>{{ log.event_type }}</td>
+          <td>{{ log.description }}</td>
+          <td>{{ formatActorId(log) }}</td>
+          <td>{{ log.ip_address || 'N/D' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
