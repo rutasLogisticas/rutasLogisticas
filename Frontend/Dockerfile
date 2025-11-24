@@ -12,8 +12,8 @@ WORKDIR /app
 # Copiar archivos de dependencias
 COPY package*.json ./
 
-# Instalar dependencias
-RUN npm ci
+# Instalar dependencias según package.json (incluye jspdf, jspdf-autotable)
+RUN npm install
 
 # Copiar el resto del código
 COPY . .
@@ -23,4 +23,3 @@ EXPOSE 4200
 
 # Comando para desarrollo con hot-reload
 CMD ["npm", "start", "--", "--host", "0.0.0.0", "--poll", "2000"]
-

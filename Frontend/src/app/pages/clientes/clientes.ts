@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClientsService, ClientSummary, ClientCreate, ClientUpdate } from '../../services/clients';
+import { ExportService } from '../../services/export.service';
 
 @Component({
   selector: 'app-clientes',
@@ -36,7 +37,7 @@ export class ClientesComponent implements OnInit {
     is_active: true
   };
 
-  constructor(private clientsService: ClientsService) {}
+  constructor(private clientsService: ClientsService, private exportService: ExportService) {}
 
   ngOnInit(): void {
     this.load();
@@ -190,4 +191,68 @@ export class ClientesComponent implements OnInit {
       });
     }
   }
+    exportClientsCSV(): void {
+    if (!this.clients || this.clients.length === 0) {
+      console.warn('No hay clientes para exportar');
+      return;
+    }
+
+    const headers = ['Nombre', 'Email', 'Teléfono', 'Empresa', 'Tipo', 'Estado', 'Activo'];
+
+    const rows = this.clients.map((c) => [
+      c.name,
+      c.email,
+      c.phone,
+      c.company || '-',
+      c.client_type,
+      c.status,
+      c.is_active ? 'Sí' : 'No'
+    ]);
+
+    this.exportService.downloadCSV('clientes', headers, rows);
+  }
+
+  exportClientsExcel(): void {
+    if (!this.clients || this.clients.length === 0) {
+      console.warn('No hay clientes para exportar');
+      return;
+    }
+
+    const headers = ['Nombre', 'Email', 'Teléfono', 'Empresa', 'Tipo', 'Estado', 'Activo'];
+
+    const rows = this.clients.map((c) => [
+      c.name,
+      c.email,
+      c.phone,
+      c.company || '-',
+      c.client_type,
+      c.status,
+      c.is_active ? 'Sí' : 'No'
+    ]);
+
+    this.exportService.downloadExcel('clientes', headers, rows);
+  }
+
+  exportClientsPDF(): void {
+    if (!this.clients || this.clients.length === 0) {
+      console.warn('No hay clientes para exportar');
+      return;
+    }
+
+    const headers = ['Nombre', 'Email', 'Teléfono', 'Empresa', 'Tipo', 'Estado', 'Activo'];
+
+    const rows = this.clients.map((c) => [
+      c.name,
+      c.email,
+      c.phone,
+      c.company || '-',
+      c.client_type,
+      c.status,
+      c.is_active ? 'Sí' : 'No'
+    ]);
+
+    this.exportService.downloadPdf('clientes', 'Reporte de Clientes', headers, rows);
+  }
+
+
 }

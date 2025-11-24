@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { VehiclesService, VehicleSummary, VehicleCreate, VehicleUpdate } from '../../services/vehicles';
+import { ExportService } from '../../services/export.service';
 
 @Component({
   selector: 'app-vehiculos',
@@ -29,7 +30,7 @@ export class VehiculosComponent implements OnInit {
     is_available: true
   };
 
-  constructor(private vehiclesService: VehiclesService) {}
+  constructor(private vehiclesService: VehiclesService,private exportService: ExportService) {}
 
   ngOnInit(): void {
     this.load();
@@ -205,4 +206,71 @@ export class VehiculosComponent implements OnInit {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   }
+  
+    exportVehiclesCSV(): void {
+    if (!this.vehicles || this.vehicles.length === 0) {
+      console.warn('No hay vehículos para exportar');
+      return;
+    }
+
+    const headers = ['Placa', 'Marca', 'Modelo', 'Año', 'Tipo', 'Estado', 'Disponible'];
+
+    const rows = this.vehicles.map((v) => [
+      v.license_plate,
+      v.brand,
+      v.model,
+      v.year,
+      v.vehicle_type,
+      this.formatStatus(v.status),
+      v.is_available ? 'Sí' : 'No'
+    ]);
+
+    // 👇 ahora usamos el servicio, no this.exportToCSV
+    this.exportService.downloadCSV('vehiculos', headers, rows);
+  }
+
+  exportVehiclesExcel(): void {
+    if (!this.vehicles || this.vehicles.length === 0) {
+      console.warn('No hay vehículos para exportar');
+      return;
+    }
+
+    const headers = ['Placa', 'Marca', 'Modelo', 'Año', 'Tipo', 'Estado', 'Disponible'];
+
+    const rows = this.vehicles.map((v) => [
+      v.license_plate,
+      v.brand,
+      v.model,
+      v.year,
+      v.vehicle_type,
+      this.formatStatus(v.status),
+      v.is_available ? 'Sí' : 'No'
+    ]);
+
+    // 👇 Excel también va como CSV (que Excel abre normal)
+    this.exportService.downloadExcel('vehiculos', headers, rows);
+  }
+
+  exportVehiclesPDF(): void {
+    if (!this.vehicles || this.vehicles.length === 0) {
+      console.warn('No hay vehículos para exportar');
+      return;
+    }
+
+    const headers = ['Placa', 'Marca', 'Modelo', 'Año', 'Tipo', 'Estado', 'Disponible'];
+
+    const rows = this.vehicles.map((v) => [
+      v.license_plate,
+      v.brand,
+      v.model,
+      v.year,
+      v.vehicle_type,
+      this.formatStatus(v.status),
+      v.is_available ? 'Sí' : 'No'
+    ]);
+
+    // 👇 usamos el servicio para PDF
+    this.exportService.downloadPdf('vehiculos', 'Reporte de Vehículos', headers, rows);
+  }
+
 }
