@@ -1,315 +1,262 @@
-<div class="reports-container">
-  <div class="header">
-    <h1>Reportes y Estadísticas</h1>
-    <button class="btn btn-primary" (click)="loadAllReports()" [disabled]="isLoading">
-      <i class="fas fa-sync-alt" [class.fa-spin]="isLoading"></i>
-      {{ isLoading ? 'Cargando...' : 'Actualizar' }}
-    </button>
-  </div>
-
-  <!-- Mensaje de error -->
-  <div class="alert alert-danger" *ngIf="errorMessage">
-    <i class="fas fa-exclamation-triangle"></i>
-    {{ errorMessage }}
-  </div>
-
-  <!-- Loading state -->
-  <div class="loading-state" *ngIf="isLoading">
-    <i class="fas fa-spinner fa-spin"></i>
-    <p>Cargando reportes...</p>
-  </div>
-
-  <!-- Resumen General -->
-  <div class="overview-section" *ngIf="overview && !isLoading">
-    <h2 class="section-title">
-      <i class="fas fa-chart-line"></i> Resumen General del Sistema
-    </h2>
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-          <i class="fas fa-box"></i>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ overview.summary.total_orders }}</div>
-          <div class="stat-label">Total Pedidos</div>
-          <div class="stat-detail">
-            <span class="badge badge-warning">{{ overview.summary.pending_orders }} Pendientes</span>
-            <span class="badge badge-success">{{ overview.summary.delivered_orders || 0 }} Entregados</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-          <i class="fas fa-truck"></i>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ overview.summary.total_vehicles }}</div>
-          <div class="stat-label">Total Vehículos</div>
-          <div class="stat-detail">
-            <span class="badge badge-success">{{ overview.summary.available_vehicles || 0 }} Disponibles</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-          <i class="fas fa-id-card"></i>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ overview.summary.total_drivers }}</div>
-          <div class="stat-label">Total Conductores</div>
-          <div class="stat-detail">
-            <span class="badge badge-success">{{ overview.summary.available_drivers || 0 }} Disponibles</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-          <i class="fas fa-users"></i>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ overview.summary.total_clients }}</div>
-          <div class="stat-label">Total Clientes</div>
-        </div>
-      </div>
-
-      <div class="stat-card highlight">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">
-          <i class="fas fa-dollar-sign"></i>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ formatCurrency(overview.summary.total_value || 0) }}</div>
-          <div class="stat-label">Valor Total</div>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
-          <i class="fas fa-calendar-alt"></i>
-        </div>
-        <div class="stat-content">
-          <div class="stat-value">{{ overview.summary.recent_orders || 0 }}</div>
-          <div class="stat-label">Pedidos (30 días)</div>
-        </div>
-      </div>
+<div class="page-content">
+  <!-- ENCABEZADO -->
+  <div class="reportes-header">
+    <div class="header-content">
+      <h2>📊 Reportes y Estadísticas</h2>
+      <p>Genera informes detallados de clientes, pedidos, vehículos y conductores</p>
     </div>
   </div>
 
-  <!-- Reporte de Pedidos -->
-  <div class="report-section" *ngIf="ordersSummary && !isLoading">
-    <h2 class="section-title">
-      <i class="fas fa-box icon"></i> Reporte de Pedidos
-    </h2>
-    <div class="report-grid">
-      <div class="report-card">
-        <h3>Total de Pedidos</h3>
-        <div class="big-number">{{ ordersSummary.total_orders }}</div>
-        <div class="sub-info">
-          <span class="badge badge-primary">{{ ordersSummary.assigned || 0 }} Asignados</span>
-          <span class="badge badge-secondary">{{ ordersSummary.unassigned || 0 }} Sin Asignar</span>
-        </div>
-      </div>
+  <!-- (Gráficos de vehículos removidos) -->
 
-      <div class="report-card" *ngIf="ordersSummary.total_value && ordersSummary.total_value > 0">
-        <h3>Valor Total</h3>
-        <div class="big-number">{{ formatCurrency(ordersSummary.total_value || 0) }}</div>
-      </div>
+  <!-- MENSAJE DE ERROR -->
+  <div *ngIf="error" class="error-message">
+    ⚠️ {{ error }}
+  </div>
+
+  <!-- TARJETAS DE REPORTES -->
+  <div class="reportes-grid">
+    <!-- Clientes -->
+    <div
+      class="reporte-card"
+      [class.active]="tipoReporte === 'clientes'"
+      (click)="seleccionarReporte('clientes')"
+    >
+      <div class="card-icon">👥</div>
+      <h3>Reporte de Clientes</h3>
+      <p>Listado de clientes con información y estado.</p>
     </div>
 
-    <div class="chart-container">
-      <h3>Pedidos por Estado</h3>
-      <div class="chart-content">
-        <div class="chart-item" *ngFor="let item of ordersSummary.by_status | keyvalue">
+    <!-- Pedidos -->
+    <div
+      class="reporte-card"
+      [class.active]="tipoReporte === 'pedidos'"
+      (click)="seleccionarReporte('pedidos')"
+    >
+      <div class="card-icon">📦</div>
+      <h3>Reporte de Pedidos</h3>
+      <p>Historial de pedidos y estados de entrega.</p>
+    </div>
+
+    <!-- Vehículos -->
+    <div
+      class="reporte-card"
+      [class.active]="tipoReporte === 'vehiculos'"
+      (click)="seleccionarReporte('vehiculos')"
+    >
+      <div class="card-icon">🚚</div>
+      <h3>Reporte de Vehículos</h3>
+      <p>Inventario y estado operativo de los vehículos.</p>
+    </div>
+
+    <!-- Conductores -->
+    <div
+      class="reporte-card"
+      [class.active]="tipoReporte === 'conductores'"
+      (click)="seleccionarReporte('conductores')"
+    >
+      <div class="card-icon">🪪</div>
+      <h3>Reporte de Conductores</h3>
+      <p>Disponibilidad y rutas completadas.</p>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filtros-panel" *ngIf="tipoReporte">
+    <h3>🔍 Filtros</h3>
+
+    <div class="filtros-grid">
+      <div class="filtro-item" *ngIf="tipoReporte !== 'conductores' && tipoReporte !== 'vehiculos' && tipoReporte !== 'clientes'">
+        <label for="fechaInicio">Fecha Inicio</label>
+        <input 
+          id="fechaInicio"
+          type="date" 
+          [(ngModel)]="filtros.fechaInicio"
+          name="fechaInicio" />
+      </div>
+
+      <div class="filtro-item" *ngIf="tipoReporte !== 'conductores' && tipoReporte !== 'vehiculos' && tipoReporte !== 'clientes'">
+        <label for="fechaFin">Fecha Fin</label>
+        <input 
+          id="fechaFin"
+          type="date" 
+          [(ngModel)]="filtros.fechaFin"
+          name="fechaFin" />
+      </div>
+
+      <div class="filtro-item" *ngIf="tipoReporte === 'clientes'">
+        <label for="nombreCliente">Nombre Cliente</label>
+        <input 
+          id="nombreCliente"
+          type="text" 
+          [(ngModel)]="filtros.nombreCliente"
+          name="nombreCliente"
+          placeholder="Buscar por nombre..." />
+      </div>
+
+      <div class="filtro-item" *ngIf="tipoReporte === 'clientes'">
+        <label for="tipoCliente">Tipo Cliente</label>
+        <select 
+          id="tipoCliente"
+          [(ngModel)]="filtros.tipoCliente"
+          name="tipoCliente">
+          <option value="">Todos</option>
+          <option value="persona">Persona</option>
+          <option value="empresa">Empresa</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+
+      <div class="filtro-item" *ngIf="tipoReporte === 'pedidos'">
+        <label for="estadoPedido">Estado Pedido</label>
+        <select 
+          id="estadoPedido"
+          [(ngModel)]="filtros.estadoPedido"
+          name="estadoPedido">
+          <option value="">Todos</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="en_proceso">En Proceso</option>
+          <option value="completado">Completado</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+      </div>
+
+      <div class="filtro-item" *ngIf="tipoReporte === 'pedidos'">
+        <label for="ciudadOrigen">Ciudad Origen</label>
+        <input 
+          id="ciudadOrigen"
+          type="text" 
+          [(ngModel)]="filtros.ciudadOrigen"
+          name="ciudadOrigen"
+          placeholder="Buscar ciudad origen..." />
+      </div>
+
+      <div class="filtro-item" *ngIf="tipoReporte === 'pedidos'">
+        <label for="ciudadDestino">Ciudad Destino</label>
+        <input 
+          id="ciudadDestino"
+          type="text" 
+          [(ngModel)]="filtros.ciudadDestino"
+          name="ciudadDestino"
+          placeholder="Buscar ciudad destino..." />
+      </div>
+
+      <div class="filtro-item" *ngIf="tipoReporte === 'vehiculos'">
+        <label for="tipoVehiculo">Tipo Vehículo</label>
+        <select 
+          id="tipoVehiculo"
+          [(ngModel)]="filtros.tipoVehiculo"
+          name="tipoVehiculo">
+          <option value="">Todos</option>
+          <option value="camioneta">Camioneta</option>
+          <option value="furgon">Furgón</option>
+          <option value="camion">Camión</option>
+          <option value="moto">Moto</option>
+        </select>
+      </div>
+
+      <div class="filtro-item" *ngIf="tipoReporte === 'vehiculos'">
+        <label for="disponibilidad">Disponibilidad</label>
+        <select 
+          id="disponibilidad"
+          [(ngModel)]="filtros.disponibilidad"
+          name="disponibilidad">
+          <option value="">Todos</option>
+          <option value="disponible">Disponible</option>
+          <option value="no_disponible">No Disponible</option>
+        </select>
+      </div>
+
+      <div class="filtro-item" *ngIf="tipoReporte === 'conductores'">
+        <label for="nombreConductor">Nombre Conductor</label>
+        <input 
+          id="nombreConductor"
+          type="text" 
+          [(ngModel)]="filtros.nombreConductor"
+          name="nombreConductor"
+          placeholder="Buscar por nombre..." />
+      </div>
+
+      <div class="filtro-item" *ngIf="tipoReporte === 'conductores'">
+        <label for="tipoLicencia">Tipo Licencia</label>
+        <select 
+          id="tipoLicencia"
+          [(ngModel)]="filtros.tipoLicencia"
+          name="tipoLicencia">
+          <option value="">Todos</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+          <option value="E">E</option>
+        </select>
+      </div>
+
+      <div class="filtro-item" *ngIf="tipoReporte === 'conductores'">
+        <label for="estadoConductor">Estado</label>
+        <select 
+          id="estadoConductor"
+          [(ngModel)]="filtros.estadoConductor"
+          name="estadoConductor">
+          <option value="">Todos</option>
+          <option value="activo">Activo</option>
+          <option value="inactivo">Inactivo</option>
+          <option value="suspendido">Suspendido</option>
+        </select>
+      </div>
+
+    <div class="filtros-actions">
+      <button class="btn-primary" (click)="generarReporte()">📄 Generar</button>
+      <button class="btn-secondary" (click)="limpiarFiltros()">🧹 Limpiar</button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="loading" class="loading">
+    <div class="loading-spinner"></div>
+    Generando reporte...
+  </div>
+
+  <!-- ESTADÍSTICAS RESUMEN -->
+  <div class="resumen-stats" *ngIf="!loading && estadisticasResumen.length > 0">
+    <div class="stat-card" *ngFor="let stat of estadisticasResumen">
+      <div class="stat-card-label">{{ stat.label }}</div>
+      <div class="stat-card-value">{{ stat.value }}</div>
+    </div>
+  </div>
+
+  <!-- GRÁFICOS PARA PEDIDOS -->
+  <div class="graficos-section" *ngIf="!loading && tipoReporte === 'pedidos' && datosReporte.length > 0">
+    <!-- Gráfico de Estados -->
+    <div class="grafico-container" *ngIf="graficoEstados">
+      <h3>📊 Distribución de Pedidos por Estado</h3>
+      <div class="chart-wrapper">
+        <div class="chart-bar-wrapper" *ngFor="let item of graficoEstados">
+          <div class="chart-bar-label">{{ item.label }}</div>
           <div class="chart-bar-container">
-            <div class="chart-bar-label">{{ item.key | titlecase }}</div>
-            <div class="chart-bar-wrapper">
-              <div class="chart-bar" [style.width.%]="(item.value / ordersSummary.total_orders) * 100" 
-                   [style.background-color]="getStatusColor(item.key)">
-                <span class="chart-value">{{ item.value }}</span>
-              </div>
+            <div 
+              class="chart-bar"
+              [style.width.%]="item.porcentaje"
+              [style.backgroundColor]="item.color">
+              <span class="chart-value">{{ item.count }}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="chart-container" *ngIf="ordersSummary.by_priority && Object.keys(ordersSummary.by_priority).length > 0">
-      <h3>Pedidos por Prioridad</h3>
-      <div class="chart-content">
-        <div class="chart-item" *ngFor="let item of ordersSummary.by_priority | keyvalue">
-          <div class="priority-badge" [style.background-color]="getPriorityColor(item.key)">
-            {{ item.key | titlecase }}: {{ item.value }}
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="chart-container" *ngIf="ordersSummary.by_destination && Object.keys(ordersSummary.by_destination).length > 0">
-      <h3>Top Ciudades Destino</h3>
-      <div class="table-container">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Ciudad</th>
-              <th>Pedidos</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of ordersSummary.by_destination | keyvalue">
-              <td>{{ item.key }}</td>
-              <td><strong>{{ item.value }}</strong></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- Reporte de Vehículos -->
-  <div class="report-section" *ngIf="vehiclesSummary && !isLoading">
-    <h2 class="section-title">
-      <i class="fas fa-truck icon"></i> Reporte de Vehículos
-    </h2>
-    <div class="report-grid">
-      <div class="report-card">
-        <h3>Total Vehículos</h3>
-        <div class="big-number">{{ vehiclesSummary.total_vehicles }}</div>
-        <div class="sub-info">
-          <span class="badge badge-success">{{ vehiclesSummary.available || 0 }} Disponibles</span>
-          <span class="badge badge-warning">{{ vehiclesSummary.busy || 0 }} En Uso</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="chart-container" *ngIf="vehiclesSummary.by_type && Object.keys(vehiclesSummary.by_type).length > 0">
-      <h3>Vehículos por Tipo</h3>
-      <div class="chart-content">
-        <div class="chart-item" *ngFor="let item of vehiclesSummary.by_type | keyvalue">
+    <!-- Gráfico de Ciudades Destino -->
+    <div class="grafico-container" *ngIf="graficoCiudades">
+      <h3>🏙️ Pedidos por Ciudad Destino (Top 10)</h3>
+      <div class="chart-wrapper">
+        <div class="chart-bar-wrapper" *ngFor="let item of graficoCiudades">
+          <div class="chart-bar-label">{{ item.label }}</div>
           <div class="chart-bar-container">
-            <div class="chart-bar-label">{{ item.key | titlecase }}</div>
-            <div class="chart-bar-wrapper">
-              <div class="chart-bar" [style.width.%]="(item.value / vehiclesSummary.total_vehicles) * 100">
-                <span class="chart-value">{{ item.value }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="chart-container" *ngIf="vehiclesSummary.top_vehicles && vehiclesSummary.top_vehicles.length > 0">
-      <h3>Top Vehículos por Pedidos</h3>
-      <div class="table-container">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Placa</th>
-              <th>Tipo</th>
-              <th>Pedidos</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let vehicle of vehiclesSummary.top_vehicles">
-              <td><strong>{{ vehicle.license_plate }}</strong></td>
-              <td>{{ vehicle.vehicle_type | titlecase }}</td>
-              <td><span class="badge badge-info">{{ vehicle.order_count }}</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- Reporte de Conductores -->
-  <div class="report-section" *ngIf="driversSummary && !isLoading">
-    <h2 class="section-title">
-      <i class="fas fa-id-card icon"></i> Reporte de Conductores
-    </h2>
-    <div class="report-grid">
-      <div class="report-card">
-        <h3>Total Conductores</h3>
-        <div class="big-number">{{ driversSummary.total_drivers }}</div>
-        <div class="sub-info">
-          <span class="badge badge-success">{{ driversSummary.available_drivers }} Disponibles</span>
-          <span class="badge badge-warning">{{ driversSummary.busy_drivers }} Ocupados</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="chart-container" *ngIf="driversSummary.top_drivers && driversSummary.top_drivers.length > 0">
-      <h3>Top Conductores por Pedidos</h3>
-      <div class="table-container">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Documento</th>
-              <th>Pedidos</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let driver of driversSummary.top_drivers">
-              <td><strong>{{ driver.name }}</strong></td>
-              <td>{{ driver.document_number }}</td>
-              <td><span class="badge badge-info">{{ driver.order_count }}</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- Reporte de Clientes -->
-  <div class="report-section" *ngIf="clientsSummary && !isLoading">
-    <h2 class="section-title">
-      <i class="fas fa-users icon"></i> Reporte de Clientes
-    </h2>
-    <div class="report-grid">
-      <div class="report-card">
-        <h3>Total Clientes</h3>
-        <div class="big-number">{{ clientsSummary.total_clients }}</div>
-        <div class="sub-info" *ngIf="clientsSummary.clients_without_orders !== undefined">
-          <span class="badge badge-secondary">{{ clientsSummary.clients_without_orders }} Sin Pedidos</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="chart-container" *ngIf="clientsSummary.top_clients && clientsSummary.top_clients.length > 0">
-      <h3>Top Clientes</h3>
-      <div class="table-container">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Cliente</th>
-              <th>Empresa</th>
-              <th>Pedidos</th>
-              <th>Valor Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let client of clientsSummary.top_clients">
-              <td><strong>{{ client.name }}</strong></td>
-              <td>{{ client.company }}</td>
-              <td><span class="badge badge-info">{{ client.order_count }}</span></td>
-              <td><strong>{{ formatCurrency(client.total_value) }}</strong></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="chart-container" *ngIf="clientsSummary.by_company && Object.keys(clientsSummary.by_company).length > 0">
-      <h3>Clientes por Empresa</h3>
-      <div class="chart-content">
-        <div class="chart-item" *ngFor="let item of clientsSummary.by_company | keyvalue">
-          <div class="chart-bar-container">
-            <div class="chart-bar-label">{{ item.key }}</div>
-            <div class="chart-bar-wrapper">
-              <div class="chart-bar" [style.width.%]="(item.value / clientsSummary.total_clients) * 100">
-                <span class="chart-value">{{ item.value }}</span>
-              </div>
+            <div 
+              class="chart-bar"
+              [style.width.%]="item.porcentaje"
+              [style.backgroundColor]="item.color">
+              <span class="chart-value">{{ item.count }}</span>
             </div>
           </div>
         </div>
@@ -317,10 +264,83 @@
     </div>
   </div>
 
-  <!-- Empty state -->
-  <div class="empty-state" *ngIf="!isLoading && !overview && !errorMessage">
-    <i class="fas fa-chart-line"></i>
-    <h4>No hay datos disponibles</h4>
-    <p>Los reportes se mostrarán cuando haya información en el sistema.</p>
+  <!-- GRÁFICOS PARA CLIENTES -->
+  <div class="graficos-section" *ngIf="!loading && tipoReporte === 'clientes' && datosReporte.length > 0">
+    <!-- Gráfico de Tipo Cliente -->
+    <div class="grafico-container" *ngIf="graficoTipoCliente">
+      <h3>👥 Distribución por Tipo de Cliente</h3>
+      <div class="chart-wrapper">
+        <div class="chart-bar-wrapper" *ngFor="let item of graficoTipoCliente">
+          <div class="chart-bar-label">{{ item.label }}</div>
+          <div class="chart-bar-container">
+            <div 
+              class="chart-bar"
+              [style.width.%]="item.porcentaje"
+              [style.backgroundColor]="item.color">
+              <span class="chart-value">{{ item.count }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico de Estado Cliente -->
+    <div class="grafico-container" *ngIf="graficoEstadoCliente">
+      <h3>📈 Distribución por Estado</h3>
+      <div class="chart-wrapper">
+        <div class="chart-bar-wrapper" *ngFor="let item of graficoEstadoCliente">
+          <div class="chart-bar-label">{{ item.label }}</div>
+          <div class="chart-bar-container">
+            <div 
+              class="chart-bar"
+              [style.width.%]="item.porcentaje"
+              [style.backgroundColor]="item.color">
+              <span class="chart-value">{{ item.count }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLA DE RESULTADOS -->
+  <div class="reporte-table-wrapper" *ngIf="!loading && datosReporte && datosReporte.length > 0">
+    <div class="reporte-table-header">
+      <h3>{{ tituloReporte }}</h3>
+      <div class="table-actions">
+        <button class="btn-success" (click)="exportarPDF()">📄 PDF</button>
+        <button class="btn-secondary" (click)="exportarExcel()">📊 Excel</button>
+        <button class="btn-secondary" (click)="imprimirReporte()">🖨️ Imprimir</button>
+      </div>
+    </div>
+
+    <div id="reporte-content">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th *ngFor="let col of getColumnKeys()">{{ formatColumnName(col) }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of datosReporte">
+            <td *ngFor="let col of getColumnKeys()">{{ getColumnValue(item, col) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SIN RESULTADOS -->
+  <div class="empty-state" *ngIf="!loading && tipoReporte && datosReporte && datosReporte.length === 0">
+    <div class="empty-state-icon">🔭</div>
+    <h3>No hay datos</h3>
+    <p>Prueba con otros filtros o fechas.</p>
+  </div>
+
+  <!-- SIN SELECCIÓN -->
+  <div class="empty-state" *ngIf="!loading && !tipoReporte">
+    <div class="empty-state-icon">📊</div>
+    <h3>Selecciona un tipo de reporte</h3>
+    <p>Haz clic en una tarjeta para comenzar.</p>
   </div>
 </div>
