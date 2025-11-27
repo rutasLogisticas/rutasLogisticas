@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 
 @Component({
   selector: 'app-reportes',
-  standalone: true, 
+  standalone: true,
   imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './reportes.html',
   styleUrls: ['./reportes.css']
@@ -253,7 +253,7 @@ export class ReportesComponent {
       const enProceso = this.datosReporte.filter(p => 
         ['asignado', 'en_proceso', 'in_transit'].includes(p.status?.toLowerCase())
       ).length;
-      
+
       this.estadisticasResumen = [
         { label: 'Total', value: total },
         { label: 'Completados', value: completados },
@@ -402,7 +402,7 @@ export class ReportesComponent {
       color: coloresEstado[estado.toLowerCase()] || '#FF9800'
     }));
   }
-  
+
 
   // Métodos para la tabla
   getColumnKeys(): string[] {
@@ -494,10 +494,10 @@ export class ReportesComponent {
     
     // Formatear valores monetarios
     if (key === 'value' && typeof value === 'number') {
-      return new Intl.NumberFormat('es-CO', {
-        style: 'currency',
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
         currency: 'COP'
-      }).format(value);
+    }).format(value);
     }
     
     if (typeof value === 'object') return JSON.stringify(value);

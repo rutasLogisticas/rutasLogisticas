@@ -334,8 +334,8 @@
   border-radius: 12px;
   padding: 30px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-}
-
+  }
+  
 .grafico-container h3 {
   margin: 0 0 25px 0;
   color: #2c3e50;
@@ -345,8 +345,8 @@
 
 .chart-wrapper {
   display: flex;
-  flex-direction: column;
-  gap: 15px;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .chart-bar-wrapper {
@@ -368,8 +368,8 @@
   border-radius: 8px;
   overflow: hidden;
   position: relative;
-}
-
+  }
+  
 .chart-bar {
   height: 100%;
   display: flex;

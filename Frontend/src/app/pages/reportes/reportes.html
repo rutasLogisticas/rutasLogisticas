@@ -36,7 +36,7 @@
       <div class="card-icon">📦</div>
       <h3>Reporte de Pedidos</h3>
       <p>Historial de pedidos y estados de entrega.</p>
-    </div>
+  </div>
 
     <!-- Vehículos -->
     <div
@@ -47,7 +47,7 @@
       <div class="card-icon">🚚</div>
       <h3>Reporte de Vehículos</h3>
       <p>Inventario y estado operativo de los vehículos.</p>
-    </div>
+        </div>
 
     <!-- Conductores -->
     <div
@@ -58,8 +58,8 @@
       <div class="card-icon">🪪</div>
       <h3>Reporte de Conductores</h3>
       <p>Disponibilidad y rutas completadas.</p>
-    </div>
-  </div>
+          </div>
+        </div>
 
   <!-- FILTROS -->
   <div class="filtros-panel" *ngIf="tipoReporte">
@@ -82,7 +82,7 @@
           type="date" 
           [(ngModel)]="filtros.fechaFin"
           name="fechaFin" />
-      </div>
+        </div>
 
       <div class="filtro-item" *ngIf="tipoReporte === 'clientes'">
         <label for="nombreCliente">Nombre Cliente</label>
@@ -92,7 +92,7 @@
           [(ngModel)]="filtros.nombreCliente"
           name="nombreCliente"
           placeholder="Buscar por nombre..." />
-      </div>
+          </div>
 
       <div class="filtro-item" *ngIf="tipoReporte === 'clientes'">
         <label for="tipoCliente">Tipo Cliente</label>
@@ -105,7 +105,7 @@
           <option value="empresa">Empresa</option>
           <option value="otro">Otro</option>
         </select>
-      </div>
+        </div>
 
       <div class="filtro-item" *ngIf="tipoReporte === 'pedidos'">
         <label for="estadoPedido">Estado Pedido</label>
@@ -153,7 +153,7 @@
           <option value="camion">Camión</option>
           <option value="moto">Moto</option>
         </select>
-      </div>
+        </div>
 
       <div class="filtro-item" *ngIf="tipoReporte === 'vehiculos'">
         <label for="disponibilidad">Disponibilidad</label>
@@ -165,7 +165,7 @@
           <option value="disponible">Disponible</option>
           <option value="no_disponible">No Disponible</option>
         </select>
-      </div>
+        </div>
 
       <div class="filtro-item" *ngIf="tipoReporte === 'conductores'">
         <label for="nombreConductor">Nombre Conductor</label>
@@ -190,7 +190,7 @@
           <option value="D">D</option>
           <option value="E">E</option>
         </select>
-      </div>
+        </div>
 
       <div class="filtro-item" *ngIf="tipoReporte === 'conductores'">
         <label for="estadoConductor">Estado</label>
@@ -215,15 +215,15 @@
   <div *ngIf="loading" class="loading">
     <div class="loading-spinner"></div>
     Generando reporte...
-  </div>
+      </div>
 
   <!-- ESTADÍSTICAS RESUMEN -->
   <div class="resumen-stats" *ngIf="!loading && estadisticasResumen.length > 0">
     <div class="stat-card" *ngFor="let stat of estadisticasResumen">
       <div class="stat-card-label">{{ stat.label }}</div>
       <div class="stat-card-value">{{ stat.value }}</div>
+      </div>
     </div>
-  </div>
 
   <!-- GRÁFICOS PARA PEDIDOS -->
   <div class="graficos-section" *ngIf="!loading && tipoReporte === 'pedidos' && datosReporte.length > 0">
@@ -296,8 +296,8 @@
               [style.width.%]="item.porcentaje"
               [style.backgroundColor]="item.color">
               <span class="chart-value">{{ item.count }}</span>
-            </div>
-          </div>
+    </div>
+  </div>
         </div>
       </div>
     </div>
@@ -315,20 +315,20 @@
     </div>
 
     <div id="reporte-content">
-      <table class="data-table">
-        <thead>
-          <tr>
+        <table class="data-table">
+          <thead>
+            <tr>
             <th *ngFor="let col of getColumnKeys()">{{ formatColumnName(col) }}</th>
-          </tr>
-        </thead>
-        <tbody>
+            </tr>
+          </thead>
+          <tbody>
           <tr *ngFor="let item of datosReporte">
             <td *ngFor="let col of getColumnKeys()">{{ getColumnValue(item, col) }}</td>
-          </tr>
-        </tbody>
-      </table>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
 
   <!-- SIN RESULTADOS -->
   <div class="empty-state" *ngIf="!loading && tipoReporte && datosReporte && datosReporte.length === 0">
